@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org"
+      xmlns:layout="ultraq.net.nz"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Nosotros — Punto Espresso</title>
+    <meta name="description" content="Conoce la historia de Punto Espresso, cafetería y tostaduría limeña dedicada al café de especialidad.">
+    <meta property="og:title" content="Nosotros — Punto Espresso">
+    <meta property="og:description" content="La historia detrás de Punto Espresso: café de origen, tostado propio y pasión por el buen café.">
+    <meta property="og:type" content="website">
+    <!-- Filtro oscuro opcional para que las letras blancas resalten sobre cualquier foto -->
+    <style>
+        .carousel-item::after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            background: rgba(0, 0, 0, 0.55);
+        }
+        .carousel-caption {
+            z-index: 2;
+            bottom: 20%;
+        }
+    </style>
+</head>
+<body>
+
+<main layout:fragment="content" class="p-0 m-0">
+
+    <!-- ========================================================= -->
+    <!-- CARRUSEL DINÁMICO QUE OCUPA TODO EL ANCHO HORIZONTAL       -->
+    <!-- ========================================================= -->
+    <div id="carruselNosotros" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel">
+
+        <!-- Indicadores inferiores -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carruselNosotros" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carruselNosotros" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        </div>
+
+        <div class="carousel-inner">
+
+            <!-- DIAPOSITIVA 1: NUESTRA HISTORIA -->
+            <div class="carousel-item active" style="height: 500px;">
+                <img th:src="@{/img/nosotros-historia.jpg}" class="d-block w-100 h-100" alt="Nuestra cafetería" style="object-fit: cover;">
+                <div class="carousel-caption d-block">
+                    <!-- El contenedor restringe el ancho del texto y lo deja centrado -->
+                    <div class="container" style="max-width: 800px;">
+                        <span class="badge text-uppercase px-3 py-2 mb-3 shadow-sm" style="background-color: #D2B48C; color: #4A2C11; font-weight: bold; letter-spacing: 1px;">Desde 2020</span>
+                        <h2 class="display-4 fw-bold mb-3 text-white">¿Cómo nació Punto Espresso?</h2>
+                        <p class="lead text-white-50">Punto Espresso comenzó como un pequeño sueño de entusiastas del café limeño con el firme propósito de servir una taza perfecta. Queríamos rescatar la calidez del hogar y fusionarla con los granos más selectos del Perú, creando un punto de encuentro único para la comunidad.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIAPOSITIVA 2: EL PROCESO DE TOSTADO -->
+            <div class="carousel-item" style="height: 500px;">
+                <img th:src="@{/img/nosotros-tostado.jpg}" class="d-block w-100 h-100" alt="Tostado de café" style="object-fit: cover;">
+                <div class="carousel-caption d-block">
+                    <div class="container" style="max-width: 800px;">
+                        <span class="badge text-uppercase px-3 py-2 mb-3 shadow-sm" style="background-color: #4A2C11; color: #FFF; font-weight: bold; letter-spacing: 1px;">El Proceso</span>
+                        <h2 class="display-4 fw-bold mb-3 text-white">Tostado Artesanal de Origen</h2>
+                        <p class="lead text-white-50">Trabajamos mano a mano con productores de Chanchamayo, Jaén y Villa Rica. Cada grano es sometido a un riguroso perfil de tueste medio que preserva sus notas florales, cítricas y achocolatadas nativas. No vendemos solo café; servimos el esfuerzo de familias caficultoras peruanas.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Flechas de navegación lateral -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carruselNosotros" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carruselNosotros" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CONTENIDO INFERIOR (PILARELES Y EQUIPO CENTRADOS)          -->
+    <!-- ========================================================= -->
+    <div class="container my-5">
+
+        <!-- COMPROMISOS / VALORES -->
+        <div class="bg-light p-4 p-md-5 mb-5 shadow-sm" style="border-radius: 20px;">
+            <h3 class="fw-bold text-center mb-4" style="color: #4A2C11;">Nuestros Compromisos</h3>
+            <div class="row text-center g-4">
+                <div class="col-md-4">
+                    <div class="p-2">
+                        <i class="bi bi-heart-fill fs-1 mb-2" style="color: #704214;"></i>
+                        <h5 class="fw-bold" style="color: #4A2C11;">Pasión</h5>
+                        <p class="text-muted small">Cuidamos minuciosamente cada detalle del filtrado y la temperatura.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-2">
+                        <i class="bi bi-shield-check fs-1 mb-2" style="color: #704214;"></i>
+                        <h5 class="fw-bold" style="color: #4A2C11;">Calidad</h5>
+                        <p class="text-muted small">Granos 100% Arábica con certificación de especialidad superior.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-2">
+                        <i class="bi bi-people-fill fs-1 mb-2" style="color: #704214;"></i>
+                        <h5 class="fw-bold" style="color: #4A2C11;">Comunidad</h5>
+                        <p class="text-muted small">Fomentamos el comercio justo respetando el pago a nuestros agricultores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NUESTRO EQUIPO -->
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <img th:src="@{/img/nosotros-equipo.jpg}" class="img-fluid rounded-3 shadow" alt="Equipo de baristas" style="max-height: 350px; width: 100%; object-fit: cover;">
+            </div>
+            <div class="col-lg-6">
+                <div class="ps-lg-4 text-center text-lg-start">
+                    <h2 class="fw-bold mb-3" style="color: #4A2C11;">Cultura Barista</h2>
+                    <p class="text-muted text-justify">Nuestro equipo está conformado por baristas profesionales certificados que entienden el café como un arte vivo. Desde el calibrado diario de la molienda hasta los trazos finos del arte latte, garantizamos una experiencia multisensorial consistente en cada visita.</p>
+                    <div class="mt-4">
+                        <a th:href="@{/catalogo}" class="btn fw-bold text-white px-4 py-2 shadow-sm" style="background-color: #4A2C11; border-radius: 8px;">Ver Especialidades</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

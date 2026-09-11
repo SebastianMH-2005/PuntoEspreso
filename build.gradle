@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.0.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.puntoespresso'
+version = '0.0.1-SNAPSHOT'
+description = 'puntoEspresso'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // El motor web base obligatorio
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // EL MOTOR DE THYMELEAF (Te faltaba esto)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // EL MOTOR DEL DIALECTO DEL PROFESOR (Para que funcione layout:decorate)
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0'
+
+    // Persistencia con base de datos (Supabase Postgres) vía JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Documentación automática de la API (Swagger UI)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+
+    // Endpoint de salud para que Render (y cualquier monitor) sepa si el backend sigue vivo
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Herramientas de desarrollo
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Pruebas del sistema
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PuntoEspressoApplication<puntoEspresso-ATF2_GRUPO_03>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.puntoespresso.puntoespresso.PuntoEspressoApplication",
+            "projectName": "puntoEspresso-ATF2_GRUPO_03",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

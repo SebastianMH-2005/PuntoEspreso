@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org"
+      xmlns:layout="ultraq.net.nz"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Checkout — Punto Espresso</title>
+    <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<main layout:fragment="content" class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <!-- Alerta éxito (Oculta) -->
+            <div id="alertaExito" class="alert alert-success d-none shadow-sm p-4 border-0 mb-4 text-center" style="border-radius: 15px; border-left: 6px solid #198754 !important;">
+                <i class="bi bi-patch-check-fill text-success fs-1 mb-2 d-block"></i>
+                <h4 class="fw-bold alert-heading">¡Pago Procesado Exitosamente!</h4>
+                <p class="mb-3">Tu orden ha sido registrada en el sistema de Punto Espresso.</p>
+                <hr>
+                <p class="mb-0 fw-bold fs-5 text-dark">
+                    Muestra este código al repartidor cuando llegue a casa:
+                    <span id="codigoReparto" class="badge bg-dark text-warning px-3 py-2 ms-2 fs-6">#PE-0000</span>
+                </p>
+                <div class="mt-4">
+                    <a th:href="@{/catalogo}" class="btn btn-success fw-bold px-4" style="border-radius: 8px;">Volver al Catálogo</a>
+                </div>
+            </div>
+
+            <!-- Formulario Checkout Principal -->
+            <div id="tarjetaCheckout" class="card border-0 shadow-lg p-4 bg-white" style="border-radius: 20px;">
+
+                <h2 class="fw-bold mb-4 text-center" style="color: #4A2C11;">Resumen de tu Pedido</h2>
+
+                <!-- Resumen Ticket -->
+                <div class="bg-light p-4 text-start mb-4" style="border-radius: 12px; border-left: 5px solid #704214;">
+                    <h5 class="fw-bold mb-3 text-uppercase small text-muted">Detalle de Caja</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Producto Seleccionado:</span>
+                        <span class="fw-bold" style="color: #4A2C11;" th:text="${producto.nombre}">Café</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Cantidad solicitada:</span>
+                        <span class="fw-bold" th:text="${cantidad} + ' unds.'">1 unds.</span>
+                    </div>
+
+                    <div class="border-top pt-2 mb-2">
+                        <span class="text-secondary d-block mb-1 small fw-bold">Comentarios / Notas de preparación:</span>
+                        <p class="text-dark bg-white p-2 rounded small border" style="font-style: italic;" th:text="${instrucciones}">Notas</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-top pt-3 mt-3">
+                        <span class="fs-4 fw-bold" style="color: #4A2C11;">Monto Total a Pagar:</span>
+                        <span class="fs-4 fw-bold text-success" th:text="'S/ ' + ${#numbers.formatDecimal(totalPagar, 1, 2)}">S/ 0.00</span>
+                    </div>
+                </div>
+
+                <!-- Forma de pago -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small d-block mb-2">SELECCIONA TU TIPO DE TARJETA</label>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoTarjeta" id="tarjetaCredito" value="CC" checked autocomplete="off">
+                            <label class="btn btn-outline-secondary w-100 py-3 fw-bold" for="tarjetaCredito">
+                                <i class="bi bi-credit-card-2-front me-2"></i>Crédito (CC)
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="tipoTarjeta" id="tarjetaDebito" value="DC" autocomplete="off">
+                            <label class="btn btn-outline-secondary w-100 py-3 fw-bold" for="tarjetaDebito">
+                                <i class="bi bi-credit-card me-2"></i>Débito (DC)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Retracto o confirmacion -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary w-100 p-3 fw-bold" style="border-radius: 10px;">
+                            <i class="bi bi-arrow-left me-1"></i>Modificar Pedido
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- pasarela de pago (Modal) -->
+                        <button type="button" class="btn w-100 p-3 fw-bold text-white shadow-sm" style="background-color: #4A2C11; border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#modalPasarela">
+                            Proceder al Pago<i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Pasaera de pago -->
+
+    <div class="modal fade" id="modalPasarela" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+
+                <div class="modal-header border-0 text-white" style="background-color: #4A2C11; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Pasarela Segura de Pago</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Validaciones Tarjeta -->
+                <form id="formBanco" class="needs-validation" novalidate>
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3 text-center">Introduce los datos de tu tarjeta para procesar los <span class="fw-bold text-dark" th:text="'S/ ' + ${#numbers.formatDecimal(totalPagar, 1, 2)}">S/ 0.00</span></p>
+
+                        <!-- (16 dígitos exactos) -->
+                        <div class="mb-3">
+                            <label for="numTarjeta" class="form-label small fw-bold">Número de Tarjeta</label>
+                            <input type="text" class="form-control" id="numTarjeta" maxlength="16" pattern="\d{16}" placeholder="4111222233334444" required style="border-radius: 8px;">
+                            <div class="invalid-feedback">Debes ingresar los 16 dígitos numéricos de tu tarjeta.</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- V(MM/AA) -->
+                            <div class="col-6 mb-3">
+                                <label for="fechaVenc" class="form-label small fw-bold">Vencimiento (MM/AA)</label>
+                                <input type="text" class="form-control" id="fechaVenc" maxlength="5" pattern="(0[1-9]|1[0-2])\/[2-9][0-9]" placeholder="12/28" required style="border-radius: 8px;">
+                                <div class="invalid-feedback">Formato MM/AA válido.</div>
+                            </div>
+                            <!-- CVV -->
+                            <div class="col-6 mb-3">
+                                <label for="cvv" class="form-label small fw-bold">CVV / CVC</label>
+                                <input type="password" class="form-control" id="cvv" maxlength="3" pattern="\d{3}" placeholder="123" required style="border-radius: 8px;">
+                                <div class="invalid-feedback">3 dígitos.</div>
+                            </div>
+                        </div>
+
+                    <div class="modal-footer border-0 p-4 bg-light" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+                        <button type="submit" class="btn btn-success w-100 p-3 fw-bold text-white shadow-sm" style="border-radius: 10px;">
+                            <i class="bi bi-lock-fill me-2"></i>Finalizar Pago Seguro
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Validar y generar código -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const formulario = document.getElementById('formBanco');
+            const modalElemento = document.getElementById('modalPasarela');
+            // Instancia nativa de Bootstrap para cerrar el modal por JS
+            const bootstrapModal = new bootstrap.Modal(modalElemento);
+
+            formulario.addEventListener('submit', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Validador de clases Bootstrap
+                if (formulario.checkValidity()) {
+                    // Ocultar modal pasarela de pagos
+                    bootstrapModal.hide();
+
+                    // Ocultar manualmente si Bootstrap se traba
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(el => el.remove());
+                    document.body.style.overflow = 'auto';
+
+                    // Generar código aleatorio
+                    const numeroAleatorio = Math.floor(1000 + Math.random() * 9000);
+                    document.getElementById('codigoReparto').innerText = "#PE-" + numeroAleatorio;
+
+                    // 3. Modificar la vista ocultando checkout mostrando mensaje éxito
+                    document.getElementById('tarjetaCheckout').classList.add('d-none');
+                    document.getElementById('alertaExito').classList.remove('d-none');
+                }
+
+                formulario.classList.add('was-validated');
+            }, false);
+        });
+    </script>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org"
+      xmlns:layout="ultraq.net.nz"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Catálogo de Cafés — Punto Espresso</title>
+    <meta name="description" content="Explora el catálogo de Punto Espresso: cafés en grano de origen, frappés, cappuccinos y bebidas frías. Pide en línea desde Lima, Perú.">
+    <meta property="og:title" content="Catálogo de Cafés — Punto Espresso">
+    <meta property="og:description" content="Café de especialidad y bebidas frías con envío en Lima. Descubre nuestro catálogo completo.">
+    <meta property="og:type" content="website">
+</head>
+<body>
+
+<main layout:fragment="content" class="container my-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold" style="color: #4A2C11;">Nuestro Catálogo</h1>
+        <p class="lead text-muted">Descubre nuestra selección exclusiva. Haz clic en el botón para personalizar tu pedido.</p>
+        <div class="mx-auto" style="width: 60px; height: 3px; background-color: #704214;"></div>
+    </div>
+
+    <!-- Grilla catalogo productos -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" th:each="prod : ${productos}">
+            <div class="card h-100 shadow-sm border-0 bg-white" style="border-radius: 15px; overflow: hidden;">
+
+                <img th:src="@{'/img/' + ${prod.imagen}}"
+                     class="card-img-top"
+                     th:alt="${prod.nombre}"
+                     style="height: 220px; object-fit: cover;">
+
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold m-0" style="color: #4A2C11;" th:text="${prod.nombre}">Nombre Café</h5>
+                        <span class="badge fs-6 px-3 py-2" style="background-color: #D2B48C; color: #4A2C11; border-radius: 20px;">
+                                S/ <span th:text="${#numbers.formatDecimal(prod.precio, 1, 2)}">0.00</span>
+                            </span>
+                    </div>
+
+                    <p class="small mb-2">
+                        <span class="badge" th:classappend="${prod.getHeaderClass()}" th:text="${prod.categoria}">Categoría</span>
+                    </p>
+
+                    <p class="card-text text-muted flex-grow-1" th:text="${prod.descripcion}">Descripción corta.</p>
+
+                    <div class="mt-3">
+                        <!-- Caso 1: Disponible (Usa th:attr para empaquetar los datos de Java de forma limpia) -->
+                        <div th:if="${prod.isDisponible()}">
+                            <div class="mb-3">
+                                    <span class="small" th:classappend="${prod.getStockBadgeClass()}">
+                                        <i class="bi bi-check-circle-fill"></i> Disponible (<span th:text="${prod.stock}">0</span> unids)
+                                    </span>
+                            </div>
+                            <button type="button"
+                                    class="btn w-100 fw-bold text-white shadow-sm btn-abrir-modal"
+                                    style="background-color: #4A2C11; border-radius: 8px;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalPersonalizar"
+                                    th:attr="data-id=${prod.id}, data-nombre=${prod.nombre}, data-precio=${prod.precio}, data-stock=${prod.stock}">
+                                <i class="bi bi-plus-circle-fill me-2"></i>Agregar
+                            </button>
+                        </div>
+
+                        <!-- Caso 2: Agotado -->
+                        <div th:unless="${prod.isDisponible()}">
+                            <div class="mb-3">
+                                    <span class="small" th:classappend="${prod.getStockBadgeClass()}">
+                                        <i class="bi bi-x-circle-fill"></i> Agotado temporalmente
+                                    </span>
+                            </div>
+                            <button class="btn btn-secondary w-100 fw-bold" disabled style="border-radius: 8px;">
+                                Sin Stock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL personalización -->
+    <div class="modal fade" id="modalPersonalizar" tabindex="-1" aria-labelledby="modalPersonalizarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+
+                <!-- Formulario POST hacia /checkout -->
+                <form th:action="@{/checkout}" method="POST">
+                    <!-- Campo oculto para el ID del producto -->
+                    <input type="hidden" id="modalInputId" name="productoId">
+
+                    <div class="modal-header border-0 text-white" style="background-color: #4A2C11; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                        <h5 class="modal-title fw-bold" id="modalPersonalizarLabel">Personalizar pedido</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4">
+                        <h4 class="fw-bold mb-3" id="modalNombreProducto" style="color: #4A2C11;">Nombre del Café</h4>
+
+                        <!-- para instrucciones -->
+                        <div class="mb-4">
+                            <label for="instrucciones" class="form-label fw-bold text-muted small">INSTRUCCIONES ADICIONALES</label>
+                            <textarea class="form-control" id="instrucciones" name="instrucciones" rows="3" placeholder="Ej: Sin crema batida, leche deslactosada, azúcar rubia..." style="border-radius: 8px; resize: none;"></textarea>
+                        </div>
+
+                        <!-- Selector unidades -->
+                        <div class="d-flex align-items-center justify-content-between bg-light p-3" style="border-radius: 10px;">
+                            <div>
+                                <span class="fw-bold d-block" style="color: #4A2C11;">Unidades</span>
+                                <small class="text-muted" id="modalStockMaximo">Disponibles: 0</small>
+                            </div>
+                            <div class="input-group" style="width: 130px;">
+                                <button class="btn btn-outline-secondary fw-bold" type="button" id="btnRestar">-</button>
+                                <input type="text" class="form-control text-center fw-bold bg-white" id="inputCantidad" name="cantidad" value="1" readonly>
+                                <button class="btn btn-outline-secondary fw-bold" type="button" id="btnSumar">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmar Costo -->
+                    <div class="modal-footer border-0 p-4 bg-light" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+                        <button type="submit" class="btn w-100 fw-bold text-white p-3 shadow-sm d-flex justify-content-between align-items-center" style="background-color: #4A2C11; border-radius: 10px;">
+                            <span><i class="bi bi-cart-check-fill me-2"></i>Confirmar Pedido</span>
+                            <span class="fs-5">S/ <span id="modalPrecioTotal">0.00</span></span>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripy -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let precioBase = 0.0;
+            let stockMaximo = 0;
+            let cantidadActual = 1;
+
+            const miModalHtml = document.getElementById('modalPersonalizar');
+
+            miModalHtml.addEventListener('show.bs.modal', function(event) {
+                const boton = event.relatedTarget;
+
+                const id = boton.getAttribute('data-id');
+                const nombre = boton.getAttribute('data-nombre');
+                precioBase = parseFloat(boton.getAttribute('data-precio')) || 0.0;
+                stockMaximo = parseInt(boton.getAttribute('data-stock'), 10) || 0;
+
+                cantidadActual = (stockMaximo > 0) ? 1 : 0;
+
+                document.getElementById('inputCantidad').value = cantidadActual;
+                document.getElementById('instrucciones').value = "";
+                document.getElementById('modalInputId').value = id;
+                document.getElementById('modalNombreProducto').innerText = nombre;
+                document.getElementById('modalStockMaximo').innerText = "Disponibles: " + stockMaximo;
+
+                actualizarTotal();
+            });
+
+            document.getElementById('btnSumar').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (cantidadActual < stockMaximo) {
+                    cantidadActual++;
+                    document.getElementById('inputCantidad').value = cantidadActual;
+                    actualizarTotal();
+                } else {
+                    alert("Límite de stock alcanzado (" + stockMaximo + " unidades disponibles).");
+                }
+            });
+
+            document.getElementById('btnRestar').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (cantidadActual > 1) {
+                    cantidadActual--;
+                    document.getElementById('inputCantidad').value = cantidadActual;
+                    actualizarTotal();
+                }
+            });
+
+            function actualizarTotal() {
+                const total = precioBase * cantidadActual;
+                document.getElementById('modalPrecioTotal').innerText = total.toFixed(2);
+            }
+        });
+    </script>
+
+</main>
+
+</body>
+</html>

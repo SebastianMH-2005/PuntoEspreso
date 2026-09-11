@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org"
+      xmlns:layout="ultraq.net.nz"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Inicio — Punto Espresso</title>
+    <meta name="description" content="Punto Espresso: cafetería y tostaduría en Lima, Perú. Café de especialidad, frappés y bebidas frías, con sedes en San Miguel y San Isidro.">
+    <meta property="og:title" content="Punto Espresso — Café de especialidad en Lima">
+    <meta property="og:description" content="Cafetería y tostaduría limeña con café de origen, frappés y bebidas frías. Visítanos en San Miguel o San Isidro.">
+    <meta property="og:type" content="website">
+
+    <!-- Datos estructurados para que Google entienda que es un negocio local (cafetería) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CafeOrCoffeeShop",
+      "name": "Punto Espresso",
+      "telephone": "+51-1-555-0199",
+      "email": "contacto@puntoespresso.pe",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Lima",
+        "addressCountry": "PE"
+      }
+    }
+    </script>
+    <style>
+        .img-boton-carrusel {
+            cursor: pointer;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+        .img-boton-carrusel:hover {
+            filter: brightness(95%);
+            transform: scale(1.005);
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <!-- 1. FOTAZO PUBLICITARIO DE MARCA (ANCHO COMPLETO Y ALTO NATURAL SIN RECORTES) -->
+    <div class="w-100 p-0 m-0 overflow-hidden shadow-sm">
+        <!-- Se elimina 'object-fit: cover' y 'max-height' para que la foto muestre todo su alto real -->
+        <img th:src="@{/img/banner-marca.jpg}" class="w-100 h-auto d-block" alt="Punto Espresso Premium">
+    </div>
+
+    <!-- 2. BANNER DE BIENVENIDA ORIGINAL CENTRADO (INTACTO) -->
+    <div class="p-5 mb-4 text-white bg-cafe-oscuro rounded-3 shadow container mt-5">
+        <div class="container-fluid py-5 text-center text-md-start">
+            <span class="badge bg-warning text-dark mb-3 px-3 py-2 text-uppercase fw-bold">Variedades Exclusivas 2026</span>
+            <h1 class="display-4 fw-bold text-crema">Tu pausa perfecta empieza en Punto Espresso</h1>
+            <p class="col-md-8 fs-5 text-white-50">
+                Seleccionamos artesanalmente los mejores granos de las regiones cafetaleras más altas del país. Experimenta un cuerpo balanceado, un aroma intenso y un sabor excepcional en cada taza.
+            </p>
+            <a th:href="@{/catalogo}" class="btn btn-cafe btn-lg px-4 mt-3 shadow">
+                <i class="bi bi-journal-richtext me-2"></i>Explorar el Catálogo
+            </a>
+        </div>
+    </div>
+
+    <!-- 3. CARRUSEL DE IMÁGENES CLICKEABLES (MÁS ANCHO Y ALTO AJUSTADO A 600PX) -->
+    <div class="container my-5">
+        <div id="carruselPromociones" class="carousel slide shadow-lg" data-bs-ride="carousel" style="border-radius: 16px; overflow: hidden;">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carruselPromociones" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#carruselPromociones" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#carruselPromociones" data-bs-slide-to="2"></button>
+            </div>
+
+            <!-- Altura ampliada a 600px para que las imágenes promocionales se vean más grandes -->
+            <div class="carousel-inner" style="height: 600px;">
+
+                <div class="carousel-item active h-100">
+                    <a th:href="@{/catalogo}">
+                        <img th:src="@{/img/banner-suspiro.jpg}" class="d-block w-100 h-100 img-boton-carrusel" alt="Lanzamiento Suspiro" style="object-fit: cover;">
+                    </a>
+                </div>
+
+                <div class="carousel-item h-100">
+                    <a th:href="@{/catalogo}">
+                        <img th:src="@{/img/especialidad-geisha.jpg}" class="d-block w-100 h-100 img-boton-carrusel" alt="Variedad Geisha" style="object-fit: cover;">
+                    </a>
+                </div>
+
+                <div class="carousel-item h-100">
+                    <a th:href="@{/catalogo}">
+                        <img th:src="@{/img/especialidad-variedad.jpg}" class="d-block w-100 h-100 img-boton-carrusel" alt="Variedad Premium" style="object-fit: cover;">
+                    </a>
+                </div>
+
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carruselPromociones" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carruselPromociones" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. SECCIÓN DE ESPECIALIDADES EN DOS COLUMNAS (INTACTO) -->
+    <div class="container mb-5">
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold text-dark mb-1">Nuestras Especialidades</h2>
+                <p class="text-muted">Explora nuestra selección artesanal de barra y granos de origen</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm bg-white p-4 text-center" style="border-radius: 15px;">
+                    <div class="card-body">
+                        <div class="text-warning display-4 mb-3"><i class="bi bi-cup-straw"></i></div>
+                        <h4 class="card-title fw-bold text-dark">Cafetería & Bebidas</h4>
+                        <p class="card-text text-muted small px-2">
+                            Frappés cremosos, lattes perfectamente texturizados y extracciones de espresso intensas servidas al momento por nuestros baristas.
+                        </p>
+                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary btn-sm px-4 mt-2" style="border-radius: 6px;">Ver Bebidas</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm bg-white p-4 text-center" style="border-radius: 15px;">
+                    <div class="card-body">
+                        <div class="text-warning display-4 mb-3"><i class="bi bi-box-seam"></i></div>
+                        <h4 class="card-title fw-bold text-dark">Café en Grano o Molido</h4>
+                        <p class="card-text text-muted small px-2">
+                            Líneas gourmet premium con perfiles de tueste medio y oscuro. Variedades Bourbon y Geisha perfectas para tus métodos de extracción en casa.
+                        </p>
+                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary btn-sm px-4 mt-2" style="border-radius: 6px;">Ver Café en Grano</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

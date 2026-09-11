@@ -1,0 +1,15 @@
+# Variables de entorno con credenciales reales — nunca se sube
+.env
+
+# Gradle / build
+.gradle/
+build/
+bin/
+
+# IDE
+.idea/
+*.iml
+out/
+
+# Logs
+*.log
