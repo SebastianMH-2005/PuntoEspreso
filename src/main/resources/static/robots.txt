@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /checkout
 
-Sitemap: https://TU-DOMINIO-FINAL/sitemap.xml
+Sitemap: https://puntoespreso.onrender.com/sitemap.xml
