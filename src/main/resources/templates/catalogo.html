@@ -38,7 +38,7 @@
                     </div>
 
                     <p class="small mb-2">
-                        <span class="badge" th:classappend="${prod.getHeaderClass()}" th:text="${prod.categoria}">Categoría</span>
+                        <span class="badge" th:classappend="${prod.getHeaderClass()}" th:text="${prod.categoria.nombre}">Categoría</span>
                     </p>
 
                     <p class="card-text text-muted flex-grow-1" th:text="${prod.descripcion}">Descripción corta.</p>
@@ -56,7 +56,7 @@
                                     style="background-color: #4A2C11; border-radius: 8px;"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalPersonalizar"
-                                    th:attr="data-id=${prod.id}, data-nombre=${prod.nombre}, data-precio=${prod.precio}, data-stock=${prod.stock}">
+                                    th:attr="data-id=${prod.idProducto}, data-nombre=${prod.nombre}, data-precio=${prod.precio}, data-stock=${prod.stock}">
                                 <i class="bi bi-plus-circle-fill me-2"></i>Agregar
                             </button>
                         </div>

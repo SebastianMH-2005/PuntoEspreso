@@ -12,7 +12,7 @@ public class Sede {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer idSede;
     private String nombre;
     private String direccion;
     private String horarioDias;
@@ -28,8 +28,7 @@ public class Sede {
         this.horarioHoras = horarioHoras;
     }
 
-    // Getters
-    public Long getId() { return id; }
+    public Integer getIdSede() { return idSede; }
     public String getNombre() { return nombre; }
     public String getDireccion() { return direccion; }
     public String getHorarioDias() { return horarioDias; }
