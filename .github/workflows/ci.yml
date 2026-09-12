@@ -22,5 +22,5 @@ jobs:
       - name: Dar permisos al wrapper de Gradle
         run: chmod +x gradlew
 
-      - name: Compilar y correr tests
-        run: ./gradlew build
+      - name: Compilar (sin tests, requieren base de datos)
+        run: ./gradlew build -x test
