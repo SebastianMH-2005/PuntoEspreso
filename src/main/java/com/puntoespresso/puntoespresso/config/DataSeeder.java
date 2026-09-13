@@ -3,10 +3,13 @@ package com.puntoespresso.puntoespresso.config;
 import com.puntoespresso.puntoespresso.dto.Categoria;
 import com.puntoespresso.puntoespresso.dto.Producto;
 import com.puntoespresso.puntoespresso.dto.Sede;
+import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import com.puntoespresso.puntoespresso.repository.SedeRepository;
+import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,11 +20,17 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoriaRepository categoriaRepository;
     private final ProductoRepository productoRepository;
     private final SedeRepository sedeRepository;
+    private final UsuarioSistemaRepository usuarioSistemaRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataSeeder(CategoriaRepository categoriaRepository, ProductoRepository productoRepository, SedeRepository sedeRepository) {
+    public DataSeeder(CategoriaRepository categoriaRepository, ProductoRepository productoRepository,
+                       SedeRepository sedeRepository, UsuarioSistemaRepository usuarioSistemaRepository,
+                       PasswordEncoder passwordEncoder) {
         this.categoriaRepository = categoriaRepository;
         this.productoRepository = productoRepository;
         this.sedeRepository = sedeRepository;
+        this.usuarioSistemaRepository = usuarioSistemaRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -62,6 +71,12 @@ public class DataSeeder implements CommandLineRunner {
                 new Sede("Tostaduría (Planta)", "Jirón Teniente Carlos Jimenez Chavez 147, Lima, Perú", "Lunes a Sábado", "08:00 — 18:00"),
                 new Sede("Cafetería San Isidro", "Avenida Paseo de la República 3440, San Isidro, Perú", "Lunes a Domingo", "08:00 — 21:30")
             ));
+        }
+
+        if (usuarioSistemaRepository.count() == 0) {
+            usuarioSistemaRepository.save(new UsuarioSistema(
+                    "Administrador", "admin@puntoespresso.pe",
+                    passwordEncoder.encode("Admin123!"), "ADMIN"));
         }
     }
 }

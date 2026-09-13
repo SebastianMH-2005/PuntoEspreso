@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Crear cuenta — Punto Espresso</title>
+    <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<main layout:fragment="content" class="container my-5" style="max-width: 480px;">
+    <h1 class="text-center mb-4" style="color:#4A2C11;">Crear cuenta</h1>
+
+    <div id="registroError" class="alert alert-danger d-none" role="alert"></div>
+    <div id="registroExito" class="alert alert-success d-none" role="alert">
+        Cuenta creada. Ya puedes iniciar sesión.
+    </div>
+
+    <form id="formRegistro" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre completo</label>
+            <input type="text" class="form-control" id="regNombre" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">DNI</label>
+            <input type="text" class="form-control" id="regDni" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" id="regEmail" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Teléfono</label>
+            <input type="text" class="form-control" id="regTelefono" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Contraseña</label>
+            <input type="password" class="form-control" id="regContrasena" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-cafe w-100">Crear cuenta</button>
+    </form>
+
+    <p class="text-center mt-3">
+        ¿Ya tienes cuenta? <a th:href="@{/}">Inicia sesión desde el inicio</a>
+    </p>
+</main>
+
+<script>
+document.getElementById('formRegistro').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+
+    const errorBox = document.getElementById('registroError');
+    const exitoBox = document.getElementById('registroExito');
+    errorBox.classList.add('d-none');
+    exitoBox.classList.add('d-none');
+
+    const body = {
+        nombre: document.getElementById('regNombre').value,
+        dni: document.getElementById('regDni').value,
+        email: document.getElementById('regEmail').value,
+        telefono: document.getElementById('regTelefono').value,
+        contrasena: document.getElementById('regContrasena').value
+    };
+
+    try {
+        const respuesta = await fetch('/api/auth/registro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (respuesta.status === 409) {
+            errorBox.textContent = 'Ya existe una cuenta con ese email.';
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        if (!respuesta.ok) {
+            errorBox.textContent = 'No se pudo crear la cuenta. Intenta de nuevo.';
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        exitoBox.classList.remove('d-none');
+        form.reset();
+        form.classList.remove('was-validated');
+    } catch (err) {
+        errorBox.textContent = 'No se pudo crear la cuenta. Intenta de nuevo.';
+        errorBox.classList.remove('d-none');
+    }
+});
+</script>
+
+</body>
+</html>

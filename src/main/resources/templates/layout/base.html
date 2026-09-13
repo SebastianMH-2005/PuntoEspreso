@@ -84,15 +84,18 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form class="needs-validation" novalidate id="formLogin">
+                                <form class="needs-validation" novalidate id="formLogin">
+                    <div id="loginError" class="alert alert-danger py-2 small d-none" role="alert">
+                        Email o contraseña incorrectos.
+                    </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Usuario</label>
-                        <input type="text" class="form-control" placeholder="usuario" required>
-                        <div class="invalid-feedback">El usuario es obligatorio.</div>
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" id="loginEmail" placeholder="tu@email.com" required>
+                        <div class="invalid-feedback">El email es obligatorio.</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Contraseña</label>
-                        <input type="password" class="form-control" placeholder="••••••••" required>
+                        <input type="password" class="form-control" id="loginContrasena" placeholder="••••••••" required>
                         <div class="invalid-feedback">La contraseña es obligatoria.</div>
                     </div>
                     <div class="mb-2 form-check">
@@ -105,6 +108,9 @@
                         </button>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
+                    <p class="text-center mt-3 mb-0 small">
+                        ¿No tienes cuenta? <a th:href="@{/registro}">Regístrate aquí</a>
+                    </p>
                 </form>
             </div>
         </div>
@@ -128,7 +134,7 @@
             </div>
             <div class="col-md-4 text-md-end">
                 <p class="text-white-50 mb-0 small">
-                    Herramientas de Desarrollo — UTP 2026<br>
+                    Desarrollo Web Integrado — UTP 2026<br>
                     <span class="text-crema">Gourmet Coffee Experience</span>
                 </p>
             </div>
@@ -150,6 +156,44 @@
                 form.classList.add('was-validated');
             });
         });
+    });
+</script>
+<script>
+    // Login real contra /api/auth/login
+    document.getElementById('formLogin').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const email = document.getElementById('loginEmail').value;
+        const contrasena = document.getElementById('loginContrasena').value;
+        const errorBox = document.getElementById('loginError');
+        errorBox.classList.add('d-none');
+
+        try {
+            const respuesta = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, contrasena })
+            });
+
+            if (!respuesta.ok) {
+                errorBox.classList.remove('d-none');
+                return;
+            }
+
+            const datos = await respuesta.json();
+            localStorage.setItem('token', datos.token);
+            localStorage.setItem('nombre', datos.nombre);
+            localStorage.setItem('rol', datos.rol);
+
+            window.location.reload();
+        } catch (err) {
+            errorBox.classList.remove('d-none');
+        }
     });
 </script>
 <th:block layout:fragment="scripts"></th:block>

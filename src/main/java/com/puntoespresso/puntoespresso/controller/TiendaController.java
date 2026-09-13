@@ -76,4 +76,10 @@ public class TiendaController {
         model.addAttribute("activePage", "nosotros");
         return "nosotros"; // Abre templates/nosotros.html
     }
+
+        @GetMapping("/registro")
+    public String registro(Model model) {
+        model.addAttribute("activePage", "registro");
+        return "registro";
+    }
 }
