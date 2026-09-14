@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Panel Admin — Punto Espresso</title>
+    <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<main layout:fragment="content" class="container my-5">
+    <h1 class="mb-4" style="color:#4A2C11;">Panel de administración</h1>
+
+    <div id="adminAcceso" class="alert alert-warning d-none">
+        Necesitas iniciar sesión como ADMIN u OPERADOR para ver esta página.
+    </div>
+
+    <div id="adminContenido" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Productos</h2>
+            <button class="btn btn-cafe" data-bs-toggle="modal" data-bs-target="#modalProducto" onclick="abrirModalNuevoProducto()">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo producto
+            </button>
+        </div>
+
+        <div id="productoError" class="alert alert-danger d-none"></div>
+
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaProductos"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal crear/editar producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-cafe-oscuro text-white">
+                    <h5 class="modal-title" id="modalProductoTitulo">Nuevo producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProducto">
+                        <input type="hidden" id="prodId">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="prodNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="prodCategoria" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="prodDescripcion" rows="2" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Precio (S/)</label>
+                                <input type="number" step="0.01" class="form-control" id="prodPrecio" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="prodStock" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de imagen (ej. cafe-latte.jpg)</label>
+                            <input type="text" class="form-control" id="prodImagen" required>
+                        </div>
+                        <button type="submit" class="btn btn-cafe w-100">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let categoriasCache = [];
+
+        function headersAuth() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            };
+        }
+
+        function verificarAcceso() {
+            const rol = localStorage.getItem('rol');
+            if (rol !== 'ADMIN' && rol !== 'OPERADOR') {
+                document.getElementById('adminAcceso').classList.remove('d-none');
+                return false;
+            }
+            document.getElementById('adminContenido').classList.remove('d-none');
+            return true;
+        }
+
+        async function cargarCategorias() {
+            const respuesta = await fetch('/api/categorias');
+            categoriasCache = await respuesta.json();
+            const select = document.getElementById('prodCategoria');
+            select.innerHTML = categoriasCache.map(c => `<option value="${c.idCategoria}">${c.nombre}</option>`).join('');
+        }
+
+        async function cargarProductos() {
+            const respuesta = await fetch('/api/admin/productos', { headers: headersAuth() });
+            if (!respuesta.ok) {
+                document.getElementById('productoError').textContent = 'No se pudieron cargar los productos.';
+                document.getElementById('productoError').classList.remove('d-none');
+                return;
+            }
+            const productos = await respuesta.json();
+            const tbody = document.getElementById('tablaProductos');
+            tbody.innerHTML = productos.map(p => `
+                <tr>
+                    <td>${p.nombre}</td>
+                    <td>${p.categoria ? p.categoria.nombre : ''}</td>
+                    <td>S/ ${p.precio.toFixed(2)}</td>
+                    <td>${p.stock}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick='abrirModalEditarProducto(${JSON.stringify(p)})'>
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${p.idProducto})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function abrirModalNuevoProducto() {
+            document.getElementById('modalProductoTitulo').textContent = 'Nuevo producto';
+            document.getElementById('formProducto').reset();
+            document.getElementById('prodId').value = '';
+        }
+
+        function abrirModalEditarProducto(producto) {
+            document.getElementById('modalProductoTitulo').textContent = 'Editar producto';
+            document.getElementById('prodId').value = producto.idProducto;
+            document.getElementById('prodNombre').value = producto.nombre;
+            document.getElementById('prodCategoria').value = producto.categoria ? producto.categoria.idCategoria : '';
+            document.getElementById('prodDescripcion').value = producto.descripcion;
+            document.getElementById('prodPrecio').value = producto.precio;
+            document.getElementById('prodStock').value = producto.stock;
+            document.getElementById('prodImagen').value = producto.imagen;
+            new bootstrap.Modal(document.getElementById('modalProducto')).show();
+        }
+
+        async function eliminarProducto(id) {
+            if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
+
+            const respuesta = await fetch('/api/admin/productos/' + id, {
+                method: 'DELETE',
+                headers: headersAuth()
+            });
+
+            if (respuesta.ok) {
+                cargarProductos();
+            } else {
+                alert('No se pudo eliminar el producto.');
+            }
+        }
+
+        document.getElementById('formProducto').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const body = {
+                idCategoria: parseInt(document.getElementById('prodCategoria').value),
+                nombre: document.getElementById('prodNombre').value,
+                descripcion: document.getElementById('prodDescripcion').value,
+                precio: parseFloat(document.getElementById('prodPrecio').value),
+                stock: parseInt(document.getElementById('prodStock').value),
+                imagen: document.getElementById('prodImagen').value
+            };
+
+            const id = document.getElementById('prodId').value;
+            const url = id ? '/api/admin/productos/' + id : '/api/admin/productos';
+            const metodo = id ? 'PUT' : 'POST';
+
+            const respuesta = await fetch(url, {
+                method: metodo,
+                headers: headersAuth(),
+                body: JSON.stringify(body)
+            });
+
+            if (respuesta.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
+                cargarProductos();
+            } else {
+                document.getElementById('productoError').textContent = 'No se pudo guardar el producto.';
+                document.getElementById('productoError').classList.remove('d-none');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (verificarAcceso()) {
+                cargarCategorias();
+                cargarProductos();
+            }
+        });
+    </script>
+</main>
+
+</body>
+</html>

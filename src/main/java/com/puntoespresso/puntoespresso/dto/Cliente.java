@@ -1,5 +1,7 @@
 package com.puntoespresso.puntoespresso.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +18,7 @@ public class Cliente {
     private String nombre;
     private String dni;
     private String email;
+    @JsonIgnore
     private String contrasena;
     private String telefono;
 

@@ -49,14 +49,17 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Páginas públicas (Thymeleaf) y recursos estáticos
+                // /admin también queda aquí: la página carga para cualquiera, pero se
+                // vacía por JavaScript si no hay un token de ADMIN/OPERADOR en localStorage.
+                // La protección real está en /api/admin/**, más abajo.
                 .requestMatchers("/", "/index", "/catalogo", "/contacto", "/nosotros", "/login", "/registro",
-                        "/checkout", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml").permitAll()
+                        "/checkout", "/admin", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml").permitAll()
                 // API pública de lectura + autenticación
-                .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias").permitAll()
                 // Documentación y monitoreo
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
-                // Panel admin: solo ADMIN u OPERADOR (todavía no existen estas rutas, quedan listas para cuando las armemos)
-                .requestMatchers("/admin/**", "/api/admin/**").hasAnyRole("ADMIN", "OPERADOR")
+                // API del panel admin: aquí sí se exige el rol de verdad
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "OPERADOR")
                 // Todo lo demás requiere estar logueado
                 .anyRequest().authenticated()
             )

@@ -1,11 +1,15 @@
 package com.puntoespresso.puntoespresso.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+
+ 
 @Entity
 @Table(name = "usuarios_sistema")
 public class UsuarioSistema {
@@ -15,6 +19,7 @@ public class UsuarioSistema {
     private Integer idUsuarioSistema;
     private String nombre;
     private String email;
+    @JsonIgnore 
     private String contrasena;
     private String rol;
 
