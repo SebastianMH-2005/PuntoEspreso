@@ -6,7 +6,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ordenes")
@@ -37,6 +40,7 @@ public class Orden {
     private String estado;
     private String codigoUnico;
     private double total;
+    private LocalDateTime fechaCreacion;
 
     public Orden() {
     }
@@ -50,6 +54,11 @@ public class Orden {
         this.estado = estado;
         this.codigoUnico = codigoUnico;
         this.total = total;
+    }
+
+    @PrePersist
+    public void alCrear() {
+        this.fechaCreacion = LocalDateTime.now();
     }
 
     public Integer getIdOrden() { return idOrden; }
@@ -72,4 +81,5 @@ public class Orden {
     public void setCodigoUnico(String codigoUnico) { this.codigoUnico = codigoUnico; }
     public double getTotal() { return total; }
     public void setTotal(double total) { this.total = total; }
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
 }

@@ -24,6 +24,9 @@
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSedes" type="button">Sedes</button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabOrdenes" type="button">Órdenes</button>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -73,6 +76,26 @@
                         </tr>
                     </thead>
                     <tbody id="tablaSedes"></tbody>
+                </table>
+            </div>
+                <div class="tab-pane fade" id="tabOrdenes">
+                <h2 class="h4 mb-3">Órdenes</h2>
+
+                <div id="ordenError" class="alert alert-danger d-none"></div>
+
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Cliente</th>
+                            <th>Producto(s)</th>
+                            <th>Total</th>
+                            <th>Entrega</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaOrdenes"></tbody>
                 </table>
             </div>
 
@@ -340,11 +363,52 @@
             }
         });
 
+        async function cargarOrdenes() {
+            const respuesta = await fetch('/api/admin/ordenes', { headers: headersAuth() });
+            if (!respuesta.ok) {
+                document.getElementById('ordenError').textContent = 'No se pudieron cargar las órdenes.';
+                document.getElementById('ordenError').classList.remove('d-none');
+                return;
+            }
+            const ordenes = await respuesta.json();
+            const estados = ['PENDIENTE', 'EN_PROCESO', 'LISTO', 'ENTREGADO', 'CANCELADO'];
+            const tbody = document.getElementById('tablaOrdenes');
+
+            tbody.innerHTML = ordenes.map(o => `
+                <tr>
+                    <td><span class="badge bg-dark text-warning">${o.codigoUnico}</span></td>
+                    <td>${o.clienteNombre}<br><small class="text-muted">${o.clienteEmail}</small></td>
+                    <td>${o.detalles.map(d => d.cantidad + 'x ' + d.productoNombre).join('<br>')}</td>
+                    <td>S/ ${o.total.toFixed(2)}</td>
+                    <td>${o.tipoEntrega}</td>
+                    <td>
+                        <select class="form-select form-select-sm" onchange="cambiarEstado(${o.idOrden}, this.value)">
+                            ${estados.map(e => `<option value="${e}" ${e === o.estado ? 'selected' : ''}>${e}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td>${new Date(o.fechaCreacion).toLocaleString('es-PE')}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function cambiarEstado(id, nuevoEstado) {
+            const respuesta = await fetch('/api/admin/ordenes/' + id + '/estado', {
+                method: 'PUT',
+                headers: headersAuth(),
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+            if (!respuesta.ok) {
+                alert('No se pudo actualizar el estado.');
+                cargarOrdenes();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             if (verificarAcceso()) {
                 cargarCategorias();
                 cargarProductos();
                 cargarSedes();
+                cargarOrdenes();
             }
         });
     </script>
