@@ -5,6 +5,7 @@ import com.puntoespresso.puntoespresso.repository.SedeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SedeService {
@@ -17,5 +18,17 @@ public class SedeService {
 
     public List<Sede> listarTodas() {
         return sedeRepository.findAll();
+    }
+
+    public Optional<Sede> buscarPorId(int id) {
+        return sedeRepository.findById(id);
+    }
+
+    public Sede guardar(Sede sede) {
+        return sedeRepository.save(sede);
+    }
+
+    public void eliminar(int id) {
+        sedeRepository.deleteById(id);
     }
 }

@@ -16,30 +16,69 @@
     </div>
 
     <div id="adminContenido" class="d-none">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Productos</h2>
-            <button class="btn btn-cafe" data-bs-toggle="modal" data-bs-target="#modalProducto" onclick="abrirModalNuevoProducto()">
-                <i class="bi bi-plus-lg me-1"></i>Nuevo producto
-            </button>
+
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabProductos" type="button">Productos</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSedes" type="button">Sedes</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div class="tab-pane fade show active" id="tabProductos">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h4 mb-0">Productos</h2>
+                    <button class="btn btn-cafe" data-bs-toggle="modal" data-bs-target="#modalProducto" onclick="abrirModalNuevoProducto()">
+                        <i class="bi bi-plus-lg me-1"></i>Nuevo producto
+                    </button>
+                </div>
+
+                <div id="productoError" class="alert alert-danger d-none"></div>
+
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos"></tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="tabSedes">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h4 mb-0">Sedes</h2>
+                    <button class="btn btn-cafe" data-bs-toggle="modal" data-bs-target="#modalSede" onclick="abrirModalNuevaSede()">
+                        <i class="bi bi-plus-lg me-1"></i>Nueva sede
+                    </button>
+                </div>
+
+                <div id="sedeError" class="alert alert-danger d-none"></div>
+
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Días</th>
+                            <th>Horario</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSedes"></tbody>
+                </table>
+            </div>
+
         </div>
-
-        <div id="productoError" class="alert alert-danger d-none"></div>
-
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaProductos"></tbody>
-        </table>
     </div>
 
-    <!-- Modal crear/editar producto -->
     <div class="modal fade" id="modalProducto" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -83,9 +122,40 @@
         </div>
     </div>
 
-    <script>
-        let categoriasCache = [];
+    <div class="modal fade" id="modalSede" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-cafe-oscuro text-white">
+                    <h5 class="modal-title" id="modalSedeTitulo">Nueva sede</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formSede">
+                        <input type="hidden" id="sedeId">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="sedeNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="sedeDireccion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Días de atención</label>
+                            <input type="text" class="form-control" id="sedeHorarioDias" placeholder="Lunes a Domingo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Horario</label>
+                            <input type="text" class="form-control" id="sedeHorarioHoras" placeholder="10:30 — 21:00" required>
+                        </div>
+                        <button type="submit" class="btn btn-cafe w-100">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
         function headersAuth() {
             return {
                 'Content-Type': 'application/json',
@@ -105,9 +175,9 @@
 
         async function cargarCategorias() {
             const respuesta = await fetch('/api/categorias');
-            categoriasCache = await respuesta.json();
+            const categorias = await respuesta.json();
             const select = document.getElementById('prodCategoria');
-            select.innerHTML = categoriasCache.map(c => `<option value="${c.idCategoria}">${c.nombre}</option>`).join('');
+            select.innerHTML = categorias.map(c => `<option value="${c.idCategoria}">${c.nombre}</option>`).join('');
         }
 
         async function cargarProductos() {
@@ -157,12 +227,7 @@
 
         async function eliminarProducto(id) {
             if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
-
-            const respuesta = await fetch('/api/admin/productos/' + id, {
-                method: 'DELETE',
-                headers: headersAuth()
-            });
-
+            const respuesta = await fetch('/api/admin/productos/' + id, { method: 'DELETE', headers: headersAuth() });
             if (respuesta.ok) {
                 cargarProductos();
             } else {
@@ -186,11 +251,7 @@
             const url = id ? '/api/admin/productos/' + id : '/api/admin/productos';
             const metodo = id ? 'PUT' : 'POST';
 
-            const respuesta = await fetch(url, {
-                method: metodo,
-                headers: headersAuth(),
-                body: JSON.stringify(body)
-            });
+            const respuesta = await fetch(url, { method: metodo, headers: headersAuth(), body: JSON.stringify(body) });
 
             if (respuesta.ok) {
                 bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
@@ -201,10 +262,89 @@
             }
         });
 
+        async function cargarSedes() {
+            const respuesta = await fetch('/api/admin/sedes', { headers: headersAuth() });
+            if (!respuesta.ok) {
+                document.getElementById('sedeError').textContent = 'No se pudieron cargar las sedes.';
+                document.getElementById('sedeError').classList.remove('d-none');
+                return;
+            }
+            const sedes = await respuesta.json();
+            const tbody = document.getElementById('tablaSedes');
+            tbody.innerHTML = sedes.map(s => `
+                <tr>
+                    <td>${s.nombre}</td>
+                    <td>${s.direccion}</td>
+                    <td>${s.horarioDias}</td>
+                    <td>${s.horarioHoras}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick='abrirModalEditarSede(${JSON.stringify(s)})'>
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarSede(${s.idSede})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function abrirModalNuevaSede() {
+            document.getElementById('modalSedeTitulo').textContent = 'Nueva sede';
+            document.getElementById('formSede').reset();
+            document.getElementById('sedeId').value = '';
+        }
+
+        function abrirModalEditarSede(sede) {
+            document.getElementById('modalSedeTitulo').textContent = 'Editar sede';
+            document.getElementById('sedeId').value = sede.idSede;
+            document.getElementById('sedeNombre').value = sede.nombre;
+            document.getElementById('sedeDireccion').value = sede.direccion;
+            document.getElementById('sedeHorarioDias').value = sede.horarioDias;
+            document.getElementById('sedeHorarioHoras').value = sede.horarioHoras;
+            new bootstrap.Modal(document.getElementById('modalSede')).show();
+        }
+
+        async function eliminarSede(id) {
+            if (!confirm('¿Seguro que quieres eliminar esta sede?')) return;
+            const respuesta = await fetch('/api/admin/sedes/' + id, { method: 'DELETE', headers: headersAuth() });
+            if (respuesta.ok) {
+                cargarSedes();
+            } else {
+                alert('No se pudo eliminar la sede.');
+            }
+        }
+
+        document.getElementById('formSede').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const body = {
+                nombre: document.getElementById('sedeNombre').value,
+                direccion: document.getElementById('sedeDireccion').value,
+                horarioDias: document.getElementById('sedeHorarioDias').value,
+                horarioHoras: document.getElementById('sedeHorarioHoras').value
+            };
+
+            const id = document.getElementById('sedeId').value;
+            const url = id ? '/api/admin/sedes/' + id : '/api/admin/sedes';
+            const metodo = id ? 'PUT' : 'POST';
+
+            const respuesta = await fetch(url, { method: metodo, headers: headersAuth(), body: JSON.stringify(body) });
+
+            if (respuesta.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('modalSede')).hide();
+                cargarSedes();
+            } else {
+                document.getElementById('sedeError').textContent = 'No se pudo guardar la sede.';
+                document.getElementById('sedeError').classList.remove('d-none');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             if (verificarAcceso()) {
                 cargarCategorias();
                 cargarProductos();
+                cargarSedes();
             }
         });
     </script>

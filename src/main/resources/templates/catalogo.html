@@ -84,7 +84,7 @@
             <div class="modal-content border-0 shadow" style="border-radius: 15px;">
 
                 <!-- Formulario POST hacia /checkout -->
-                <form th:action="@{/checkout}" method="POST">
+                <form th:action="@{/checkout}" method="POST" id="formPersonalizar">
                     <!-- Campo oculto para el ID del producto -->
                     <input type="hidden" id="modalInputId" name="productoId">
 
@@ -181,6 +181,32 @@
                 const total = precioBase * cantidadActual;
                 document.getElementById('modalPrecioTotal').innerText = total.toFixed(2);
             }
+            });
+    </script>
+
+    <script>
+        document.getElementById('formPersonalizar').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                const modalPersonalizarEl = document.getElementById('modalPersonalizar');
+                const instancia = bootstrap.Modal.getInstance(modalPersonalizarEl);
+                if (instancia) instancia.hide();
+
+                setTimeout(function () {
+                    new bootstrap.Modal(document.getElementById('modalLogin')).show();
+                }, 300);
+                return;
+            }
+
+            const pedidoPendiente = {
+                idProducto: parseInt(document.getElementById('modalInputId').value),
+                cantidad: parseInt(document.getElementById('inputCantidad').value),
+                instrucciones: document.getElementById('instrucciones').value
+            };
+            sessionStorage.setItem('pedidoPendiente', JSON.stringify(pedidoPendiente));
+            window.location.href = '/checkout';
         });
     </script>
 
