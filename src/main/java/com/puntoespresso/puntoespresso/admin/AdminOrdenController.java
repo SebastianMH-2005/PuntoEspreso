@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,13 +35,16 @@ public class AdminOrdenController {
     }
 
     @GetMapping
-    public List<OrdenAdminResponse> listar() {
-        return ordenRepository.findAll().stream()
+    public List<OrdenAdminResponse> listar(@RequestParam(required = false) String estado) {
+        List<Orden> ordenes = (estado != null && !estado.isBlank())
+                ? ordenRepository.buscarPorEstado(estado)
+                : ordenRepository.findAll();
+
+        return ordenes.stream()
                 .map(this::aRespuesta)
                 .sorted((a, b) -> b.fechaCreacion().compareTo(a.fechaCreacion()))
                 .toList();
     }
-
     @PutMapping("/{id}/estado")
     public OrdenAdminResponse actualizarEstado(@PathVariable int id, @RequestBody EstadoRequest request,
                                                 @AuthenticationPrincipal UsuarioAutenticado usuario) {

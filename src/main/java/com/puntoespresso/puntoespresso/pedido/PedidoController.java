@@ -12,6 +12,7 @@ import com.puntoespresso.puntoespresso.repository.OrdenRepository;
 import com.puntoespresso.puntoespresso.service.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ public class PedidoController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<?> crear(@RequestBody PedidoRequest request, @AuthenticationPrincipal UsuarioAutenticado usuario) {
         if (!"CLIENTE".equals(usuario.getRol())) {
             return ResponseEntity.status(403).body("Solo los clientes pueden generar pedidos");
