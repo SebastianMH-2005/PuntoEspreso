@@ -53,7 +53,7 @@ public class SecurityConfig {
                 // vacía por JavaScript si no hay un token de ADMIN/OPERADOR en localStorage.
                 // La protección real está en /api/admin/**, más abajo.
                 .requestMatchers("/", "/index", "/catalogo", "/contacto", "/nosotros", "/login", "/registro",
-                        "/checkout", "/admin", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml").permitAll()
+                        "/checkout", "/admin", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml", "/favicon.ico").permitAll()
                 // API pública de lectura + autenticación
                 .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias").permitAll()
                 // Documentación y monitoreo
