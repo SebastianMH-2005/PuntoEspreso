@@ -207,6 +207,43 @@
         }
     });
 </script>
+
+<script>
+    // Refleja en el navbar si hay una sesión activa
+    function actualizarNavSesion() {
+        const token = localStorage.getItem('token');
+        const nombre = localStorage.getItem('nombre');
+        const rol = localStorage.getItem('rol');
+        const navIngresar = document.getElementById('navIngresar');
+        const navUsuario = document.getElementById('navUsuario');
+        const navPanelAdmin = document.getElementById('navPanelAdmin');
+
+        if (token) {
+            navIngresar.classList.add('d-none');
+            navUsuario.classList.remove('d-none');
+            document.getElementById('navNombreUsuario').textContent = nombre || 'Mi cuenta';
+
+            if (rol === 'ADMIN' || rol === 'OPERADOR') {
+                navPanelAdmin.classList.remove('d-none');
+            } else {
+                navPanelAdmin.classList.add('d-none');
+            }
+        } else {
+            navIngresar.classList.remove('d-none');
+            navUsuario.classList.add('d-none');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', actualizarNavSesion);
+
+    document.getElementById('btnCerrarSesion').addEventListener('click', function (e) {
+        e.preventDefault();
+        localStorage.removeItem('token');
+        localStorage.removeItem('nombre');
+        localStorage.removeItem('rol');
+        window.location.href = '/';
+    });
+</script>
 <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>
