@@ -1,6 +1,7 @@
 package com.puntoespresso.puntoespresso.auth;
 
 import com.puntoespresso.puntoespresso.dto.Cliente;
+import com.puntoespresso.puntoespresso.dto.Rol;
 import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;
 import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;
@@ -31,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         var cliente = clienteRepository.findByEmail(email);
         if (cliente.isPresent()) {
             Cliente c = cliente.get();
-            return new UsuarioAutenticado(c.getIdCliente(), c.getNombre(), c.getEmail(), c.getContrasena(), "CLIENTE");
+            return new UsuarioAutenticado(c.getIdCliente(), c.getNombre(), c.getEmail(), c.getContrasena(), Rol.CLIENTE);
         }
 
         throw new UsernameNotFoundException("No existe una cuenta con ese email");

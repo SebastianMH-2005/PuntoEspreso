@@ -1,5 +1,6 @@
 package com.puntoespresso.puntoespresso.auth;
 
+import com.puntoespresso.puntoespresso.dto.Rol;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,9 +14,9 @@ public class UsuarioAutenticado implements UserDetails {
     private final String nombre;
     private final String email;
     private final String contrasena;
-    private final String rol;
+    private final Rol rol;
 
-    public UsuarioAutenticado(Integer id, String nombre, String email, String contrasena, String rol) {
+    public UsuarioAutenticado(Integer id, String nombre, String email, String contrasena, Rol rol) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -25,11 +26,11 @@ public class UsuarioAutenticado implements UserDetails {
 
     public Integer getId() { return id; }
     public String getNombre() { return nombre; }
-    public String getRol() { return rol; }
+    public Rol getRol() { return rol; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + rol));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
 
     @Override

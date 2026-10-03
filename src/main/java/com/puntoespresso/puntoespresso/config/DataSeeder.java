@@ -2,6 +2,7 @@ package com.puntoespresso.puntoespresso.config;
 
 import com.puntoespresso.puntoespresso.dto.Categoria;
 import com.puntoespresso.puntoespresso.dto.Producto;
+import com.puntoespresso.puntoespresso.dto.Rol;
 import com.puntoespresso.puntoespresso.dto.Sede;
 import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
@@ -76,7 +77,7 @@ public class DataSeeder implements CommandLineRunner {
         if (usuarioSistemaRepository.count() == 0) {
             usuarioSistemaRepository.save(new UsuarioSistema(
                     "Administrador", "admin@puntoespresso.pe",
-                    passwordEncoder.encode("Admin123!"), "ADMIN"));
+                    passwordEncoder.encode("Admin123!"), Rol.ADMIN));
         }
     }
 }

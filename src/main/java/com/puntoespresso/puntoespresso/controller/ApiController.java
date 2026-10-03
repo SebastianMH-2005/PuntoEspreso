@@ -49,4 +49,9 @@ public class ApiController {
     public List<Categoria> listarCategorias() {
         return categoriaService.listarTodas();
     }
+
+    @GetMapping("/categorias/{id}/productos")
+    public List<Producto> listarProductosPorCategoria(@PathVariable int id) {
+        return productoService.listarPorCategoria(id);
+    }
 }

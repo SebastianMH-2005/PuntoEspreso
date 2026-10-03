@@ -31,4 +31,8 @@ public class ProductoService {
     public void eliminar(int id) {
         productoRepository.deleteById(id);
     }
+
+    public List<Producto> listarPorCategoria(int idCategoria) {
+        return productoRepository.buscarPorCategoria(idCategoria);
+    }
 }
