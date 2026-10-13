@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/index", "/catalogo", "/contacto", "/nosotros", "/login", "/registro",
                         "/checkout", "/admin", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml", "/favicon.ico").permitAll()
                 // API pública de lectura + autenticación
-                .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias").permitAll()
+                .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias/**").permitAll()
                 // Documentación y monitoreo
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                 // API del panel admin: aquí sí se exige el rol de verdad
