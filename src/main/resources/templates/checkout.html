@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="thymeleaf.org"
-      xmlns:layout="ultraq.net.nz"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
     <title>Checkout — Punto Espresso</title>
@@ -18,7 +18,7 @@
                 <p class="mb-3">Tu orden ha sido registrada en el sistema de Punto Espresso.</p>
                 <hr>
                 <p class="mb-0 fw-bold fs-5 text-dark">
-                    Muestra este código al repartidor cuando llegue a casa:
+                    Muestra este código al recoger tu pedido en la sede:
                     <span id="codigoReparto" class="badge bg-dark text-warning px-3 py-2 ms-2 fs-6">#PE-0000</span>
                 </p>
                 <div class="mt-4">
@@ -114,7 +114,7 @@
                             <div class="col-6 mb-3">
                                 <label for="fechaVenc" class="form-label small fw-bold">Vencimiento (MM/AA)</label>
                                 <input type="text" class="form-control" id="fechaVenc" maxlength="5" pattern="(0[1-9]|1[0-2])\/[2-9][0-9]" placeholder="12/28" required style="border-radius: 8px;">
-                                <div class="invalid-feedback">Formato MM/AA válido.</div>
+                                <div class="invalid-feedback">Fecha inválida o tarjeta vencida (MM/AA).</div>
                             </div>
                             <div class="col-6 mb-3">
                                 <label for="cvv" class="form-label small fw-bold">CVV / CVC</label>
@@ -122,6 +122,8 @@
                                 <div class="invalid-feedback">3 dígitos.</div>
                             </div>
                         </div>
+
+                    </div> <!-- cierra modal-body -->
 
                     <div class="modal-footer border-0 p-4 bg-light" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
                         <button type="submit" class="btn btn-success w-100 p-3 fw-bold text-white shadow-sm" style="border-radius: 10px;">
@@ -136,6 +138,15 @@
 
     <script>
         let pedidoPendiente = null;
+
+        function fechaVencida(valor) {
+            const m = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(valor);
+            if (!m) return false;
+            const mes = parseInt(m[1], 10);
+            const anio = 2000 + parseInt(m[2], 10);
+            const hoy = new Date();
+            return anio < hoy.getFullYear() || (anio === hoy.getFullYear() && mes < hoy.getMonth() + 1);
+        }
 
         function headersAuth() {
             return {
@@ -158,6 +169,12 @@
                 return;
             }
             const producto = await respuesta.json();
+            if (!Number.isInteger(pedidoPendiente.cantidad) || pedidoPendiente.cantidad < 1
+                    || producto.stock < pedidoPendiente.cantidad) {
+                sessionStorage.removeItem('pedidoPendiente');
+                window.location.href = '/catalogo';
+                return;
+            }
             const total = producto.precio * pedidoPendiente.cantidad;
 
             document.getElementById('resumenProducto').textContent = producto.nombre;
@@ -174,6 +191,19 @@
             const modalElemento = document.getElementById('modalPasarela');
             const bootstrapModal = new bootstrap.Modal(modalElemento);
 
+            const campoNumero = document.getElementById('numTarjeta');
+            const campoFecha = document.getElementById('fechaVenc');
+            const campoCvv = document.getElementById('cvv');
+
+            campoNumero.addEventListener('input', () => { campoNumero.value = campoNumero.value.replace(/\D/g, ''); });
+            campoCvv.addEventListener('input', () => { campoCvv.value = campoCvv.value.replace(/\D/g, ''); });
+            campoFecha.addEventListener('input', () => {
+                let v = campoFecha.value.replace(/\D/g, '');
+                if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+                campoFecha.value = v;
+                campoFecha.setCustomValidity(fechaVencida(v) ? 'Tarjeta vencida' : '');
+            });
+
             formulario.addEventListener('submit', async function(event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -182,6 +212,16 @@
                     formulario.classList.add('was-validated');
                     return;
                 }
+
+                if (!localStorage.getItem('token')) {
+                    bootstrapModal.hide();
+                    document.getElementById('alertaError').textContent = 'Debes iniciar sesión para completar el pedido.';
+                    document.getElementById('alertaError').classList.remove('d-none');
+                    return;
+                }
+
+                const botonPago = formulario.querySelector('button[type="submit"]');
+                botonPago.disabled = true;
 
                 const metodoPago = document.querySelector('input[name="tipoTarjeta"]:checked').value;
 
@@ -194,13 +234,29 @@
                         instrucciones: pedidoPendiente.instrucciones,
                         metodoPago: metodoPago
                     })
-                });
+                }).catch(() => null);
+
+                if (!respuesta) {
+                    botonPago.disabled = false;
+                    bootstrapModal.hide();
+                    document.getElementById('alertaError').textContent = 'No se pudo conectar con el servidor. Intenta de nuevo.';
+                    document.getElementById('alertaError').classList.remove('d-none');
+                    return;
+                }
 
                 if (!respuesta.ok) {
                     bootstrapModal.hide();
-                    document.getElementById('alertaError').textContent = respuesta.status === 401
-                        ? 'Tu sesión expiró. Inicia sesión de nuevo para completar el pedido.'
-                        : 'No se pudo procesar tu pedido. Intenta de nuevo.';
+                    botonPago.disabled = false;
+                    let mensaje = 'No se pudo procesar tu pedido. Intenta de nuevo.';
+                    if (respuesta.status === 401) {
+                        mensaje = 'Tu sesión expiró. Inicia sesión de nuevo para completar el pedido.';
+                    } else if (respuesta.status === 409 || respuesta.status === 403) {
+                        mensaje = (await respuesta.text()) || mensaje;
+                    } else if (respuesta.status === 400) {
+                        const datos = await respuesta.json().catch(() => null);
+                        mensaje = (datos && datos.message) || mensaje;
+                    }
+                    document.getElementById('alertaError').textContent = mensaje;
                     document.getElementById('alertaError').classList.remove('d-none');
                     return;
                 }

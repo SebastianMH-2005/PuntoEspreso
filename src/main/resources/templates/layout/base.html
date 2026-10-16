@@ -210,8 +210,23 @@
 
 <script>
     // Refleja en el navbar si hay una sesión activa
+    function tokenVigente(token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            return payload.exp * 1000 > Date.now();
+        } catch (e) {
+            return false;
+        }
+    }
+
     function actualizarNavSesion() {
-        const token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
+        if (token && !tokenVigente(token)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('nombre');
+            localStorage.removeItem('rol');
+            token = null;
+        }
         const nombre = localStorage.getItem('nombre');
         const rol = localStorage.getItem('rol');
         const navIngresar = document.getElementById('navIngresar');

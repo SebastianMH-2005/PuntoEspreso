@@ -3,6 +3,7 @@ package com.puntoespresso.puntoespresso.service;
 import com.puntoespresso.puntoespresso.dto.Producto;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,11 @@ public class ProductoService {
 
     public void eliminar(int id) {
         productoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public boolean descontarStock(int idProducto, int cantidad) {
+        return productoRepository.descontarStock(idProducto, cantidad) > 0;
     }
 
     public List<Producto> listarPorCategoria(int idCategoria) {

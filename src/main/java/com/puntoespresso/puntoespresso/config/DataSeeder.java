@@ -9,6 +9,7 @@ import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import com.puntoespresso.puntoespresso.repository.SedeRepository;
 import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ public class DataSeeder implements CommandLineRunner {
     private final SedeRepository sedeRepository;
     private final UsuarioSistemaRepository usuarioSistemaRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.seed.admin-password}")
+    private String adminPassword;
 
     public DataSeeder(CategoriaRepository categoriaRepository, ProductoRepository productoRepository,
                        SedeRepository sedeRepository, UsuarioSistemaRepository usuarioSistemaRepository,
@@ -45,10 +49,10 @@ public class DataSeeder implements CommandLineRunner {
         } else {
             bebidas = categoriaRepository.findAll().stream()
                     .filter(c -> "Bebidas".equals(c.getNombre()))
-                    .findFirst().orElseThrow();
+                    .findFirst().orElseGet(() -> categoriaRepository.save(new Categoria("Bebidas")));
             cafeEnGrano = categoriaRepository.findAll().stream()
                     .filter(c -> "Café en Grano".equals(c.getNombre()))
-                    .findFirst().orElseThrow();
+                    .findFirst().orElseGet(() -> categoriaRepository.save(new Categoria("Café en Grano")));
         }
 
         if (productoRepository.count() == 0) {
@@ -77,7 +81,7 @@ public class DataSeeder implements CommandLineRunner {
         if (usuarioSistemaRepository.count() == 0) {
             usuarioSistemaRepository.save(new UsuarioSistema(
                     "Administrador", "admin@puntoespresso.pe",
-                    passwordEncoder.encode("Admin123!"), Rol.ADMIN));
+                    passwordEncoder.encode(adminPassword), Rol.ADMIN));
         }
     }
 }

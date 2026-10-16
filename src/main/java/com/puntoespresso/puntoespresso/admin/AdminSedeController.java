@@ -3,6 +3,7 @@ package com.puntoespresso.puntoespresso.admin;
 import com.puntoespresso.puntoespresso.dto.Sede;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.service.SedeService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +31,13 @@ public class AdminSedeController {
     }
 
     @PostMapping
-    public Sede crear(@RequestBody SedeRequest request) {
+    public Sede crear(@Valid @RequestBody SedeRequest request) {
         Sede sede = new Sede(request.nombre(), request.direccion(), request.horarioDias(), request.horarioHoras());
         return sedeService.guardar(sede);
     }
 
     @PutMapping("/{id}")
-    public Sede actualizar(@PathVariable int id, @RequestBody SedeRequest request) {
+    public Sede actualizar(@PathVariable int id, @Valid @RequestBody SedeRequest request) {
         Sede sede = sedeService.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una sede con id " + id));
 
@@ -50,6 +51,8 @@ public class AdminSedeController {
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable int id) {
+                sedeService.buscarPorId(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe una sede con id " + id));
         sedeService.eliminar(id);
     }
 }

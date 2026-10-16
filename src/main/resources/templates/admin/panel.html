@@ -114,7 +114,7 @@
                         <input type="hidden" id="prodId">
                         <div class="mb-3">
                             <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="prodNombre" required>
+                            <input type="text" class="form-control" id="prodNombre" maxlength="100" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Categoría</label>
@@ -122,21 +122,21 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
-                            <textarea class="form-control" id="prodDescripcion" rows="2" required></textarea>
+                            <textarea class="form-control" id="prodDescripcion" rows="2" maxlength="255" required></textarea>
                         </div>
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <label class="form-label">Precio (S/)</label>
-                                <input type="number" step="0.01" class="form-control" id="prodPrecio" required>
+                                <input type="number" step="0.01" min="0.01" max="9999.99" class="form-control" id="prodPrecio" required>
                             </div>
                             <div class="col-6 mb-3">
                                 <label class="form-label">Stock</label>
-                                <input type="number" class="form-control" id="prodStock" required>
+                                <input type="number" step="1" min="0" max="100000" class="form-control" id="prodStock" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nombre de imagen (ej. cafe-latte.jpg)</label>
-                            <input type="text" class="form-control" id="prodImagen" required>
+                            <input type="text" class="form-control" id="prodImagen" maxlength="100" pattern="[\w\-]+\.(jpg|jpeg|png|webp)" title="Ej: cafe-latte.jpg" required>
                         </div>
                         <button type="submit" class="btn btn-cafe w-100">Guardar</button>
                     </form>
@@ -157,19 +157,19 @@
                         <input type="hidden" id="sedeId">
                         <div class="mb-3">
                             <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="sedeNombre" required>
+                            <input type="text" class="form-control" id="sedeNombre" maxlength="100" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="sedeDireccion" required>
+                            <input type="text" class="form-control" id="sedeDireccion" maxlength="200" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Días de atención</label>
-                            <input type="text" class="form-control" id="sedeHorarioDias" placeholder="Lunes a Domingo" required>
+                            <input type="text" class="form-control" id="sedeHorarioDias" maxlength="60" placeholder="Lunes a Domingo" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Horario</label>
-                            <input type="text" class="form-control" id="sedeHorarioHoras" placeholder="10:30 — 21:00" required>
+                            <input type="text" class="form-control" id="sedeHorarioHoras" maxlength="40" placeholder="10:30 — 21:00" required>
                         </div>
                         <button type="submit" class="btn btn-cafe w-100">Guardar</button>
                     </form>
@@ -179,6 +179,24 @@
     </div>
 
     <script>
+        let productosCache = [];
+        let sedesCache = [];
+
+        function esc(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        async function mensajeError(respuesta, porDefecto) {
+            try {
+                const datos = await respuesta.json();
+                return datos.message || porDefecto;
+            } catch (e) {
+                return porDefecto;
+            }
+        }
+
         function headersAuth() {
             return {
                 'Content-Type': 'application/json',
@@ -200,7 +218,7 @@
             const respuesta = await fetch('/api/categorias');
             const categorias = await respuesta.json();
             const select = document.getElementById('prodCategoria');
-            select.innerHTML = categorias.map(c => `<option value="${c.idCategoria}">${c.nombre}</option>`).join('');
+            select.innerHTML = categorias.map(c => `<option value="${c.idCategoria}">${esc(c.nombre)}</option>`).join('');
         }
 
         async function cargarProductos() {
@@ -211,15 +229,16 @@
                 return;
             }
             const productos = await respuesta.json();
+            productosCache = productos;
             const tbody = document.getElementById('tablaProductos');
             tbody.innerHTML = productos.map(p => `
                 <tr>
-                    <td>${p.nombre}</td>
-                    <td>${p.categoria ? p.categoria.nombre : ''}</td>
+                    <td>${esc(p.nombre)}</td>
+                    <td>${p.categoria ? esc(p.categoria.nombre) : ''}</td>
                     <td>S/ ${p.precio.toFixed(2)}</td>
                     <td>${p.stock}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1" onclick='abrirModalEditarProducto(${JSON.stringify(p)})'>
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick="abrirModalEditarProducto(${p.idProducto})">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${p.idProducto})">
@@ -236,7 +255,9 @@
             document.getElementById('prodId').value = '';
         }
 
-        function abrirModalEditarProducto(producto) {
+        function abrirModalEditarProducto(id) {
+            const producto = productosCache.find(p => p.idProducto === id);
+            if (!producto) return;
             document.getElementById('modalProductoTitulo').textContent = 'Editar producto';
             document.getElementById('prodId').value = producto.idProducto;
             document.getElementById('prodNombre').value = producto.nombre;
@@ -254,7 +275,7 @@
             if (respuesta.ok) {
                 cargarProductos();
             } else {
-                alert('No se pudo eliminar el producto.');
+                alert(await mensajeError(respuesta, 'No se pudo eliminar el producto.'));
             }
         }
 
@@ -270,6 +291,7 @@
                 imagen: document.getElementById('prodImagen').value
             };
 
+            document.getElementById('productoError').classList.add('d-none');
             const id = document.getElementById('prodId').value;
             const url = id ? '/api/admin/productos/' + id : '/api/admin/productos';
             const metodo = id ? 'PUT' : 'POST';
@@ -280,7 +302,9 @@
                 bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
                 cargarProductos();
             } else {
-                document.getElementById('productoError').textContent = 'No se pudo guardar el producto.';
+                const msgProducto = await mensajeError(respuesta, 'No se pudo guardar el producto.');
+                document.getElementById('productoError').textContent = msgProducto;
+                alert(msgProducto);
                 document.getElementById('productoError').classList.remove('d-none');
             }
         });
@@ -293,15 +317,16 @@
                 return;
             }
             const sedes = await respuesta.json();
+            sedesCache = sedes;
             const tbody = document.getElementById('tablaSedes');
             tbody.innerHTML = sedes.map(s => `
                 <tr>
-                    <td>${s.nombre}</td>
-                    <td>${s.direccion}</td>
-                    <td>${s.horarioDias}</td>
-                    <td>${s.horarioHoras}</td>
+                    <td>${esc(s.nombre)}</td>
+                    <td>${esc(s.direccion)}</td>
+                    <td>${esc(s.horarioDias)}</td>
+                    <td>${esc(s.horarioHoras)}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-secondary me-1" onclick='abrirModalEditarSede(${JSON.stringify(s)})'>
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick="abrirModalEditarSede(${s.idSede})">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger" onclick="eliminarSede(${s.idSede})">
@@ -318,7 +343,9 @@
             document.getElementById('sedeId').value = '';
         }
 
-        function abrirModalEditarSede(sede) {
+        function abrirModalEditarSede(id) {
+            const sede = sedesCache.find(s => s.idSede === id);
+            if (!sede) return;
             document.getElementById('modalSedeTitulo').textContent = 'Editar sede';
             document.getElementById('sedeId').value = sede.idSede;
             document.getElementById('sedeNombre').value = sede.nombre;
@@ -334,7 +361,7 @@
             if (respuesta.ok) {
                 cargarSedes();
             } else {
-                alert('No se pudo eliminar la sede.');
+                alert(await mensajeError(respuesta, 'No se pudo eliminar la sede.'));
             }
         }
 
@@ -348,6 +375,7 @@
                 horarioHoras: document.getElementById('sedeHorarioHoras').value
             };
 
+            document.getElementById('sedeError').classList.add('d-none');
             const id = document.getElementById('sedeId').value;
             const url = id ? '/api/admin/sedes/' + id : '/api/admin/sedes';
             const metodo = id ? 'PUT' : 'POST';
@@ -358,7 +386,9 @@
                 bootstrap.Modal.getInstance(document.getElementById('modalSede')).hide();
                 cargarSedes();
             } else {
-                document.getElementById('sedeError').textContent = 'No se pudo guardar la sede.';
+                const msgSede = await mensajeError(respuesta, 'No se pudo guardar la sede.');
+                document.getElementById('sedeError').textContent = msgSede;
+                alert(msgSede);
                 document.getElementById('sedeError').classList.remove('d-none');
             }
         });
@@ -376,11 +406,11 @@
 
             tbody.innerHTML = ordenes.map(o => `
                 <tr>
-                    <td><span class="badge bg-dark text-warning">${o.codigoUnico}</span></td>
-                    <td>${o.clienteNombre}<br><small class="text-muted">${o.clienteEmail}</small></td>
-                    <td>${o.detalles.map(d => d.cantidad + 'x ' + d.productoNombre).join('<br>')}</td>
+                    <td><span class="badge bg-dark text-warning">${esc(o.codigoUnico)}</span></td>
+                    <td>${esc(o.clienteNombre)}<br><small class="text-muted">${esc(o.clienteEmail)}</small></td>
+                    <td>${o.detalles.map(d => d.cantidad + 'x ' + esc(d.productoNombre)).join('<br>')}</td>
                     <td>S/ ${o.total.toFixed(2)}</td>
-                    <td>${o.tipoEntrega}</td>
+                    <td>${esc(o.tipoEntrega)}</td>
                     <td>
                         <select class="form-select form-select-sm" onchange="cambiarEstado(${o.idOrden}, this.value)">
                             ${estados.map(e => `<option value="${e}" ${e === o.estado ? 'selected' : ''}>${e}</option>`).join('')}

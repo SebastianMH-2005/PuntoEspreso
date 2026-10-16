@@ -2,6 +2,7 @@ package com.puntoespresso.puntoespresso.repository;
 
 import com.puntoespresso.puntoespresso.dto.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -11,4 +12,9 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
     @Query("SELECT p FROM Producto p WHERE p.categoria.idCategoria = :idCategoria")
     List<Producto> buscarPorCategoria(@Param("idCategoria") Integer idCategoria);
+
+    // Descuento atómico: solo actualiza si todavía hay stock suficiente (evita vender de más)
+    @Modifying
+    @Query("UPDATE Producto p SET p.stock = p.stock - :cantidad WHERE p.idProducto = :id AND p.stock >= :cantidad")
+    int descontarStock(@Param("id") Integer id, @Param("cantidad") int cantidad);
 }

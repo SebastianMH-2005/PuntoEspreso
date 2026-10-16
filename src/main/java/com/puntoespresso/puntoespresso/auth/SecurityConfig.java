@@ -2,7 +2,10 @@ package com.puntoespresso.puntoespresso.auth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,6 +48,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -53,7 +57,7 @@ public class SecurityConfig {
                 // vacía por JavaScript si no hay un token de ADMIN/OPERADOR en localStorage.
                 // La protección real está en /api/admin/**, más abajo.
                 .requestMatchers("/", "/index", "/catalogo", "/contacto", "/nosotros", "/login", "/registro",
-                        "/checkout", "/admin", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml", "/favicon.ico").permitAll()
+                        "/checkout", "/admin", "/error", "/css/**", "/js/**", "/img/**", "/robots.txt", "/sitemap.xml", "/favicon.ico").permitAll()
                 // API pública de lectura + autenticación
                 .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias/**").permitAll()
                 // Documentación y monitoreo
@@ -63,6 +67,7 @@ public class SecurityConfig {
                 // Todo lo demás requiere estar logueado
                 .anyRequest().authenticated()
             )
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -30,6 +30,8 @@ dependencies {
 
     // Persistencia con base de datos (Supabase Postgres) vía JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     runtimeOnly 'org.postgresql:postgresql'
 
     // Documentación automática de la API (Swagger UI)

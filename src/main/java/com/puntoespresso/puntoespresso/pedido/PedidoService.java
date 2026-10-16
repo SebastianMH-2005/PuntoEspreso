@@ -48,7 +48,7 @@ public class PedidoService {
             throw new StockInsuficienteException("No hay suficiente stock disponible");
         }
 
-        double total = producto.getPrecio() * request.cantidad();
+                double total = Math.round(producto.getPrecio() * request.cantidad() * 100.0) / 100.0;
         String codigoUnico = "PE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         Orden orden = new Orden(cliente, null, null, "RECOJO", request.metodoPago(), "PENDIENTE", codigoUnico, total);
@@ -57,8 +57,9 @@ public class PedidoService {
         OrdenDetalle detalle = new OrdenDetalle(orden, producto, request.cantidad(), producto.getPrecio(), request.instrucciones());
         ordenDetalleRepository.save(detalle);
 
-        producto.setStock(producto.getStock() - request.cantidad());
-        productoService.guardar(producto);
+        if (!productoService.descontarStock(producto.getIdProducto(), request.cantidad())) {
+            throw new StockInsuficienteException("No hay suficiente stock disponible");
+        }
 
         return new PedidoResponse(codigoUnico, producto.getNombre(), request.cantidad(), total);
     }

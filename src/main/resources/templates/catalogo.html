@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="thymeleaf.org"
-      xmlns:layout="ultraq.net.nz"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
     <title>Catálogo de Cafés — Punto Espresso</title>
@@ -38,7 +38,7 @@
                     </div>
 
                     <p class="small mb-2">
-                        <span class="badge" th:classappend="${prod.getHeaderClass()}" th:text="${prod.categoria.nombre}">Categoría</span>
+                        <span class="badge" th:classappend="${prod.getHeaderClass()}" th:text="${prod.categoria?.nombre}">Categoría</span>
                     </p>
 
                     <p class="card-text text-muted flex-grow-1" th:text="${prod.descripcion}">Descripción corta.</p>
@@ -99,7 +99,7 @@
                         <!-- para instrucciones -->
                         <div class="mb-4">
                             <label for="instrucciones" class="form-label fw-bold text-muted small">INSTRUCCIONES ADICIONALES</label>
-                            <textarea class="form-control" id="instrucciones" name="instrucciones" rows="3" placeholder="Ej: Sin crema batida, leche deslactosada, azúcar rubia..." style="border-radius: 8px; resize: none;"></textarea>
+                            <textarea class="form-control" id="instrucciones" name="instrucciones" rows="3" maxlength="200" placeholder="Ej: Sin crema batida, leche deslactosada, azúcar rubia..." style="border-radius: 8px; resize: none;"></textarea>
                         </div>
 
                         <!-- Selector unidades -->
@@ -189,7 +189,7 @@
             e.preventDefault();
 
             const token = localStorage.getItem('token');
-            if (!token) {
+            if (!token || !tokenVigente(token)) {
                 const modalPersonalizarEl = document.getElementById('modalPersonalizar');
                 const instancia = bootstrap.Modal.getInstance(modalPersonalizarEl);
                 if (instancia) instancia.hide();
@@ -205,6 +205,10 @@
                 cantidad: parseInt(document.getElementById('inputCantidad').value),
                 instrucciones: document.getElementById('instrucciones').value
             };
+            if (!Number.isInteger(pedidoPendiente.idProducto) || !Number.isInteger(pedidoPendiente.cantidad)
+                    || pedidoPendiente.cantidad < 1) {
+                return;
+            }
             sessionStorage.setItem('pedidoPendiente', JSON.stringify(pedidoPendiente));
             window.location.href = '/checkout';
         });

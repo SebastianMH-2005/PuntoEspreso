@@ -19,23 +19,28 @@
     <form id="formRegistro" class="needs-validation" novalidate>
         <div class="mb-3">
             <label class="form-label fw-semibold">Nombre completo</label>
-            <input type="text" class="form-control" id="regNombre" required>
+            <input type="text" class="form-control" id="regNombre" minlength="2" maxlength="100" required>
+            <div class="invalid-feedback">Ingresa tu nombre completo (mínimo 2 caracteres).</div>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold">DNI</label>
-            <input type="text" class="form-control" id="regDni" required>
+            <input type="text" class="form-control" id="regDni" inputmode="numeric" maxlength="8" pattern="\d{8}" required>
+            <div class="invalid-feedback">El DNI debe tener 8 dígitos.</div>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold">Email</label>
-            <input type="email" class="form-control" id="regEmail" required>
+            <input type="email" class="form-control" id="regEmail" maxlength="100" required>
+            <div class="invalid-feedback">Ingresa un email válido.</div>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold">Teléfono</label>
-            <input type="text" class="form-control" id="regTelefono" required>
+            <input type="tel" class="form-control" id="regTelefono" inputmode="numeric" maxlength="9" pattern="9\d{8}" required>
+            <div class="invalid-feedback">Debe tener 9 dígitos y empezar con 9.</div>
         </div>
         <div class="mb-3">
             <label class="form-label fw-semibold">Contraseña</label>
-            <input type="password" class="form-control" id="regContrasena" minlength="6" required>
+            <input type="password" class="form-control" id="regContrasena" minlength="8" maxlength="72" required>
+            <div class="invalid-feedback">La contraseña debe tener entre 8 y 72 caracteres.</div>
         </div>
         <button type="submit" class="btn btn-cafe w-100">Crear cuenta</button>
     </form>
@@ -59,10 +64,10 @@ document.getElementById('formRegistro').addEventListener('submit', async functio
     exitoBox.classList.add('d-none');
 
     const body = {
-        nombre: document.getElementById('regNombre').value,
-        dni: document.getElementById('regDni').value,
-        email: document.getElementById('regEmail').value,
-        telefono: document.getElementById('regTelefono').value,
+        nombre: document.getElementById('regNombre').value.trim(),
+        dni: document.getElementById('regDni').value.trim(),
+        email: document.getElementById('regEmail').value.trim(),
+        telefono: document.getElementById('regTelefono').value.trim(),
         contrasena: document.getElementById('regContrasena').value
     };
 
@@ -74,7 +79,14 @@ document.getElementById('formRegistro').addEventListener('submit', async functio
         });
 
         if (respuesta.status === 409) {
-            errorBox.textContent = 'Ya existe una cuenta con ese email.';
+            errorBox.textContent = (await respuesta.text()) || 'Ya existe una cuenta con ese email o DNI.';
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        if (respuesta.status === 400) {
+            const datos = await respuesta.json().catch(() => null);
+            errorBox.textContent = (datos && datos.message) || 'Revisa los datos ingresados.';
             errorBox.classList.remove('d-none');
             return;
         }

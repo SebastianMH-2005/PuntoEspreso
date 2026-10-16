@@ -5,8 +5,8 @@ import com.puntoespresso.puntoespresso.dto.Producto;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import com.puntoespresso.puntoespresso.service.ProductoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -27,7 +27,7 @@ public class AdminProductoController {
     }
 
     @PostMapping
-    public Producto crear(@RequestBody ProductoRequest request) {
+    public Producto crear(@Valid @RequestBody ProductoRequest request) {
         Categoria categoria = categoriaRepository.findById(request.idCategoria())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada"));
         Producto producto = new Producto(categoria, request.nombre(), request.precio(), request.descripcion(), request.stock(), request.imagen());
@@ -35,7 +35,7 @@ public class AdminProductoController {
     }
 
     @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable int id, @RequestBody ProductoRequest request) {
+    public Producto actualizar(@PathVariable int id, @Valid @RequestBody ProductoRequest request) {
         Producto producto = productoService.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe un producto con id " + id));
 
@@ -54,6 +54,8 @@ public class AdminProductoController {
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable int id) {
+               productoService.buscarPorId(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe un producto con id " + id));
         productoService.eliminar(id);
     }
 }

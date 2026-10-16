@@ -8,8 +8,8 @@ import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.repository.OrdenDetalleRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenRepository;
 import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -42,11 +44,12 @@ public class AdminOrdenController {
 
         return ordenes.stream()
                 .map(this::aRespuesta)
-                .sorted((a, b) -> b.fechaCreacion().compareTo(a.fechaCreacion()))
+                .sorted(Comparator.comparing(OrdenAdminResponse::fechaCreacion,
+                Comparator.nullsLast(Comparator.<LocalDateTime>reverseOrder())))
                 .toList();
     }
     @PutMapping("/{id}/estado")
-    public OrdenAdminResponse actualizarEstado(@PathVariable int id, @RequestBody EstadoRequest request,
+    public OrdenAdminResponse actualizarEstado(@PathVariable int id, @Valid @RequestBody EstadoRequest request,
                                                 @AuthenticationPrincipal UsuarioAutenticado usuario) {
         Orden orden = ordenRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una orden con id " + id));
