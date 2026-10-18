@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Ubicaciones — Punto Espresso</title>
+    <meta name="description" content="Encuentra las sedes de Punto Espresso en Lima: San Miguel, San Isidro y nuestra tostaduría, con horarios de atención.">
+    <meta property="og:title" content="Ubicaciones — Punto Espresso">
+    <meta property="og:description" content="Nuestras cafeterías y tostaduría en Lima, Perú, con horarios de atención.">
+    <meta property="og:type" content="website">
+</head>
+<body>
+
+<div layout:fragment="content" class="container my-5">
+    <div class="row">
+        <!-- Lado Izquierdo: Buscador -->
+        <div class="col-md-5 mb-4">
+            <h1 class="fw-bold text-cafe-oscuro">¡Busca tu local más cercano!</h1>
+            <p class="text-muted">Ingresa tu dirección para mostrarte los locales más cercanos</p>
+
+            <div class="input-group mb-3">
+                <select class="form-select border-secondary-subtle bg-light">
+                    <option selected>Ingresa tu dirección</option>
+                    <option value="1">San Miguel</option>
+                    <option value="2">San Isidro</option>
+                    <option value="3">Chorrillos</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Lado Derecho: Listado de Sedes -->
+        <div class="col-md-7">
+            <div th:each="sede : ${sedes}" class="card shadow-sm border-0 mb-3 p-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-cafe-oscuro" th:text="${sede.nombre}">Nombre Sede</h5>
+                    <p class="card-text text-muted mb-3" th:text="${sede.direccion}">Dirección</p>
+
+                    <div class="small text-secondary">
+                        <span class="d-block" th:text="${sede.horarioDias}">Días</span>
+                        <span class="fw-bold" th:text="${sede.horarioHoras}">Horas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
