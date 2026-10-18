@@ -5,5 +5,5 @@ import java.util.List;
 
 public record OrdenAdminResponse(Integer idOrden, String clienteNombre, String clienteEmail, String tipoEntrega,
                                   String metodoPago, String estado, String codigoUnico, double total,
-                                  LocalDateTime fechaCreacion, List<DetalleResponse> detalles) {
+                                  LocalDateTime fechaCreacion, String sedeNombre, List<DetalleResponse> detalles) {
 }

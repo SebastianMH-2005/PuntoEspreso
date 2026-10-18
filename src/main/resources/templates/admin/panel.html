@@ -27,6 +27,9 @@
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabOrdenes" type="button">Órdenes</button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabPersonal" type="button">Personal</button>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -78,7 +81,39 @@
                     <tbody id="tablaSedes"></tbody>
                 </table>
             </div>
-                <div class="tab-pane fade" id="tabOrdenes">
+                <div class="tab-pane fade" id="tabPersonal">
+                <h2 class="h4 mb-3">Personal</h2>
+                <div id="usuarioError" class="alert alert-danger d-none"></div>
+
+                <form id="formOperador" class="row g-2 mb-4" onsubmit="crearOperador(event)">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="opNombre" placeholder="Nombre" minlength="2" maxlength="100" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="email" class="form-control" id="opEmail" placeholder="Email" maxlength="100" autocomplete="off" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="password" class="form-control" id="opContrasena" placeholder="Contraseña (mín. 8)" minlength="8" maxlength="72" autocomplete="new-password" required>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-cafe">Crear operador</button>
+                    </div>
+                </form>
+
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios"></tbody>
+                </table>
+            </div>
+
+            <div class="tab-pane fade" id="tabOrdenes">
                 <h2 class="h4 mb-3">Órdenes</h2>
 
                 <div id="ordenError" class="alert alert-danger d-none"></div>
@@ -202,6 +237,54 @@
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             };
+        }
+
+        async function cargarUsuarios() {
+            const respuesta = await fetch('/api/admin/usuarios', { headers: headersAuth() });
+            if (!respuesta.ok) return;
+            const usuarios = await respuesta.json();
+            document.getElementById('tablaUsuarios').innerHTML = usuarios.map(u => `
+                <tr>
+                    <td>${esc(u.nombre)}</td>
+                    <td>${esc(u.email)}</td>
+                    <td><span class="badge ${u.rol === 'ADMIN' ? 'bg-dark' : 'bg-secondary'}">${esc(u.rol)}</span></td>
+                    <td>${u.rol === 'OPERADOR'
+                        ? `<button class="btn btn-sm btn-outline-danger" onclick="eliminarUsuario(${u.idUsuarioSistema})">Eliminar</button>`
+                        : ''}</td>
+                </tr>`).join('');
+        }
+
+        async function crearOperador(e) {
+            e.preventDefault();
+            const error = document.getElementById('usuarioError');
+            error.classList.add('d-none');
+
+            const respuesta = await fetch('/api/admin/usuarios', {
+                method: 'POST',
+                headers: headersAuth(),
+                body: JSON.stringify({
+                    nombre: document.getElementById('opNombre').value.trim(),
+                    email: document.getElementById('opEmail').value.trim(),
+                    contrasena: document.getElementById('opContrasena').value
+                })
+            });
+            if (!respuesta.ok) {
+                error.textContent = await mensajeError(respuesta, 'No se pudo crear el operador.');
+                error.classList.remove('d-none');
+                return;
+            }
+            e.target.reset();
+            cargarUsuarios();
+        }
+
+        async function eliminarUsuario(id) {
+            if (!confirm('¿Eliminar este operador?')) return;
+            const respuesta = await fetch('/api/admin/usuarios/' + id, { method: 'DELETE', headers: headersAuth() });
+            if (!respuesta.ok) {
+                alert(await mensajeError(respuesta, 'No se pudo eliminar el operador.'));
+                return;
+            }
+            cargarUsuarios();
         }
 
         function verificarAcceso() {
@@ -410,7 +493,7 @@
                     <td>${esc(o.clienteNombre)}<br><small class="text-muted">${esc(o.clienteEmail)}</small></td>
                     <td>${o.detalles.map(d => d.cantidad + 'x ' + esc(d.productoNombre)).join('<br>')}</td>
                     <td>S/ ${o.total.toFixed(2)}</td>
-                    <td>${esc(o.tipoEntrega)}</td>
+                    <td>${esc(o.tipoEntrega)}${o.sedeNombre ? '<br><small class="text-muted">' + esc(o.sedeNombre) + '</small>' : ''}</td>
                     <td>
                         <select class="form-select form-select-sm" onchange="cambiarEstado(${o.idOrden}, this.value)">
                             ${estados.map(e => `<option value="${e}" ${e === o.estado ? 'selected' : ''}>${e}</option>`).join('')}
@@ -428,17 +511,26 @@
                 body: JSON.stringify({ estado: nuevoEstado })
             });
             if (!respuesta.ok) {
-                alert('No se pudo actualizar el estado.');
+                alert(await mensajeError(respuesta, 'No se pudo actualizar el estado.'));
                 cargarOrdenes();
             }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             if (verificarAcceso()) {
-                cargarCategorias();
-                cargarProductos();
-                cargarSedes();
                 cargarOrdenes();
+                if (localStorage.getItem('rol') === 'ADMIN') {
+                    cargarCategorias();
+                    cargarProductos();
+                    cargarSedes();
+                    cargarUsuarios();
+                } else {
+                    // OPERADOR: solo atiende órdenes
+                    ['#tabProductos', '#tabSedes', '#tabPersonal'].forEach(destino => {
+                        document.querySelector('[data-bs-target="' + destino + '"]').closest('li').classList.add('d-none');
+                    });
+                    bootstrap.Tab.getOrCreateInstance(document.querySelector('[data-bs-target="#tabOrdenes"]')).show();
+                }
             }
         });
     </script>

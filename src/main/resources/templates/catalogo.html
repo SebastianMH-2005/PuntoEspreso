@@ -56,7 +56,7 @@
                                     style="background-color: #4A2C11; border-radius: 8px;"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalPersonalizar"
-                                    th:attr="data-id=${prod.idProducto}, data-nombre=${prod.nombre}, data-precio=${prod.precio}, data-stock=${prod.stock}">
+                                    th:attr="data-id=${prod.idProducto}, data-nombre=${prod.nombre}, data-precio=${prod.precio}, data-stock=${prod.stock}, data-imagen=${prod.imagen}">
                                 <i class="bi bi-plus-circle-fill me-2"></i>Agregar
                             </button>
                         </div>
@@ -119,7 +119,7 @@
                     <!-- Confirmar Costo -->
                     <div class="modal-footer border-0 p-4 bg-light" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
                         <button type="submit" class="btn w-100 fw-bold text-white p-3 shadow-sm d-flex justify-content-between align-items-center" style="background-color: #4A2C11; border-radius: 10px;">
-                            <span><i class="bi bi-cart-check-fill me-2"></i>Confirmar Pedido</span>
+                            <span><i class="bi bi-cart-plus-fill me-2"></i>Agregar al carrito</span>
                             <span class="fs-5">S/ <span id="modalPrecioTotal">0.00</span></span>
                         </button>
                     </div>
@@ -144,13 +144,22 @@
                 const id = boton.getAttribute('data-id');
                 const nombre = boton.getAttribute('data-nombre');
                 precioBase = parseFloat(boton.getAttribute('data-precio')) || 0.0;
-                stockMaximo = parseInt(boton.getAttribute('data-stock'), 10) || 0;
+                const stockTotal = parseInt(boton.getAttribute('data-stock'), 10) || 0;
+                // Lo que ya está en el carrito no se puede volver a pedir
+                stockMaximo = Math.max(stockTotal - Carrito.cantidadDe(parseInt(id, 10)), 0);
 
                 cantidadActual = (stockMaximo > 0) ? 1 : 0;
 
                 document.getElementById('inputCantidad').value = cantidadActual;
                 document.getElementById('instrucciones').value = "";
                 document.getElementById('modalInputId').value = id;
+                window.productoSeleccionado = {
+                    idProducto: parseInt(id, 10),
+                    nombre: nombre,
+                    precio: precioBase,
+                    stock: stockTotal,
+                    imagen: boton.getAttribute('data-imagen')
+                };
                 document.getElementById('modalNombreProducto').innerText = nombre;
                 document.getElementById('modalStockMaximo').innerText = "Disponibles: " + stockMaximo;
 
@@ -184,33 +193,42 @@
             });
     </script>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toastCarrito" class="toast align-items-center text-bg-success border-0" role="status" aria-live="polite">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Producto agregado al carrito.
+                    <a th:href="@{/carrito}" class="text-white fw-bold ms-1">Ver carrito</a>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('formPersonalizar').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const token = localStorage.getItem('token');
-            if (!token || !tokenVigente(token)) {
-                const modalPersonalizarEl = document.getElementById('modalPersonalizar');
-                const instancia = bootstrap.Modal.getInstance(modalPersonalizarEl);
-                if (instancia) instancia.hide();
+            const producto = window.productoSeleccionado;
+            const cantidad = parseInt(document.getElementById('inputCantidad').value, 10);
 
-                setTimeout(function () {
-                    new bootstrap.Modal(document.getElementById('modalLogin')).show();
-                }, 300);
+            if (!producto || !Number.isInteger(cantidad) || cantidad < 1) {
+                alert('Ya tienes en tu carrito todo el stock disponible de este producto.');
                 return;
             }
 
-            const pedidoPendiente = {
-                idProducto: parseInt(document.getElementById('modalInputId').value),
-                cantidad: parseInt(document.getElementById('inputCantidad').value),
-                instrucciones: document.getElementById('instrucciones').value
-            };
-            if (!Number.isInteger(pedidoPendiente.idProducto) || !Number.isInteger(pedidoPendiente.cantidad)
-                    || pedidoPendiente.cantidad < 1) {
-                return;
-            }
-            sessionStorage.setItem('pedidoPendiente', JSON.stringify(pedidoPendiente));
-            window.location.href = '/checkout';
+            Carrito.agregar({
+                idProducto: producto.idProducto,
+                nombre: producto.nombre,
+                precio: producto.precio,
+                stock: producto.stock,
+                imagen: producto.imagen,
+                cantidad: cantidad,
+                instrucciones: document.getElementById('instrucciones').value.trim().substring(0, 200)
+            });
+
+            bootstrap.Modal.getInstance(document.getElementById('modalPersonalizar')).hide();
+            bootstrap.Toast.getOrCreateInstance(document.getElementById('toastCarrito'), { delay: 3500 }).show();
         });
     </script>
 

@@ -1,4 +1,8 @@
 package com.puntoespresso.puntoespresso.pedido;
 
-public record PedidoResponse(String codigoUnico, String nombreProducto, int cantidad, double total) {
+import com.puntoespresso.puntoespresso.admin.DetalleResponse;
+
+import java.util.List;
+
+public record PedidoResponse(String codigoUnico, double total, String sedeNombre, List<DetalleResponse> detalles) {
 }

@@ -18,10 +18,11 @@
                 <p class="mb-3">Tu orden ha sido registrada en el sistema de Punto Espresso.</p>
                 <hr>
                 <p class="mb-0 fw-bold fs-5 text-dark">
-                    Muestra este código al recoger tu pedido en la sede:
+                    Muestra este código al recoger tu pedido en la sede <span id="nombreSedeRecojo"></span>:
                     <span id="codigoReparto" class="badge bg-dark text-warning px-3 py-2 ms-2 fs-6">#PE-0000</span>
                 </p>
                 <div class="mt-4">
+                    <a th:href="@{/mis-pedidos}" class="btn btn-outline-success fw-bold px-4 me-2" style="border-radius: 8px;">Ver mis pedidos</a>
                     <a th:href="@{/catalogo}" class="btn btn-success fw-bold px-4" style="border-radius: 8px;">Volver al Catálogo</a>
                 </div>
             </div>
@@ -35,20 +36,7 @@
                 <div class="bg-light p-4 text-start mb-4" style="border-radius: 12px; border-left: 5px solid #704214;">
                     <h5 class="fw-bold mb-3 text-uppercase small text-muted">Detalle de Caja</h5>
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-secondary">Producto Seleccionado:</span>
-                        <span class="fw-bold" style="color: #4A2C11;" id="resumenProducto">Café</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-secondary">Cantidad solicitada:</span>
-                        <span class="fw-bold" id="resumenCantidad">1 unds.</span>
-                    </div>
-
-                    <div class="border-top pt-2 mb-2">
-                        <span class="text-secondary d-block mb-1 small fw-bold">Comentarios / Notas de preparación:</span>
-                        <p class="text-dark bg-white p-2 rounded small border" style="font-style: italic;" id="resumenInstrucciones">Sin instrucciones adicionales</p>
-                    </div>
+                    <div id="resumenItems" class="mb-2"></div>
 
                     <div class="d-flex justify-content-between border-top pt-3 mt-3">
                         <span class="fs-4 fw-bold" style="color: #4A2C11;">Monto Total a Pagar:</span>
@@ -57,6 +45,11 @@
                 </div>
 
                 <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small d-block mb-2" for="selectSede">SEDE DE RECOJO</label>
+                    <select class="form-select mb-4" id="selectSede" required>
+                        <option value="">Cargando sedes...</option>
+                    </select>
+
                     <label class="form-label fw-bold text-muted small d-block mb-2">SELECCIONA TU TIPO DE TARJETA</label>
                     <div class="row g-3">
                         <div class="col-6">
@@ -76,8 +69,8 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary w-100 p-3 fw-bold" style="border-radius: 10px;">
-                            <i class="bi bi-arrow-left me-1"></i>Modificar Pedido
+                        <a th:href="@{/carrito}" class="btn btn-outline-secondary w-100 p-3 fw-bold" style="border-radius: 10px;">
+                            <i class="bi bi-arrow-left me-1"></i>Volver al carrito
                         </a>
                     </div>
                     <div class="col-md-6">
@@ -137,7 +130,7 @@
     </div>
 
     <script>
-        let pedidoPendiente = null;
+        let carrito = [];
 
         function fechaVencida(valor) {
             const m = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(valor);
@@ -155,37 +148,57 @@
             };
         }
 
+        async function cargarSedes() {
+            const select = document.getElementById('selectSede');
+            const respuesta = await fetch('/api/sedes').catch(() => null);
+            if (!respuesta || !respuesta.ok) {
+                select.innerHTML = '<option value="">No se pudieron cargar las sedes</option>';
+                return;
+            }
+            const sedes = await respuesta.json();
+            select.innerHTML = sedes.map(s =>
+                `<option value="${s.idSede}">${escaparHtml(s.nombre)} — ${escaparHtml(s.direccion)}</option>`
+            ).join('');
+        }
+
         async function cargarResumen() {
-            const guardado = sessionStorage.getItem('pedidoPendiente');
-            if (!guardado) {
-                window.location.href = '/catalogo';
+            if (Carrito.obtener().length === 0) {
+                window.location.href = '/carrito';
                 return;
             }
-            pedidoPendiente = JSON.parse(guardado);
 
-            const respuesta = await fetch('/api/productos/' + pedidoPendiente.idProducto);
-            if (!respuesta.ok) {
-                window.location.href = '/catalogo';
+            const respuesta = await fetch('/api/productos').catch(() => null);
+            if (!respuesta || !respuesta.ok) {
+                window.location.href = '/carrito';
                 return;
             }
-            const producto = await respuesta.json();
-            if (!Number.isInteger(pedidoPendiente.cantidad) || pedidoPendiente.cantidad < 1
-                    || producto.stock < pedidoPendiente.cantidad) {
-                sessionStorage.removeItem('pedidoPendiente');
-                window.location.href = '/catalogo';
-                return;
-            }
-            const total = producto.precio * pedidoPendiente.cantidad;
 
-            document.getElementById('resumenProducto').textContent = producto.nombre;
-            document.getElementById('resumenCantidad').textContent = pedidoPendiente.cantidad + ' unds.';
-            document.getElementById('resumenInstrucciones').textContent = pedidoPendiente.instrucciones || 'Sin instrucciones adicionales';
+            // Si cambió precio o stock desde que agregaste los productos, vuelves al carrito con un aviso
+            const resultado = Carrito.sincronizar(await respuesta.json());
+            if (resultado.cambios.length > 0 || resultado.items.length === 0) {
+                sessionStorage.setItem('avisoCarrito', JSON.stringify(resultado.cambios));
+                window.location.href = '/carrito';
+                return;
+            }
+
+            carrito = resultado.items;
+            const total = Math.round(carrito.reduce((suma, i) => suma + i.precio * i.cantidad, 0) * 100) / 100;
+
+            document.getElementById('resumenItems').innerHTML = carrito.map(i => `
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="fw-bold" style="color: #4A2C11;">${i.cantidad} × ${escaparHtml(i.nombre)}</span>
+                        ${i.instrucciones ? `<div class="small text-muted fst-italic">${escaparHtml(i.instrucciones)}</div>` : ''}
+                    </div>
+                    <span class="text-secondary">S/ ${(i.precio * i.cantidad).toFixed(2)}</span>
+                </div>`).join('');
+
             document.getElementById('resumenTotal').textContent = 'S/ ' + total.toFixed(2);
             document.getElementById('resumenTotalModal').textContent = 'S/ ' + total.toFixed(2);
         }
-
         document.addEventListener('DOMContentLoaded', function() {
             cargarResumen();
+            cargarSedes();
 
             const formulario = document.getElementById('formBanco');
             const modalElemento = document.getElementById('modalPasarela');
@@ -229,9 +242,12 @@
                     method: 'POST',
                     headers: headersAuth(),
                     body: JSON.stringify({
-                        idProducto: pedidoPendiente.idProducto,
-                        cantidad: pedidoPendiente.cantidad,
-                        instrucciones: pedidoPendiente.instrucciones,
+                        items: carrito.map(i => ({
+                            idProducto: i.idProducto,
+                            cantidad: i.cantidad,
+                            instrucciones: i.instrucciones || null
+                        })),
+                        idSede: parseInt(document.getElementById('selectSede').value, 10),
                         metodoPago: metodoPago
                     })
                 }).catch(() => null);
@@ -262,7 +278,7 @@
                 }
 
                 const datos = await respuesta.json();
-                sessionStorage.removeItem('pedidoPendiente');
+                Carrito.vaciar();
 
                 bootstrapModal.hide();
                 const backdrops = document.querySelectorAll('.modal-backdrop');
@@ -270,6 +286,7 @@
                 document.body.style.overflow = 'auto';
 
                 document.getElementById('codigoReparto').innerText = datos.codigoUnico;
+                document.getElementById('nombreSedeRecojo').textContent = datos.sedeNombre ? '«' + datos.sedeNombre + '»' : '';
                 document.getElementById('tarjetaCheckout').classList.add('d-none');
                 document.getElementById('alertaExito').classList.remove('d-none');
             });

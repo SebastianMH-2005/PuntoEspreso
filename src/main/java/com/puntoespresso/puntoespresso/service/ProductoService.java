@@ -38,6 +38,11 @@ public class ProductoService {
         return productoRepository.descontarStock(idProducto, cantidad) > 0;
     }
 
+    @Transactional
+    public void reponerStock(int idProducto, int cantidad) {
+        productoRepository.reponerStock(idProducto, cantidad);
+    }
+
     public List<Producto> listarPorCategoria(int idCategoria) {
         return productoRepository.buscarPorCategoria(idCategoria);
     }

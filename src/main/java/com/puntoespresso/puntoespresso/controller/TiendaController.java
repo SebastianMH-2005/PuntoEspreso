@@ -38,10 +38,22 @@ public class TiendaController {
         return "ubicaciones";
     }
 
+    @GetMapping("/carrito")
+    public String carrito(Model model) {
+        model.addAttribute("activePage", "carrito");
+        return "carrito";
+    }
+
     @GetMapping("/checkout")
     public String checkout(Model model) {
         model.addAttribute("activePage", "checkout");
         return "checkout";
+    }
+
+    @GetMapping("/mis-pedidos")
+    public String misPedidos(Model model) {
+        model.addAttribute("activePage", "mis-pedidos");
+        return "mis-pedidos";
     }
 
     @GetMapping("/nosotros")

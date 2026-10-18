@@ -65,6 +65,18 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(estado).body(error);
     }
 
+    @ExceptionHandler(ConflictoException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> manejarConflicto(ConflictoException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     // Red de seguridad: cualquier otro error inesperado en la API también sale como JSON,
     // sin exponer detalles internos (stack traces) al cliente.
     @ExceptionHandler(Exception.class)
