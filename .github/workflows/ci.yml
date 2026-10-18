@@ -20,7 +20,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Dar permisos al wrapper de Gradle
+        working-directory: backend
         run: chmod +x gradlew
 
       - name: Compilar (sin tests, requieren base de datos)
+        working-directory: backend
         run: ./gradlew build -x test
