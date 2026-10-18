@@ -51,7 +51,7 @@ public class AdminSedeController {
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable int id) {
-                sedeService.buscarPorId(id)
+        sedeService.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una sede con id " + id));
         sedeService.eliminar(id);
     }

@@ -18,7 +18,7 @@ public class TiendaController {
         this.sedeService = sedeService;
     }
 
-    @GetMapping({"/", "/index"})
+    @GetMapping({ "/", "/index" })
     public String index(Model model) {
         model.addAttribute("activePage", "inicio");
         return "index";

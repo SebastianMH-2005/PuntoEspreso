@@ -42,22 +42,69 @@ public class Producto {
         this.imagen = imagen;
     }
 
-    public Integer getIdProducto() { return idProducto; }
-    public void setIdProducto(Integer idProducto) { this.idProducto = idProducto; }
-    public Categoria getCategoria() { return categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
-    public UsuarioSistema getUsuarioSistema() { return usuarioSistema; }
-    public void setUsuarioSistema(UsuarioSistema usuarioSistema) { this.usuarioSistema = usuarioSistema; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public double getPrecio() { return precio; }
-    public void setPrecio(double precio) { this.precio = precio; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public int getStock() { return stock; }
-    public void setStock(int stock) { this.stock = stock; }
-    public String getImagen() { return imagen; }
-    public void setImagen(String imagen) { this.imagen = imagen; }
+    public Integer getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(Integer idProducto) {
+        this.idProducto = idProducto;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public UsuarioSistema getUsuarioSistema() {
+        return usuarioSistema;
+    }
+
+    public void setUsuarioSistema(UsuarioSistema usuarioSistema) {
+        this.usuarioSistema = usuarioSistema;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 
     public boolean isDisponible() {
         return this.stock > 0;
@@ -69,7 +116,8 @@ public class Producto {
 
     public String getHeaderClass() {
         return categoria != null && "Café en Grano".equals(categoria.getNombre())
-                ? "bg-dark text-warning" : "bg-warning text-dark";
+                ? "bg-dark text-warning"
+                : "bg-warning text-dark";
     }
 
     public String getStockBadgeClass() {

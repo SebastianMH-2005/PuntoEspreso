@@ -32,8 +32,8 @@ public class PedidoService {
     private final SedeService sedeService;
 
     public PedidoService(ProductoService productoService, ClienteRepository clienteRepository,
-                          OrdenRepository ordenRepository, OrdenDetalleRepository ordenDetalleRepository,
-                          SedeService sedeService) {
+            OrdenRepository ordenRepository, OrdenDetalleRepository ordenDetalleRepository,
+            SedeService sedeService) {
         this.productoService = productoService;
         this.clienteRepository = clienteRepository;
         this.ordenRepository = ordenRepository;
@@ -42,8 +42,10 @@ public class PedidoService {
     }
 
     private static String unirInstrucciones(String a, String b) {
-        if (a == null || a.isBlank()) return b;
-        if (b == null || b.isBlank()) return a;
+        if (a == null || a.isBlank())
+            return b;
+        if (b == null || b.isBlank())
+            return a;
         String unidas = a + " | " + b;
         return unidas.length() > 200 ? unidas.substring(0, 200) : unidas;
     }
@@ -57,14 +59,16 @@ public class PedidoService {
         Cliente cliente = clienteRepository.findByEmail(usuario.getUsername())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Cliente no encontrado"));
 
-                Sede sede = sedeService.buscarPorId(request.idSede())
+        Sede sede = sedeService.buscarPorId(request.idSede())
                 .orElseThrow(() -> new RecursoNoEncontradoException("La sede elegida no existe"));
 
-        // Une líneas repetidas del mismo producto y las ordena por id (evita bloqueos cruzados entre pedidos simultáneos)
+        // Une líneas repetidas del mismo producto y las ordena por id (evita bloqueos
+        // cruzados entre pedidos simultáneos)
         Map<Integer, ItemPedidoRequest> lineas = new TreeMap<>();
         for (ItemPedidoRequest item : request.items()) {
             lineas.merge(item.idProducto(), item, (a, b) -> new ItemPedidoRequest(
-                    a.idProducto(), a.cantidad() + b.cantidad(), unirInstrucciones(a.instrucciones(), b.instrucciones())));
+                    a.idProducto(), a.cantidad() + b.cantidad(),
+                    unirInstrucciones(a.instrucciones(), b.instrucciones())));
         }
 
         String codigoUnico = "PE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -77,7 +81,8 @@ public class PedidoService {
             Producto producto = productoService.buscarPorId(linea.idProducto())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado"));
 
-            // Si algún producto no alcanza, se revierte todo el pedido (incluido el stock ya descontado)
+            // Si algún producto no alcanza, se revierte todo el pedido (incluido el stock
+            // ya descontado)
             if (!productoService.descontarStock(producto.getIdProducto(), linea.cantidad())) {
                 throw new StockInsuficienteException("No hay suficiente stock de «" + producto.getNombre() + "»");
             }

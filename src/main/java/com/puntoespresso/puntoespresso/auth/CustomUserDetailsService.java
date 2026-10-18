@@ -16,7 +16,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UsuarioSistemaRepository usuarioSistemaRepository;
     private final ClienteRepository clienteRepository;
 
-    public CustomUserDetailsService(UsuarioSistemaRepository usuarioSistemaRepository, ClienteRepository clienteRepository) {
+    public CustomUserDetailsService(UsuarioSistemaRepository usuarioSistemaRepository,
+            ClienteRepository clienteRepository) {
         this.usuarioSistemaRepository = usuarioSistemaRepository;
         this.clienteRepository = clienteRepository;
     }
@@ -26,13 +27,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         var staff = usuarioSistemaRepository.findByEmail(email);
         if (staff.isPresent()) {
             UsuarioSistema u = staff.get();
-            return new UsuarioAutenticado(u.getIdUsuarioSistema(), u.getNombre(), u.getEmail(), u.getContrasena(), u.getRol());
+            return new UsuarioAutenticado(u.getIdUsuarioSistema(), u.getNombre(), u.getEmail(), u.getContrasena(),
+                    u.getRol());
         }
 
         var cliente = clienteRepository.findByEmail(email);
         if (cliente.isPresent()) {
             Cliente c = cliente.get();
-            return new UsuarioAutenticado(c.getIdCliente(), c.getNombre(), c.getEmail(), c.getContrasena(), Rol.CLIENTE);
+            return new UsuarioAutenticado(c.getIdCliente(), c.getNombre(), c.getEmail(), c.getContrasena(),
+                    Rol.CLIENTE);
         }
 
         throw new UsernameNotFoundException("No existe una cuenta con ese email");

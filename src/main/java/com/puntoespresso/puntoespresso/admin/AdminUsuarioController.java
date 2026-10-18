@@ -28,7 +28,7 @@ public class AdminUsuarioController {
     private final PasswordEncoder passwordEncoder;
 
     public AdminUsuarioController(UsuarioSistemaRepository usuarioSistemaRepository,
-                                  ClienteRepository clienteRepository, PasswordEncoder passwordEncoder) {
+            ClienteRepository clienteRepository, PasswordEncoder passwordEncoder) {
         this.usuarioSistemaRepository = usuarioSistemaRepository;
         this.clienteRepository = clienteRepository;
         this.passwordEncoder = passwordEncoder;
@@ -42,7 +42,8 @@ public class AdminUsuarioController {
     @PostMapping
     public UsuarioSistemaResponse crearOperador(@Valid @RequestBody UsuarioSistemaRequest request) {
         String email = request.email().trim().toLowerCase();
-        if (usuarioSistemaRepository.findByEmail(email).isPresent() || clienteRepository.findByEmail(email).isPresent()) {
+        if (usuarioSistemaRepository.findByEmail(email).isPresent()
+                || clienteRepository.findByEmail(email).isPresent()) {
             throw new ConflictoException("Ya existe una cuenta con ese email");
         }
 

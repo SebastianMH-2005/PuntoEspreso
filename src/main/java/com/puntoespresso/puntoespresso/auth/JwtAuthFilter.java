@@ -41,7 +41,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 try {
                     userDetails = userDetailsService.loadUserByUsername(email);
                 } catch (UsernameNotFoundException e) {
-                    // Token válido de un usuario que ya no existe: se trata como anónimo, no como error 500
+                    // Token válido de un usuario que ya no existe: se trata como anónimo, no como
+                    // error 500
                     filterChain.doFilter(request, response);
                     return;
                 }

@@ -30,7 +30,8 @@ public class AdminProductoController {
     public Producto crear(@Valid @RequestBody ProductoRequest request) {
         Categoria categoria = categoriaRepository.findById(request.idCategoria())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada"));
-        Producto producto = new Producto(categoria, request.nombre(), request.precio(), request.descripcion(), request.stock(), request.imagen());
+        Producto producto = new Producto(categoria, request.nombre(), request.precio(), request.descripcion(),
+                request.stock(), request.imagen());
         return productoService.guardar(producto);
     }
 
@@ -54,7 +55,7 @@ public class AdminProductoController {
 
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable int id) {
-               productoService.buscarPorId(id)
+        productoService.buscarPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe un producto con id " + id));
         productoService.eliminar(id);
     }

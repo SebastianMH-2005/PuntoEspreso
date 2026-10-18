@@ -27,13 +27,14 @@ public class OrdenService {
     private final ProductoService productoService;
 
     public OrdenService(OrdenRepository ordenRepository, OrdenDetalleRepository ordenDetalleRepository,
-                        ProductoService productoService) {
+            ProductoService productoService) {
         this.ordenRepository = ordenRepository;
         this.ordenDetalleRepository = ordenDetalleRepository;
         this.productoService = productoService;
     }
 
-    // Los métodos "DelCliente" solo se alcanzan con rol CLIENTE (lo exige SecurityConfig en /api/pedidos/**),
+    // Los métodos "DelCliente" solo se alcanzan con rol CLIENTE (lo exige
+    // SecurityConfig en /api/pedidos/**),
     // por eso usuario.getId() es siempre un id de la tabla clientes.
 
     @Transactional(readOnly = true)
@@ -50,7 +51,8 @@ public class OrdenService {
 
     @Transactional
     public MiOrdenResponse cancelarDelCliente(int idOrden, UsuarioAutenticado usuario) {
-        Orden orden = buscarDelCliente(idOrden, usuario);
+        Orden orden = ordenRepository.buscarDelClienteParaActualizar(idOrden, usuario.getId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe un pedido con id " + idOrden));
         if (!PENDIENTE.equals(orden.getEstado())) {
             throw new ConflictoException("Solo puedes cancelar pedidos que aún estén pendientes");
         }
@@ -62,7 +64,7 @@ public class OrdenService {
 
     @Transactional
     public Orden cambiarEstado(int idOrden, String nuevoEstado, UsuarioSistema staff) {
-        Orden orden = ordenRepository.findById(idOrden)
+        Orden orden = ordenRepository.buscarParaActualizar(idOrden)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una orden con id " + idOrden));
 
         String actual = orden.getEstado();
@@ -79,7 +81,8 @@ public class OrdenService {
     }
 
     private Orden buscarDelCliente(int idOrden, UsuarioAutenticado usuario) {
-        // Si la orden existe pero es de otro cliente, responde 404 igual (no revela que existe)
+        // Si la orden existe pero es de otro cliente, responde 404 igual (no revela que
+        // existe)
         return ordenRepository.findByIdOrdenAndCliente_IdCliente(idOrden, usuario.getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe un pedido con id " + idOrden));
     }

@@ -17,7 +17,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     @Query("UPDATE Producto p SET p.stock = p.stock + :cantidad WHERE p.idProducto = :id")
     int reponerStock(@Param("id") Integer id, @Param("cantidad") int cantidad);
 
-    // Descuento atómico: solo actualiza si todavía hay stock suficiente (evita vender de más)
+    // Descuento atómico: solo actualiza si todavía hay stock suficiente (evita
+    // vender de más)
     @Modifying
     @Query("UPDATE Producto p SET p.stock = p.stock - :cantidad WHERE p.idProducto = :id AND p.stock >= :cantidad")
     int descontarStock(@Param("id") Integer id, @Param("cantidad") int cantidad);

@@ -45,7 +45,8 @@ public class Orden {
     public Orden() {
     }
 
-    public Orden(Cliente cliente, Direccion direccion, Sede sede, String tipoEntrega, String metodoPago, String estado, String codigoUnico, double total) {
+    public Orden(Cliente cliente, Direccion direccion, Sede sede, String tipoEntrega, String metodoPago, String estado,
+            String codigoUnico, double total) {
         this.cliente = cliente;
         this.direccion = direccion;
         this.sede = sede;
@@ -61,25 +62,87 @@ public class Orden {
         this.fechaCreacion = LocalDateTime.now();
     }
 
-    public Integer getIdOrden() { return idOrden; }
-    public void setIdOrden(Integer idOrden) { this.idOrden = idOrden; }
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-    public Direccion getDireccion() { return direccion; }
-    public void setDireccion(Direccion direccion) { this.direccion = direccion; }
-    public Sede getSede() { return sede; }
-    public void setSede(Sede sede) { this.sede = sede; }
-    public UsuarioSistema getUsuarioSistema() { return usuarioSistema; }
-    public void setUsuarioSistema(UsuarioSistema usuarioSistema) { this.usuarioSistema = usuarioSistema; }
-    public String getTipoEntrega() { return tipoEntrega; }
-    public void setTipoEntrega(String tipoEntrega) { this.tipoEntrega = tipoEntrega; }
-    public String getMetodoPago() { return metodoPago; }
-    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-    public String getCodigoUnico() { return codigoUnico; }
-    public void setCodigoUnico(String codigoUnico) { this.codigoUnico = codigoUnico; }
-    public double getTotal() { return total; }
-    public void setTotal(double total) { this.total = total; }
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public Integer getIdOrden() {
+        return idOrden;
+    }
+
+    public void setIdOrden(Integer idOrden) {
+        this.idOrden = idOrden;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Direccion getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
+    }
+
+    public Sede getSede() {
+        return sede;
+    }
+
+    public void setSede(Sede sede) {
+        this.sede = sede;
+    }
+
+    public UsuarioSistema getUsuarioSistema() {
+        return usuarioSistema;
+    }
+
+    public void setUsuarioSistema(UsuarioSistema usuarioSistema) {
+        this.usuarioSistema = usuarioSistema;
+    }
+
+    public String getTipoEntrega() {
+        return tipoEntrega;
+    }
+
+    public void setTipoEntrega(String tipoEntrega) {
+        this.tipoEntrega = tipoEntrega;
+    }
+
+    public String getMetodoPago() {
+        return metodoPago;
+    }
+
+    public void setMetodoPago(String metodoPago) {
+        this.metodoPago = metodoPago;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getCodigoUnico() {
+        return codigoUnico;
+    }
+
+    public void setCodigoUnico(String codigoUnico) {
+        this.codigoUnico = codigoUnico;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
 }

@@ -18,8 +18,8 @@ public class AuthService {
     private final UsuarioSistemaRepository usuarioSistemaRepository;
 
     public AuthService(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
-                        ClienteRepository clienteRepository, PasswordEncoder passwordEncoder,
-                        UsuarioSistemaRepository usuarioSistemaRepository) {
+            ClienteRepository clienteRepository, PasswordEncoder passwordEncoder,
+            UsuarioSistemaRepository usuarioSistemaRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.clienteRepository = clienteRepository;
@@ -38,13 +38,12 @@ public class AuthService {
     }
 
     public boolean emailYaRegistrado(String email) {
-                String normalizado = normalizar(email);
+        String normalizado = normalizar(email);
         return clienteRepository.findByEmail(normalizado).isPresent()
                 || usuarioSistemaRepository.findByEmail(normalizado).isPresent();
     }
 
-
-        public boolean dniYaRegistrado(String dni) {
+    public boolean dniYaRegistrado(String dni) {
         return clienteRepository.existsByDni(dni.trim());
     }
 

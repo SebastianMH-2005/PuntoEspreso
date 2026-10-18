@@ -24,9 +24,17 @@ public class UsuarioAutenticado implements UserDetails {
         this.rol = rol;
     }
 
-    public Integer getId() { return id; }
-    public String getNombre() { return nombre; }
-    public Rol getRol() { return rol; }
+    public Integer getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -34,20 +42,32 @@ public class UsuarioAutenticado implements UserDetails {
     }
 
     @Override
-    public String getPassword() { return contrasena; }
+    public String getPassword() {
+        return contrasena;
+    }
 
     @Override
-    public String getUsername() { return email; }
+    public String getUsername() {
+        return email;
+    }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 }

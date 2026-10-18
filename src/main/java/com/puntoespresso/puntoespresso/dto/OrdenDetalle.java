@@ -39,16 +39,51 @@ public class OrdenDetalle {
         this.instrucciones = instrucciones;
     }
 
-    public Integer getIdOrdenDetalle() { return idOrdenDetalle; }
-    public void setIdOrdenDetalle(Integer idOrdenDetalle) { this.idOrdenDetalle = idOrdenDetalle; }
-    public Orden getOrden() { return orden; }
-    public void setOrden(Orden orden) { this.orden = orden; }
-    public Producto getProducto() { return producto; }
-    public void setProducto(Producto producto) { this.producto = producto; }
-    public int getCantidad() { return cantidad; }
-    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
-    public double getPrecioUnitario() { return precioUnitario; }
-    public void setPrecioUnitario(double precioUnitario) { this.precioUnitario = precioUnitario; }
-    public String getInstrucciones() { return instrucciones; }
-    public void setInstrucciones(String instrucciones) { this.instrucciones = instrucciones; }
+    public Integer getIdOrdenDetalle() {
+        return idOrdenDetalle;
+    }
+
+    public void setIdOrdenDetalle(Integer idOrdenDetalle) {
+        this.idOrdenDetalle = idOrdenDetalle;
+    }
+
+    public Orden getOrden() {
+        return orden;
+    }
+
+    public void setOrden(Orden orden) {
+        this.orden = orden;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public double getPrecioUnitario() {
+        return precioUnitario;
+    }
+
+    public void setPrecioUnitario(double precioUnitario) {
+        this.precioUnitario = precioUnitario;
+    }
+
+    public String getInstrucciones() {
+        return instrucciones;
+    }
+
+    public void setInstrucciones(String instrucciones) {
+        this.instrucciones = instrucciones;
+    }
 }
