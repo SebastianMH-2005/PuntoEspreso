@@ -1,0 +1,22 @@
+# Credenciales
+.env
+
+# Salida generada por Java/Gradle
+.gradle/
+bin/
+build/
+out/
+
+# Logs y reportes de caída de la JVM
+*.log
+hs_err_pid*
+replay_pid*
+
+# Node / Angular
+node_modules/
+.angular/
+dist/
+
+# IDE
+.idea/
+*.iml

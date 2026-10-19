@@ -1,8 +1,0 @@
-{
-  "properties": [
-    { "name": "app.cors.allowed-origins", "type": "java.lang.String", "description": "Orígenes permitidos para /api/** (separados por coma)." },
-    { "name": "app.jwt.secret", "type": "java.lang.String", "description": "Secreto HMAC para firmar los JWT (mínimo 32 caracteres)." },
-    { "name": "app.jwt.expiration-ms", "type": "java.lang.Long", "description": "Duración del token JWT en milisegundos." },
-    { "name": "app.seed.admin-password", "type": "java.lang.String", "description": "Contraseña del admin inicial creado por DataSeeder." }
-  ]
-}
