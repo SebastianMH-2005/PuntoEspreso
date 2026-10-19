@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /carrito
+Disallow: /mis-pedidos
+
+Sitemap: https://TU-DOMINIO.vercel.app/sitemap.xml
