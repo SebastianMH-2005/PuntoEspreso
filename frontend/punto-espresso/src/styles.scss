@@ -1,0 +1,18 @@
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+
+/* Paleta de Punto Espresso (la misma del sitio actual) */
+:root {
+  --cafe-oscuro: #3d2514;
+  --cafe-calido: #f4efe9;
+  --cafe-crema: #d4a373;
+  --cafe-boton: #8b5a2b;
+  --cafe-boton-hover: #6f441f;
+}
+
+body { background-color: var(--cafe-calido); }
+
+.bg-cafe-oscuro { background-color: var(--cafe-oscuro) !important; }
+.bg-cafe-calido { background-color: var(--cafe-calido) !important; }
+.text-crema { color: var(--cafe-crema) !important; }
+.btn-cafe { background-color: var(--cafe-boton); color: #fff; border: none; }
+.btn-cafe:hover { background-color: var(--cafe-boton-hover); color: var(--cafe-calido); }

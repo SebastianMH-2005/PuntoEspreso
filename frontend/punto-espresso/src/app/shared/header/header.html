@@ -1,0 +1,74 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-cafe-oscuro">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-crema" routerLink="/" (click)="cerrarMenu()">
+      <i class="bi bi-cup-hot me-2"></i>Punto Espresso
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      aria-label="Abrir menú"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="alternarMenu()"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse" [class.show]="menuAbierto()">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }" (click)="cerrarMenu()">
+            <i class="bi bi-house-door me-1"></i>Inicio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/catalogo" routerLinkActive="active" (click)="cerrarMenu()">
+            <i class="bi bi-cup-straw me-1"></i>Catálogo
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contacto" routerLinkActive="active" (click)="cerrarMenu()">
+            <i class="bi bi-geo-alt me-1"></i>Contacto
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/nosotros" routerLinkActive="active" (click)="cerrarMenu()">
+            <i class="bi bi-people me-1"></i>Nosotros
+          </a>
+        </li>
+
+        @if (auth.estaLogueado()) {
+          @if (auth.esCliente()) {
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/mis-pedidos" routerLinkActive="active" (click)="cerrarMenu()">
+                <i class="bi bi-receipt me-1"></i>Mis pedidos
+              </a>
+            </li>
+          }
+          @if (auth.esPersonal()) {
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin" routerLinkActive="active" (click)="cerrarMenu()">
+                <i class="bi bi-speedometer2 me-1"></i>Panel
+              </a>
+            </li>
+          }
+          <li class="nav-item">
+            <span class="navbar-text text-crema me-2">Hola, {{ auth.nombre() }}</span>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="btn btn-outline-light btn-sm mt-1" (click)="cerrarSesion()">
+              Cerrar sesión
+            </button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active" (click)="cerrarMenu()">
+              <i class="bi bi-person me-1"></i>Ingresar
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>
