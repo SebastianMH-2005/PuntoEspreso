@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SeoService } from './core/services/seo.service';
 import { Footer } from './shared/footer/footer';
 import { Header } from './shared/header/header';
 
@@ -10,5 +11,9 @@ import { Header } from './shared/header/header';
   templateUrl: './app.html',
 })
 export class App {
-  // El título de cada página lo define el router (propiedad "title" en app.routes.ts)
+    constructor() {
+    // El título de cada página lo define el router (propiedad "title" en app.routes.ts);
+    // SeoService completa descripción, canonical y robots en cada navegación
+    inject(SeoService);
+  }
 }
