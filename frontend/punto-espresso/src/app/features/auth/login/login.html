@@ -1,0 +1,81 @@
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-5">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h1 class="h3 fw-bold mb-1" style="color: var(--cafe-oscuro)">Iniciar sesión</h1>
+          <p class="text-muted">Ingresa para hacer y seguir tus pedidos.</p>
+
+          @if (registrado()) {
+            <div class="alert alert-success" role="status">
+              Tu cuenta fue creada. Ya puedes iniciar sesión.
+            </div>
+          }
+          @if (error(); as mensaje) {
+            <div class="alert alert-danger" role="alert">{{ mensaje }}</div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                autocomplete="email"
+                [class.is-invalid]="invalido('email')"
+              />
+              <app-field-error [control]="form.controls.email" />
+            </div>
+
+            <div class="mb-3">
+              <label for="contrasena" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <input
+                  id="contrasena"
+                  [type]="verContrasena() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="contrasena"
+                  autocomplete="current-password"
+                  [class.is-invalid]="invalido('contrasena')"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="verContrasena.set(!verContrasena())"
+                >
+                  <i
+                    class="bi"
+                    [class.bi-eye]="!verContrasena()"
+                    [class.bi-eye-slash]="verContrasena()"
+                  ></i>
+                </button>
+              </div>
+              <app-field-error [control]="form.controls.contrasena" />
+            </div>
+
+            <button type="submit" class="btn btn-cafe w-100" [disabled]="enviando()">
+              @if (enviando()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span
+                >Ingresando…
+              } @else {
+                Ingresar
+              }
+            </button>
+            @if (enviando()) {
+              <p class="small text-muted text-center mt-2 mb-0">
+                Si el servidor estaba dormido, el primer ingreso puede tardar un poco.
+              </p>
+            }
+          </form>
+
+          <p class="text-center mt-4 mb-0">
+            ¿No tienes cuenta? <a routerLink="/registro">Regístrate</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

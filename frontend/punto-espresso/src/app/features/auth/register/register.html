@@ -1,0 +1,146 @@
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-9 col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h1 class="h3 fw-bold mb-1" style="color: var(--cafe-oscuro)">Crear cuenta</h1>
+          <p class="text-muted">Regístrate para hacer pedidos y seguirlos desde tu cuenta.</p>
+
+          @if (error(); as mensaje) {
+            <div class="alert alert-danger" role="alert">{{ mensaje }}</div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo</label>
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                formControlName="nombre"
+                autocomplete="name"
+                maxlength="100"
+                [class.is-invalid]="invalido('nombre')"
+              />
+              <app-field-error [control]="form.controls.nombre" />
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6 mb-3">
+                <label for="dni" class="form-label">DNI</label>
+                <input
+                  id="dni"
+                  type="text"
+                  inputmode="numeric"
+                  class="form-control"
+                  formControlName="dni"
+                  maxlength="8"
+                  [class.is-invalid]="invalido('dni')"
+                />
+                <app-field-error
+                  [control]="form.controls.dni"
+                  [mensajes]="{ pattern: 'El DNI debe tener 8 dígitos.' }"
+                />
+              </div>
+              <div class="col-sm-6 mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input
+                  id="telefono"
+                  type="tel"
+                  inputmode="numeric"
+                  class="form-control"
+                  formControlName="telefono"
+                  autocomplete="tel"
+                  maxlength="9"
+                  [class.is-invalid]="invalido('telefono')"
+                />
+                <app-field-error
+                  [control]="form.controls.telefono"
+                  [mensajes]="{ pattern: 'Debe tener 9 dígitos y empezar con 9.' }"
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                autocomplete="email"
+                maxlength="100"
+                [class.is-invalid]="invalido('email')"
+              />
+              <app-field-error [control]="form.controls.email" />
+            </div>
+
+            <div class="mb-3">
+              <label for="contrasena" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <input
+                  id="contrasena"
+                  [type]="verContrasena() ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="contrasena"
+                  autocomplete="new-password"
+                  maxlength="72"
+                  [class.is-invalid]="invalido('contrasena')"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="verContrasena.set(!verContrasena())"
+                >
+                  <i
+                    class="bi"
+                    [class.bi-eye]="!verContrasena()"
+                    [class.bi-eye-slash]="verContrasena()"
+                  ></i>
+                </button>
+              </div>
+              <div class="form-text">Mínimo 8 caracteres.</div>
+              <app-field-error [control]="form.controls.contrasena" />
+            </div>
+
+            <div class="mb-4">
+              <label for="confirmacion" class="form-label">Repite la contraseña</label>
+              <input
+                id="confirmacion"
+                [type]="verContrasena() ? 'text' : 'password'"
+                class="form-control"
+                formControlName="confirmacion"
+                autocomplete="new-password"
+                maxlength="72"
+                [class.is-invalid]="invalido('confirmacion') || confirmacionNoCoincide()"
+              />
+              <app-field-error [control]="form.controls.confirmacion" />
+              @if (confirmacionNoCoincide()) {
+                <div class="invalid-feedback d-block">Las contraseñas no coinciden.</div>
+              }
+            </div>
+
+            <button type="submit" class="btn btn-cafe w-100" [disabled]="enviando()">
+              @if (enviando()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span
+                >Creando cuenta…
+              } @else {
+                Crear cuenta
+              }
+            </button>
+            @if (enviando()) {
+              <p class="small text-muted text-center mt-2 mb-0">
+                Si el servidor estaba dormido, puede tardar un poco.
+              </p>
+            }
+          </form>
+
+          <p class="text-center mt-4 mb-0">
+            ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

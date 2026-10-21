@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { invitadoGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -20,7 +21,21 @@ export const routes: Routes = [
     },
     loadComponent: () => import('./features/catalog/catalog').then((m) => m.Catalog),
   },
-  // Siguientes pasos: login, registro, carrito, checkout, mis-pedidos, admin...
+  {
+    path: 'login',
+    title: 'Iniciar sesión | Punto Espresso',
+    canActivate: [invitadoGuard],
+    data: { noindex: true },
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
+  },
+  {
+    path: 'registro',
+    title: 'Crear cuenta | Punto Espresso',
+    canActivate: [invitadoGuard],
+    data: { noindex: true },
+    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
+  },
+  // Siguientes pasos: carrito, checkout, mis-pedidos, admin...
   {
     path: '**',
     title: 'Página no encontrada | Punto Espresso',
