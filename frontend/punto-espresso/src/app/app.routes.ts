@@ -48,7 +48,14 @@ export const routes: Routes = [
     data: { noindex: true },
     loadComponent: () => import('./features/checkout/checkout').then((m) => m.Checkout),
   },
-  // Siguientes pasos: mis-pedidos, admin...
+  {
+    path: 'mis-pedidos',
+    title: 'Mis pedidos | Punto Espresso',
+    canActivate: [rolGuard('CLIENTE')],
+    data: { noindex: true },
+    loadComponent: () => import('./features/orders/orders').then((m) => m.Orders),
+  },
+  // Siguientes pasos: admin...
   {
     path: '**',
     title: 'Página no encontrada | Punto Espresso',

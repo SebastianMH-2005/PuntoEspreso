@@ -1,0 +1,160 @@
+<section class="bg-cafe-oscuro text-white py-4">
+  <div class="container">
+    <h1 class="h2 fw-bold text-crema mb-0">Mis pedidos</h1>
+  </div>
+</section>
+
+<section class="container py-4">
+  @if (mensaje(); as aviso) {
+    <div
+      class="alert d-flex justify-content-between align-items-start"
+      [class.alert-success]="aviso.tipo === 'exito'"
+      [class.alert-danger]="aviso.tipo === 'error'"
+      role="alert"
+    >
+      <span>{{ aviso.texto }}</span>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar"
+        (click)="mensaje.set(null)"
+      ></button>
+    </div>
+  }
+
+  @switch (carga()) {
+    @case ('cargando') {
+      <div class="text-center py-5">
+        <div class="spinner-border text-secondary" role="status"></div>
+        <p class="mt-3 text-muted">Cargando tus pedidos…</p>
+        @if (servidorLento()) {
+          <p class="small text-muted">
+            El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+          </p>
+        }
+      </div>
+    }
+    @case ('error') {
+      <div class="alert alert-danger d-flex justify-content-between align-items-center">
+        <span>No pudimos cargar tus pedidos. Revisa tu conexión e inténtalo otra vez.</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar('inicial')">
+          Reintentar
+        </button>
+      </div>
+    }
+    @case ('listo') {
+      @if (pedidos().length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-receipt display-3 text-muted"></i>
+          <p class="lead mt-3">Aún no tienes pedidos.</p>
+          <a routerLink="/catalogo" class="btn btn-cafe">Ir al catálogo</a>
+        </div>
+      } @else {
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+          <div class="btn-group" role="group" aria-label="Filtrar pedidos">
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-cafe]="filtro() === 'todos'"
+              [class.btn-outline-secondary]="filtro() !== 'todos'"
+              (click)="filtro.set('todos')"
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-cafe]="filtro() === 'activos'"
+              [class.btn-outline-secondary]="filtro() !== 'activos'"
+              (click)="filtro.set('activos')"
+            >
+              En curso
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm"
+              [class.btn-cafe]="filtro() === 'historial'"
+              [class.btn-outline-secondary]="filtro() !== 'historial'"
+              (click)="filtro.set('historial')"
+            >
+              Historial
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            [disabled]="actualizando()"
+            (click)="cargar('manual')"
+          >
+            <i class="bi bi-arrow-clockwise me-1"></i
+            >{{ actualizando() ? 'Actualizando…' : 'Actualizar' }}
+          </button>
+        </div>
+
+        @if (visibles().length === 0) {
+          <div class="alert alert-info">No tienes pedidos en esta categoría.</div>
+        } @else {
+          <div class="row g-3">
+            @for (pedido of visibles(); track pedido.idOrden) {
+              <div class="col-lg-6">
+                <article class="card shadow-sm border-0 h-100">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <span class="badge bg-dark text-warning fs-6 font-monospace">
+                        {{ pedido.codigoUnico }}
+                      </span>
+                      <span class="badge" [class]="estado(pedido).clase">
+                        {{ estado(pedido).texto }}
+                      </span>
+                    </div>
+
+                    <p class="text-muted small mb-2">
+                      {{ pedido.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}
+                      @if (pedido.sedeNombre) {
+                        · Recojo en {{ pedido.sedeNombre }}
+                      }
+                    </p>
+
+                    <ul class="mb-3 ps-3">
+                      @for (detalle of pedido.detalles; track detalle.productoNombre) {
+                        <li>
+                          {{ detalle.cantidad }} × {{ detalle.productoNombre }}
+                          <span class="text-muted">
+                            ({{ detalle.precioUnitario | currency: 'PEN' : 'S/ ' : '1.2-2' }})
+                          </span>
+                        </li>
+                      }
+                    </ul>
+
+                    @if (pedido.estado === 'LISTO') {
+                      <p class="small text-success mb-2">
+                        <i class="bi bi-bag-check me-1"></i>Tu pedido está listo: muestra tu código
+                        en la sede.
+                      </p>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold">
+                        Total: {{ pedido.total | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                      </span>
+                      @if (pedido.estado === 'PENDIENTE') {
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-danger"
+                          [disabled]="cancelando() === pedido.idOrden"
+                          (click)="cancelar(pedido)"
+                        >
+                          {{ cancelando() === pedido.idOrden ? 'Cancelando…' : 'Cancelar pedido' }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </article>
+              </div>
+            }
+          </div>
+        }
+      }
+    }
+  }
+</section>
