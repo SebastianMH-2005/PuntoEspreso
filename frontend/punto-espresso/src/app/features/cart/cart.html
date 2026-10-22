@@ -1,0 +1,143 @@
+<section class="bg-cafe-oscuro text-white py-4">
+  <div class="container">
+    <h1 class="h2 fw-bold text-crema mb-0">Mi carrito</h1>
+  </div>
+</section>
+
+<section class="container py-4">
+  @if (cart.avisos().length > 0) {
+    <div class="alert alert-warning d-flex justify-content-between align-items-start" role="alert">
+      <ul class="mb-0 ps-3">
+        @for (aviso of cart.avisos(); track aviso) {
+          <li>{{ aviso }}</li>
+        }
+      </ul>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Cerrar avisos"
+        (click)="cart.limpiarAvisos()"
+      ></button>
+    </div>
+  }
+
+  @if (limite(); as mensaje) {
+    <div class="alert alert-info py-2" role="status">{{ mensaje }}</div>
+  }
+
+  @if (cart.items().length === 0) {
+    <div class="text-center py-5">
+      <i class="bi bi-cart-x display-3 text-muted"></i>
+      <p class="lead mt-3">Tu carrito está vacío.</p>
+      <a routerLink="/catalogo" class="btn btn-cafe">Explorar el catálogo</a>
+    </div>
+  } @else {
+    @if (verificando()) {
+      <p class="small text-muted">Verificando precios y stock…</p>
+    }
+
+    <div class="vstack gap-3 mb-4">
+      @for (item of cart.items(); track item.idProducto) {
+        <article class="card shadow-sm border-0">
+          <div class="card-body">
+            <div class="d-flex gap-3">
+              <img
+                class="rounded flex-shrink-0"
+                [src]="'/img/' + item.imagen"
+                [alt]="item.nombre"
+                width="80"
+                height="80"
+                style="object-fit: cover"
+                (error)="ocultarImagen($event)"
+              />
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="h5 mb-1" style="color: var(--cafe-oscuro)">{{ item.nombre }}</h2>
+                    <span class="text-muted small">
+                      {{ item.precio | currency: 'PEN' : 'S/ ' : '1.2-2' }} c/u · Stock:
+                      {{ item.stock }}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    [attr.aria-label]="'Quitar ' + item.nombre"
+                    (click)="cart.quitar(item.idProducto)"
+                  ></button>
+                </div>
+
+                <div class="row g-2 align-items-center mt-2">
+                  <div class="col-sm-4">
+                    <div class="input-group input-group-sm" style="max-width: 140px">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        aria-label="Disminuir cantidad"
+                        (click)="cambiarCantidad(item.idProducto, -1, item.stock)"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="text"
+                        class="form-control text-center fw-bold"
+                        [value]="item.cantidad"
+                        aria-label="Cantidad"
+                        readonly
+                      />
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        aria-label="Aumentar cantidad"
+                        (click)="cambiarCantidad(item.idProducto, 1, item.stock)"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-sm-5">
+                    <input
+                      #nota
+                      type="text"
+                      class="form-control form-control-sm"
+                      maxlength="200"
+                      placeholder="Instrucciones (opcional)"
+                      aria-label="Instrucciones para este producto"
+                      [value]="item.instrucciones ?? ''"
+                      (change)="cart.actualizarInstrucciones(item.idProducto, nota.value)"
+                    />
+                  </div>
+                  <div class="col-sm-3 text-sm-end fw-bold">
+                    {{ item.precio * item.cantidad | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="vaciar()">
+        Vaciar carrito
+      </button>
+      <span class="fs-4 fw-bold" style="color: var(--cafe-oscuro)">
+        Total: {{ cart.total() | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+      </span>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-6">
+        <a routerLink="/catalogo" class="btn btn-outline-secondary w-100 p-3 fw-bold">
+          <i class="bi bi-arrow-left me-1"></i>Seguir comprando
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a routerLink="/checkout" class="btn btn-cafe w-100 p-3 fw-bold">
+          Proceder al pago<i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  }
+</section>

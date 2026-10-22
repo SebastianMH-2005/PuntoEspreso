@@ -1,0 +1,258 @@
+<section class="bg-cafe-oscuro text-white py-4">
+  <div class="container">
+    <h1 class="h2 fw-bold text-crema mb-0">
+      {{ pedido() ? 'Pedido confirmado' : 'Finalizar pedido' }}
+    </h1>
+  </div>
+</section>
+
+<section class="container py-4">
+  @if (pedido(); as confirmado) {
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 text-center">
+          <div class="card-body p-4">
+            <i class="bi bi-check-circle-fill display-3 text-success"></i>
+            <h2 class="h3 mt-3">¡Pedido recibido!</h2>
+            <p class="text-muted mb-2">
+              Muestra este código al recoger tu pedido en la sede «{{ confirmado.sedeNombre }}»:
+            </p>
+            <p class="display-6 fw-bold font-monospace" style="color: var(--cafe-oscuro)">
+              {{ confirmado.codigoUnico }}
+            </p>
+
+            <ul class="list-group list-group-flush text-start my-3">
+              @for (detalle of confirmado.detalles; track detalle.productoNombre) {
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>{{ detalle.cantidad }} × {{ detalle.productoNombre }}</span>
+                  <span>
+                    {{
+                      detalle.precioUnitario * detalle.cantidad | currency: 'PEN' : 'S/ ' : '1.2-2'
+                    }}
+                  </span>
+                </li>
+              }
+              <li class="list-group-item d-flex justify-content-between fw-bold">
+                <span>Total</span>
+                <span>{{ confirmado.total | currency: 'PEN' : 'S/ ' : '1.2-2' }}</span>
+              </li>
+            </ul>
+
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+              <a routerLink="/catalogo" class="btn btn-cafe">Seguir comprando</a>
+              <a routerLink="/" class="btn btn-outline-secondary">Volver al inicio</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else if (cargando()) {
+    <div class="text-center py-5">
+      @if (errorCarga()) {
+        <div class="alert alert-danger d-inline-block">
+          No pudimos cargar los datos del pedido.
+          <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="cargar()">
+            Reintentar
+          </button>
+        </div>
+      } @else {
+        <div class="spinner-border text-secondary" role="status"></div>
+        <p class="mt-3 text-muted">Preparando tu pedido…</p>
+      }
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-bold mb-3">Sede de recojo</h2>
+              @if (sedes().length === 0) {
+                <div class="alert alert-warning mb-0">
+                  No hay sedes disponibles en este momento. Inténtalo más tarde.
+                </div>
+              } @else {
+                <label for="idSede" class="form-label">¿Dónde recogerás tu pedido?</label>
+                <select
+                  id="idSede"
+                  class="form-select"
+                  formControlName="idSede"
+                  [class.is-invalid]="invalido('idSede')"
+                >
+                  @for (sede of sedes(); track sede.idSede) {
+                    <option [ngValue]="sede.idSede">
+                      {{ sede.nombre }} — {{ sede.direccion }}
+                    </option>
+                  }
+                </select>
+                <app-field-error
+                  [control]="form.controls.idSede"
+                  [mensajes]="{ required: 'Elige una sede.' }"
+                />
+              }
+            </div>
+          </div>
+
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-bold mb-1">Pago con tarjeta</h2>
+              <p class="small text-muted">
+                Pago simulado: los datos de la tarjeta no se envían ni se guardan.
+              </p>
+
+              <div class="mb-3">
+                <div class="form-check form-check-inline">
+                  <input
+                    id="pagoCredito"
+                    class="form-check-input"
+                    type="radio"
+                    value="CC"
+                    formControlName="metodoPago"
+                  />
+                  <label class="form-check-label" for="pagoCredito">Crédito</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    id="pagoDebito"
+                    class="form-check-input"
+                    type="radio"
+                    value="DC"
+                    formControlName="metodoPago"
+                  />
+                  <label class="form-check-label" for="pagoDebito">Débito</label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="titular" class="form-label">Titular de la tarjeta</label>
+                <input
+                  id="titular"
+                  type="text"
+                  class="form-control"
+                  formControlName="titular"
+                  autocomplete="cc-name"
+                  maxlength="60"
+                  [class.is-invalid]="invalido('titular')"
+                />
+                <app-field-error [control]="form.controls.titular" />
+              </div>
+
+              <div class="mb-3">
+                <label for="numeroTarjeta" class="form-label">Número de tarjeta</label>
+                <input
+                  id="numeroTarjeta"
+                  type="text"
+                  inputmode="numeric"
+                  class="form-control"
+                  formControlName="numeroTarjeta"
+                  autocomplete="cc-number"
+                  placeholder="16 dígitos"
+                  [class.is-invalid]="invalido('numeroTarjeta')"
+                  (input)="alEscribir('numeroTarjeta', $event)"
+                />
+                <app-field-error
+                  [control]="form.controls.numeroTarjeta"
+                  [mensajes]="{ pattern: 'Debe tener 16 dígitos.' }"
+                />
+              </div>
+
+              <div class="row">
+                <div class="col-6 mb-3">
+                  <label for="vencimiento" class="form-label">Vencimiento</label>
+                  <input
+                    id="vencimiento"
+                    type="text"
+                    inputmode="numeric"
+                    class="form-control"
+                    formControlName="vencimiento"
+                    autocomplete="cc-exp"
+                    placeholder="MM/AA"
+                    [class.is-invalid]="invalido('vencimiento')"
+                    (input)="alEscribir('vencimiento', $event)"
+                  />
+                  <app-field-error
+                    [control]="form.controls.vencimiento"
+                    [mensajes]="{
+                      pattern: 'Usa el formato MM/AA.',
+                      vencida: 'La tarjeta está vencida.',
+                    }"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label for="cvv" class="form-label">CVV</label>
+                  <input
+                    id="cvv"
+                    type="text"
+                    inputmode="numeric"
+                    class="form-control"
+                    formControlName="cvv"
+                    autocomplete="cc-csc"
+                    placeholder="3 dígitos"
+                    [class.is-invalid]="invalido('cvv')"
+                    (input)="alEscribir('cvv', $event)"
+                  />
+                  <app-field-error
+                    [control]="form.controls.cvv"
+                    [mensajes]="{ pattern: 'Debe tener 3 dígitos.' }"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+              <h2 class="h5 fw-bold mb-3">Resumen</h2>
+              <ul class="list-unstyled mb-3">
+                @for (item of cart.items(); track item.idProducto) {
+                  <li class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <span class="fw-bold">{{ item.cantidad }} × {{ item.nombre }}</span>
+                      @if (item.instrucciones) {
+                        <div class="small text-muted fst-italic">{{ item.instrucciones }}</div>
+                      }
+                    </div>
+                    <span class="text-secondary">
+                      {{ item.precio * item.cantidad | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+              <div class="d-flex justify-content-between fs-5 fw-bold border-top pt-3">
+                <span>Total</span>
+                <span>{{ cart.total() | currency: 'PEN' : 'S/ ' : '1.2-2' }}</span>
+              </div>
+
+              @if (error(); as mensaje) {
+                <div class="alert alert-danger mt-3 mb-0" role="alert">
+                  {{ mensaje }}
+                  @if (errorStock()) {
+                    <a routerLink="/carrito" class="alert-link d-block mt-1">Revisar mi carrito</a>
+                  }
+                </div>
+              }
+
+              <button
+                type="submit"
+                class="btn btn-cafe w-100 mt-3 p-3 fw-bold"
+                [disabled]="enviando() || sedes().length === 0"
+              >
+                @if (enviando()) {
+                  <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span
+                  >Procesando…
+                } @else {
+                  Confirmar pedido
+                }
+              </button>
+              <a routerLink="/carrito" class="btn btn-outline-secondary w-100 mt-2">
+                <i class="bi bi-arrow-left me-1"></i>Volver al carrito
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  }
+</section>

@@ -38,6 +38,15 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/carrito" routerLinkActive="active" (click)="cerrarMenu()">
+            <i class="bi bi-cart3 me-1"></i>Carrito
+            @if (cart.totalUnidades() > 0) {
+              <span class="badge rounded-pill bg-warning text-dark ms-1">{{ cart.totalUnidades() }}</span>
+            }
+          </a>
+        </li>
+
         @if (auth.estaLogueado()) {
           @if (auth.esCliente()) {
             <li class="nav-item">

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { invitadoGuard } from './core/guards/auth.guard';
+import { invitadoGuard, rolGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -35,7 +35,20 @@ export const routes: Routes = [
     data: { noindex: true },
     loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
   },
-  // Siguientes pasos: carrito, checkout, mis-pedidos, admin...
+  {
+    path: 'carrito',
+    title: 'Mi carrito | Punto Espresso',
+    data: { noindex: true },
+    loadComponent: () => import('./features/cart/cart').then((m) => m.Cart),
+  },
+  {
+    path: 'checkout',
+    title: 'Finalizar pedido | Punto Espresso',
+    canActivate: [rolGuard('CLIENTE')],
+    data: { noindex: true },
+    loadComponent: () => import('./features/checkout/checkout').then((m) => m.Checkout),
+  },
+  // Siguientes pasos: mis-pedidos, admin...
   {
     path: '**',
     title: 'Página no encontrada | Punto Espresso',

@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class Header {
   protected readonly auth = inject(AuthService);
+  protected readonly cart = inject(CartService);
   protected readonly menuAbierto = signal(false);
 
   protected alternarMenu(): void {
@@ -21,6 +23,7 @@ export class Header {
 
   protected cerrarSesion(): void {
     this.cerrarMenu();
+    this.cart.vaciar();
     this.auth.cerrarSesion();
   }
 }
