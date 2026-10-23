@@ -82,6 +82,18 @@ describe('Login', () => {
     expect(el.textContent).toContain('Email o contraseña incorrectos.');
   });
 
+  it('lleva al personal al panel de administración', async () => {
+    const { fixture, el, http, navegar } = crear();
+
+    escribir(el, 'email', 'admin@puntoespresso.pe');
+    escribir(el, 'contrasena', 'secreta123');
+    enviar(el);
+    http.expectOne(URL_LOGIN).flush({ token: 'a.b.c', nombre: 'Admin', rol: 'ADMIN' });
+    await fixture.whenStable();
+
+    expect(navegar).toHaveBeenCalledWith('/admin');
+  });
+
   it('vuelve a la ruta pedida solo si es una ruta interna', async () => {
     const { fixture, el, http, navegar } = crear();
     fixture.componentRef.setInput('redirect', '/catalogo');

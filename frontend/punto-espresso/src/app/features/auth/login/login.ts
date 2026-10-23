@@ -62,6 +62,9 @@ export class Login {
   // Solo se acepta una ruta interna: evita redirigir a otro sitio con /login?redirect=//otro-sitio.com
   private destino(): string {
     const ruta = this.redirect();
-    return ruta && ruta.startsWith('/') && !ruta.startsWith('//') ? ruta : '/';
+    if (ruta && ruta.startsWith('/') && !ruta.startsWith('//')) {
+      return ruta;
+    }
+    return this.auth.esPersonal() ? '/admin' : '/';
   }
 }

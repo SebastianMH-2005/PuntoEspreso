@@ -25,9 +25,11 @@ export class SeoService {
   }
 
   private actualizar(): void {
-    const datos = this.rutaActiva().data;
+    const ruta = this.rutaActiva();
+    const datos = ruta.data;
     const descripcion = (datos['descripcion'] as string | undefined) ?? DESCRIPCION_POR_DEFECTO;
-    const noindex = datos['noindex'] === true;
+    // "noindex" de una ruta padre (por ejemplo /admin) vale para todas sus rutas hijas
+    const noindex = ruta.pathFromRoot.some((tramo) => tramo.data['noindex'] === true);
     const url = this.document.location.origin + this.router.url.split(/[?#]/)[0];
 
     this.meta.updateTag({ name: 'description', content: descripcion });

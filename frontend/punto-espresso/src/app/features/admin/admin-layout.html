@@ -1,0 +1,20 @@
+<section class="bg-cafe-oscuro text-white py-4">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <h1 class="h2 fw-bold text-crema mb-0">Panel de administración</h1>
+    <span class="badge bg-warning text-dark fs-6">{{ rolEtiqueta() }}</span>
+  </div>
+</section>
+
+<section class="container py-4">
+  <ul class="nav nav-tabs mb-4">
+    @for (pestana of pestanas(); track pestana.ruta) {
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/admin', pestana.ruta]" routerLinkActive="active">
+          <i class="bi me-1" [class]="pestana.icono"></i>{{ pestana.etiqueta }}
+        </a>
+      </li>
+    }
+  </ul>
+
+  <router-outlet />
+</section>

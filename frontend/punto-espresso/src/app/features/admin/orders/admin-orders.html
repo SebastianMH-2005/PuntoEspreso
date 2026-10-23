@@ -1,0 +1,150 @@
+@if (mensaje(); as aviso) {
+  <div
+    class="alert d-flex justify-content-between align-items-start"
+    [class.alert-success]="aviso.tipo === 'exito'"
+    [class.alert-danger]="aviso.tipo === 'error'"
+    role="alert"
+  >
+    <span>{{ aviso.texto }}</span>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Cerrar"
+      (click)="mensaje.set(null)"
+    ></button>
+  </div>
+}
+
+@switch (carga()) {
+  @case ('cargando') {
+    <div class="text-center py-5">
+      <div class="spinner-border text-secondary" role="status"></div>
+      <p class="mt-3 text-muted">Cargando órdenes…</p>
+      @if (servidorLento()) {
+        <p class="small text-muted">
+          El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+        </p>
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="alert alert-danger d-flex justify-content-between align-items-center">
+      <span>No pudimos cargar las órdenes. Revisa tu conexión e inténtalo otra vez.</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar('inicial')">
+        Reintentar
+      </button>
+    </div>
+  }
+  @case ('listo') {
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div class="d-flex flex-wrap gap-2">
+        <select
+          #selector
+          class="form-select form-select-sm w-auto"
+          aria-label="Filtrar por estado"
+          (change)="cambiarFiltro(selector.value)"
+        >
+          <option value="">Todos los estados</option>
+          @for (opcion of opcionesEstado; track opcion.valor) {
+            <option [value]="opcion.valor">{{ opcion.texto }}</option>
+          }
+        </select>
+        <input
+          #caja
+          type="search"
+          class="form-control form-control-sm w-auto"
+          placeholder="Buscar por código o cliente"
+          aria-label="Buscar órdenes"
+          maxlength="60"
+          (input)="busqueda.set(caja.value)"
+        />
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        @if (filtroEstado() === '' && porAtender() > 0) {
+          <span class="badge bg-warning text-dark">{{ porAtender() }} por atender</span>
+        }
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          [disabled]="actualizando()"
+          (click)="cargar('manual')"
+        >
+          <i class="bi bi-arrow-clockwise me-1"></i
+          >{{ actualizando() ? 'Actualizando…' : 'Actualizar' }}
+        </button>
+      </div>
+    </div>
+
+    @if (visibles().length === 0) {
+      <div class="alert alert-info">No hay órdenes que coincidan con el filtro.</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white shadow-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Productos</th>
+              <th>Sede</th>
+              <th class="text-end">Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (orden of visibles(); track orden.idOrden) {
+              <tr>
+                <td>
+                  <span class="badge bg-dark text-warning font-monospace">
+                    {{ orden.codigoUnico }}
+                  </span>
+                  <div class="small text-muted">
+                    {{ orden.fechaCreacion | date: 'dd/MM HH:mm' }}
+                  </div>
+                </td>
+                <td>
+                  {{ orden.clienteNombre }}
+                  <div class="small text-muted">{{ orden.clienteEmail }}</div>
+                </td>
+                <td>
+                  <ul class="list-unstyled mb-0 small">
+                    @for (detalle of orden.detalles; track detalle.productoNombre) {
+                      <li>{{ detalle.cantidad }} × {{ detalle.productoNombre }}</li>
+                    }
+                  </ul>
+                </td>
+                <td>{{ orden.sedeNombre ?? '—' }}</td>
+                <td class="text-end">{{ orden.total | currency: 'PEN' : 'S/ ' : '1.2-2' }}</td>
+                <td>
+                  <span class="badge" [class]="estado(orden).clase">{{ estado(orden).texto }}</span>
+                </td>
+                <td class="text-nowrap">
+                  @if (siguiente(orden); as paso) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-cafe"
+                      [disabled]="procesando() === orden.idOrden"
+                      (click)="avanzar(orden, paso)"
+                    >
+                      {{ paso.texto }}
+                    </button>
+                  }
+                  @if (puedeCancelar(orden)) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger ms-1"
+                      [disabled]="procesando() === orden.idOrden"
+                      (click)="cancelar(orden)"
+                    >
+                      Cancelar
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+}

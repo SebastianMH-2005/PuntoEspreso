@@ -55,7 +55,47 @@ export const routes: Routes = [
     data: { noindex: true },
     loadComponent: () => import('./features/orders/orders').then((m) => m.Orders),
   },
-  // Siguientes pasos: admin...
+  {
+    path: 'admin',
+    title: 'Panel de administración | Punto Espresso',
+    canActivate: [rolGuard('ADMIN', 'OPERADOR')],
+    data: { noindex: true },
+    loadComponent: () => import('./features/admin/admin-layout').then((m) => m.AdminLayout),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'ordenes' },
+      {
+        path: 'ordenes',
+        title: 'Órdenes | Panel de administración',
+        loadComponent: () =>
+          import('./features/admin/orders/admin-orders').then((m) => m.AdminOrders),
+      },
+      // Productos, sedes y personal: solo ADMIN. Se migran a Angular en los siguientes pasos.
+      {
+        path: 'productos',
+        title: 'Productos | Panel de administración',
+        canActivate: [rolGuard('ADMIN')],
+        data: { seccion: 'Productos' },
+        loadComponent: () =>
+          import('./features/admin/pending/admin-pending').then((m) => m.AdminPending),
+      },
+      {
+        path: 'sedes',
+        title: 'Sedes | Panel de administración',
+        canActivate: [rolGuard('ADMIN')],
+        data: { seccion: 'Sedes' },
+        loadComponent: () =>
+          import('./features/admin/pending/admin-pending').then((m) => m.AdminPending),
+      },
+      {
+        path: 'personal',
+        title: 'Personal | Panel de administración',
+        canActivate: [rolGuard('ADMIN')],
+        data: { seccion: 'Personal' },
+        loadComponent: () =>
+          import('./features/admin/pending/admin-pending').then((m) => m.AdminPending),
+      },
+    ],
+  },
   {
     path: '**',
     title: 'Página no encontrada | Punto Espresso',

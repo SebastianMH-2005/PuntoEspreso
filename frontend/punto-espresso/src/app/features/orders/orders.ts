@@ -2,22 +2,18 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { EstadoPedido, MiPedido } from '../../core/models/pedido.models';
+import { MiPedido } from '../../core/models/pedido.models';
 import { PedidoService } from '../../core/services/pedido.service';
+import {
+  ESTADOS_ACTIVOS as ACTIVOS,
+  ESTADOS_PEDIDO as ESTADOS,
+} from '../../core/utils/estado-pedido';
 import { mensajeDeError } from '../../core/utils/mensaje-error';
 
 type Carga = 'cargando' | 'listo' | 'error';
 type Filtro = 'todos' | 'activos' | 'historial';
 type Modo = 'inicial' | 'manual' | 'auto';
 
-const ESTADOS: Record<EstadoPedido, { texto: string; clase: string }> = {
-  PENDIENTE: { texto: 'Pendiente', clase: 'bg-warning text-dark' },
-  EN_PROCESO: { texto: 'En proceso', clase: 'bg-info text-dark' },
-  LISTO: { texto: 'Listo para recoger', clase: 'bg-success' },
-  ENTREGADO: { texto: 'Entregado', clase: 'bg-secondary' },
-  CANCELADO: { texto: 'Cancelado', clase: 'bg-danger' },
-};
-const ACTIVOS: EstadoPedido[] = ['PENDIENTE', 'EN_PROCESO', 'LISTO'];
 const INTERVALO_REFRESCO_MS = 30_000;
 
 @Component({
