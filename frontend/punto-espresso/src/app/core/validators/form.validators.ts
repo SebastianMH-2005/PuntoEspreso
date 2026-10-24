@@ -22,6 +22,12 @@ export function camposIguales(campo: string, confirmacion: string): ValidatorFn 
     grupo.get(campo)?.value === grupo.get(confirmacion)?.value ? null : { noCoinciden: true };
 }
 
+/** Acepta solo números enteros (un campo vacío lo valida Validators.required). */
+export const esEntero: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const valor: unknown = control.value;
+  return valor === null || valor === '' || Number.isInteger(valor) ? null : { entero: true };
+};
+
 /** Rechaza textos formados solo por espacios (Validators.required los deja pasar). */
 export const noSoloEspacios: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const valor: unknown = control.value;

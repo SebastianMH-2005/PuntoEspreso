@@ -60,6 +60,23 @@ describe('rutas protegidas', () => {
     expect(url()).toBe('/');
   });
 
+  it('solo el administrador entra a crear productos', async () => {
+    iniciarSesion('OPERADOR');
+    const operador = await crear();
+    await operador.harness.navigateByUrl('/admin/productos/nuevo');
+    expect(operador.url()).toBe('/');
+    TestBed.resetTestingModule();
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+    });
+    iniciarSesion('ADMIN');
+    const admin = await crear();
+    await admin.harness.navigateByUrl('/admin/productos/nuevo');
+    admin.http.expectOne(`${environment.apiUrl}/api/categorias`).flush([]);
+    expect(admin.url()).toBe('/admin/productos/nuevo');
+  });
+
   it('el administrador entra a todo y /admin lleva a las órdenes', async () => {
     iniciarSesion('ADMIN');
     const { harness, http, url } = await crear();
