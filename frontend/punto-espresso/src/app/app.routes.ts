@@ -69,7 +69,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/orders/admin-orders').then((m) => m.AdminOrders),
       },
-      // Productos, sedes y personal: solo ADMIN. Se migran a Angular en los siguientes pasos.
+      // Productos, sedes y personal: solo ADMIN
       {
         path: 'productos',
         canActivate: [rolGuard('ADMIN')],
@@ -102,17 +102,14 @@ export const routes: Routes = [
         path: 'sedes',
         title: 'Sedes | Panel de administración',
         canActivate: [rolGuard('ADMIN')],
-        data: { seccion: 'Sedes' },
-        loadComponent: () =>
-          import('./features/admin/pending/admin-pending').then((m) => m.AdminPending),
+        loadComponent: () => import('./features/admin/sedes/admin-sedes').then((m) => m.AdminSedes),
       },
       {
         path: 'personal',
         title: 'Personal | Panel de administración',
         canActivate: [rolGuard('ADMIN')],
-        data: { seccion: 'Personal' },
         loadComponent: () =>
-          import('./features/admin/pending/admin-pending').then((m) => m.AdminPending),
+          import('./features/admin/personal/admin-personal').then((m) => m.AdminPersonal),
       },
     ],
   },

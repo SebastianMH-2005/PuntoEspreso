@@ -1,0 +1,162 @@
+<h2 class="h4 mb-3">Personal</h2>
+
+@if (mensaje(); as aviso) {
+  <div
+    class="alert d-flex justify-content-between align-items-start"
+    [class.alert-success]="aviso.tipo === 'exito'"
+    [class.alert-danger]="aviso.tipo === 'error'"
+    role="alert"
+  >
+    <span>{{ aviso.texto }}</span>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Cerrar"
+      (click)="mensaje.set(null)"
+    ></button>
+  </div>
+}
+
+<form [formGroup]="form" (ngSubmit)="crear()" novalidate>
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Nuevo operador</h3>
+
+      @if (errorFormulario(); as error) {
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+      }
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            class="form-control"
+            formControlName="nombre"
+            autocomplete="off"
+            maxlength="100"
+            [class.is-invalid]="invalido('nombre')"
+          />
+          <app-field-error [control]="form.controls.nombre" />
+        </div>
+        <div class="col-md-4">
+          <label for="email" class="form-label">Email</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            autocomplete="off"
+            maxlength="100"
+            [class.is-invalid]="invalido('email')"
+          />
+          <app-field-error [control]="form.controls.email" />
+        </div>
+        <div class="col-md-4">
+          <label for="contrasena" class="form-label">Contraseña inicial</label>
+          <div class="input-group">
+            <input
+              id="contrasena"
+              [type]="verContrasena() ? 'text' : 'password'"
+              class="form-control"
+              formControlName="contrasena"
+              autocomplete="new-password"
+              maxlength="72"
+              [class.is-invalid]="invalido('contrasena')"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="verContrasena.set(!verContrasena())"
+            >
+              <i
+                class="bi"
+                [class.bi-eye]="!verContrasena()"
+                [class.bi-eye-slash]="verContrasena()"
+              ></i>
+            </button>
+          </div>
+          <div class="form-text">Mínimo 8 caracteres.</div>
+          <app-field-error [control]="form.controls.contrasena" />
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-cafe" [disabled]="enviando()">
+          @if (enviando()) {
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Creando…
+          } @else {
+            Crear operador
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+@switch (carga()) {
+  @case ('cargando') {
+    <div class="text-center py-5">
+      <div class="spinner-border text-secondary" role="status"></div>
+      <p class="mt-3 text-muted">Cargando personal…</p>
+      @if (servidorLento()) {
+        <p class="small text-muted">
+          El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+        </p>
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="alert alert-danger d-flex justify-content-between align-items-center">
+      <span>No pudimos cargar el personal. Revisa tu conexión e inténtalo otra vez.</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar()">
+        Reintentar
+      </button>
+    </div>
+  }
+  @case ('listo') {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle bg-white shadow-sm mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of usuarios(); track usuario.idUsuarioSistema) {
+            <tr>
+              <td class="fw-bold">{{ usuario.nombre }}</td>
+              <td>{{ usuario.email }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.bg-dark]="usuario.rol === 'ADMIN'"
+                  [class.bg-secondary]="usuario.rol !== 'ADMIN'"
+                >
+                  {{ usuario.rol === 'ADMIN' ? 'Administrador' : 'Operador' }}
+                </span>
+              </td>
+              <td>
+                @if (usuario.rol === 'OPERADOR') {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    [disabled]="procesando() === usuario.idUsuarioSistema"
+                    (click)="eliminar(usuario)"
+                  >
+                    Eliminar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

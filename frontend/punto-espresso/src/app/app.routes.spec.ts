@@ -60,6 +60,17 @@ describe('rutas protegidas', () => {
     expect(url()).toBe('/');
   });
 
+  it('el operador no entra a sedes ni a personal', async () => {
+    iniciarSesion('OPERADOR');
+    const { harness, url } = await crear();
+
+    await harness.navigateByUrl('/admin/sedes');
+    expect(url()).toBe('/');
+
+    await harness.navigateByUrl('/admin/personal');
+    expect(url()).toBe('/');
+  });
+
   it('solo el administrador entra a crear productos', async () => {
     iniciarSesion('OPERADOR');
     const operador = await crear();
