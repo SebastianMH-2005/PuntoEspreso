@@ -13,6 +13,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     @Query("SELECT p FROM Producto p WHERE p.categoria.idCategoria = :idCategoria")
     List<Producto> buscarPorCategoria(@Param("idCategoria") Integer idCategoria);
 
+    List<Producto> findByStockLessThanEqualOrderByStockAscNombreAsc(int stock);
+
     @Modifying
     @Query("UPDATE Producto p SET p.stock = p.stock + :cantidad WHERE p.idProducto = :id")
     int reponerStock(@Param("id") Integer id, @Param("cantidad") int cantidad);

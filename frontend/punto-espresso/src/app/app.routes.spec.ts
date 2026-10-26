@@ -88,13 +88,13 @@ describe('rutas protegidas', () => {
     expect(admin.url()).toBe('/admin/productos/nuevo');
   });
 
-  it('el administrador entra a todo y /admin lleva a las órdenes', async () => {
+  it('el administrador entra a todo y /admin lleva al resumen', async () => {
     iniciarSesion('ADMIN');
     const { harness, http, url } = await crear();
 
     await harness.navigateByUrl('/admin');
-    http.expectOne((r) => r.url === URL_ORDENES).flush([]);
-    expect(url()).toBe('/admin/ordenes');
+    http.expectOne((r) => r.url === `${environment.apiUrl}/api/admin/dashboard`).flush(null);
+    expect(url()).toBe('/admin/resumen');
 
     await harness.navigateByUrl('/admin/productos');
     expect(url()).toBe('/admin/productos');

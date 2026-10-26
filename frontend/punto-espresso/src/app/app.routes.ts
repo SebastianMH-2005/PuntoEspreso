@@ -1,5 +1,7 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { invitadoGuard, rolGuard } from './core/guards/auth.guard';
+import { AuthService } from './core/services/auth.service';
 
 export const routes: Routes = [
   {
@@ -62,7 +64,19 @@ export const routes: Routes = [
     data: { noindex: true },
     loadComponent: () => import('./features/admin/admin-layout').then((m) => m.AdminLayout),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'ordenes' },
+      {
+        path: '',
+        pathMatch: 'full',
+        // El administrador empieza en el resumen; el operador, directo en las órdenes
+        redirectTo: () => (inject(AuthService).rol() === 'ADMIN' ? 'resumen' : 'ordenes'),
+      },
+      {
+        path: 'resumen',
+        title: 'Resumen | Panel de administración',
+        canActivate: [rolGuard('ADMIN')],
+        loadComponent: () =>
+          import('./features/admin/dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+      },
       {
         path: 'ordenes',
         title: 'Órdenes | Panel de administración',

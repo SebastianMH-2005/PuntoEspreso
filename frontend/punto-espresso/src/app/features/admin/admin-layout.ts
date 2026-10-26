@@ -12,6 +12,7 @@ interface Pestana {
 
 // Cada pestaña dice qué roles la ven. El backend vuelve a validar el rol en cada petición.
 const PESTANAS: Pestana[] = [
+  { ruta: 'resumen', etiqueta: 'Resumen', icono: 'bi-graph-up', roles: ['ADMIN'] },
   { ruta: 'ordenes', etiqueta: 'Órdenes', icono: 'bi-receipt', roles: ['ADMIN', 'OPERADOR'] },
   { ruta: 'productos', etiqueta: 'Productos', icono: 'bi-cup-hot', roles: ['ADMIN'] },
   { ruta: 'sedes', etiqueta: 'Sedes', icono: 'bi-geo-alt', roles: ['ADMIN'] },

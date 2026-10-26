@@ -1,0 +1,207 @@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h2 class="h4 mb-0">Resumen de ventas</h2>
+  <div class="d-flex align-items-center gap-2">
+    <div class="btn-group" role="group" aria-label="Periodo">
+      @for (rango of rangos; track rango) {
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-cafe]="dias() === rango"
+          [class.btn-outline-secondary]="dias() !== rango"
+          [attr.aria-pressed]="dias() === rango"
+          (click)="cambiarRango(rango)"
+        >
+          {{ rango }} días
+        </button>
+      }
+    </div>
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm"
+      [disabled]="actualizando()"
+      (click)="cargar('manual')"
+    >
+      <i class="bi bi-arrow-clockwise me-1"></i
+      >{{ actualizando() ? 'Actualizando…' : 'Actualizar' }}
+    </button>
+  </div>
+</div>
+
+@if (errorActualizar(); as error) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-start" role="alert">
+    <span>{{ error }}</span>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Cerrar"
+      (click)="errorActualizar.set(null)"
+    ></button>
+  </div>
+}
+
+@switch (carga()) {
+  @case ('cargando') {
+    <div class="text-center py-5">
+      <div class="spinner-border text-secondary" role="status"></div>
+      <p class="mt-3 text-muted">Calculando el resumen…</p>
+      @if (servidorLento()) {
+        <p class="small text-muted">
+          El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+        </p>
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="alert alert-danger d-flex justify-content-between align-items-center">
+      <span>No pudimos cargar el resumen. Revisa tu conexión e inténtalo otra vez.</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar('inicial')">
+        Reintentar
+      </button>
+    </div>
+  }
+  @case ('listo') {
+    @if (datos(); as d) {
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="text-muted small">Pedidos hoy</div>
+              <div class="fs-2 fw-bold">{{ d.pedidosHoy }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="text-muted small">Ventas hoy</div>
+              <div class="fs-2 fw-bold">{{ d.ventasHoy | currency: 'PEN' : 'S/ ' : '1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="text-muted small">Ventas ({{ d.dias }} días)</div>
+              <div class="fs-2 fw-bold">
+                {{ d.ventasPeriodo | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+              </div>
+              <div class="small text-muted">
+                {{ d.pedidosPeriodo }} pedidos · ticket promedio
+                {{ d.ticketPromedio | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                @if (d.canceladosPeriodo > 0) {
+                  · {{ d.canceladosPeriodo }} cancelados
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="text-muted small">Por atender</div>
+              <div class="fs-2 fw-bold">
+                <a routerLink="/admin/ordenes" class="text-decoration-none">{{ d.pendientes }}</a>
+              </div>
+              <div class="small text-muted">
+                {{ d.enProceso }} en proceso · {{ d.listos }} listos
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-7">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <h3 class="h6 fw-bold mb-3">Ventas por día</h3>
+              @for (dia of d.ventasPorDia; track dia.fecha) {
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="small text-muted" style="width: 3rem">
+                    {{ dia.fecha | date: 'dd/MM' }}
+                  </span>
+                  <div class="progress flex-grow-1" style="height: 1.1rem">
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      style="background-color: var(--cafe-boton)"
+                      [style.width.%]="porcentaje(dia.total, maxVenta())"
+                      [attr.aria-label]="'Ventas del ' + dia.fecha"
+                    ></div>
+                  </div>
+                  <span class="small text-end" style="width: 9rem">
+                    {{ dia.total | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                    <span class="text-muted">· {{ dia.pedidos }} ped.</span>
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+              <h3 class="h6 fw-bold mb-3">Más vendidos</h3>
+              @if (d.masVendidos.length === 0) {
+                <p class="text-muted small mb-0">Todavía no hay ventas en este periodo.</p>
+              } @else {
+                @for (producto of d.masVendidos; track producto.nombre; let i = $index) {
+                  <div class="mb-2">
+                    <div class="d-flex justify-content-between small">
+                      <span class="fw-bold">{{ i + 1 }}. {{ producto.nombre }}</span>
+                      <span class="text-muted">
+                        {{ producto.unidades }} u. ·
+                        {{ producto.ingresos | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                      </span>
+                    </div>
+                    <div class="progress" style="height: 0.5rem">
+                      <div
+                        class="progress-bar bg-warning"
+                        role="progressbar"
+                        [style.width.%]="porcentaje(producto.unidades, maxUnidades())"
+                        [attr.aria-label]="'Unidades vendidas de ' + producto.nombre"
+                      ></div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h3 class="h6 fw-bold mb-3">Stock bajo</h3>
+              @if (d.stockBajo.length === 0) {
+                <p class="text-muted small mb-0">Todos los productos tienen stock suficiente.</p>
+              } @else {
+                <ul class="list-unstyled mb-0">
+                  @for (producto of d.stockBajo; track producto.idProducto) {
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>
+                        {{ producto.nombre }}
+                        @if (producto.stock === 0) {
+                          <span class="badge bg-danger ms-1">Agotado</span>
+                        } @else {
+                          <span class="badge bg-warning text-dark ms-1">
+                            {{ producto.stock }} u.
+                          </span>
+                        }
+                      </span>
+                      <a
+                        [routerLink]="['/admin/productos', producto.idProducto, 'editar']"
+                        class="btn btn-sm btn-outline-secondary"
+                      >
+                        Reponer
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+}

@@ -33,7 +33,7 @@ describe('AdminLayout', () => {
   it('el administrador ve todas las pestañas', async () => {
     const { el, textos } = await pestanas('ADMIN');
 
-    expect(textos).toEqual(['Órdenes', 'Productos', 'Sedes', 'Personal']);
+    expect(textos).toEqual(['Resumen', 'Órdenes', 'Productos', 'Sedes', 'Personal']);
     expect(el.textContent).toContain('Administrador');
   });
 
