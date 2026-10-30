@@ -1,9 +1,54 @@
+<img
+  class="d-block w-100 h-auto"
+  src="/img/banner-marca.jpg"
+  alt="Punto Espresso Premium"
+  fetchpriority="high"
+/>
+
 <section class="bg-cafe-oscuro text-white py-5">
-  <div class="container text-center py-4">
-    <h1 class="display-4 fw-bold text-crema">Punto Espresso</h1>
-    <p class="lead mb-4">
-      Cafetería y tostaduría en Lima. Café de especialidad, frappés y bebidas frías.
+  <div class="container text-center py-3">
+    <span class="badge bg-warning text-dark mb-3">Variedades Exclusivas 2026</span>
+    <h1 class="display-5 fw-bold text-crema">Tu pausa perfecta empieza en Punto Espresso</h1>
+    <p class="lead mx-auto mb-4" style="max-width: 720px">
+      Seleccionamos artesanalmente los mejores granos de las regiones cafetaleras más altas del
+      país. Experimenta un cuerpo balanceado, un aroma intenso y un sabor excepcional en cada taza.
     </p>
-    <a routerLink="/catalogo" class="btn btn-cafe btn-lg">Ver catálogo</a>
+    <a routerLink="/catalogo" class="btn btn-cafe btn-lg">Explorar el Catálogo</a>
+  </div>
+</section>
+
+<app-carousel [diapositivas]="diapositivas" />
+
+<section class="container py-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold" style="color: var(--cafe-oscuro)">Nuestras Especialidades</h2>
+    <p class="text-muted">Explora nuestra selección artesanal de barra y granos de origen</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <article class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h3 class="h4"><i class="bi bi-cup-hot me-2 text-crema"></i>Cafetería &amp; Bebidas</h3>
+          <p class="text-muted">
+            Frappés cremosos, lattes perfectamente texturizados y extracciones de espresso intensas
+            servidas al momento por nuestros baristas.
+          </p>
+          <a routerLink="/catalogo" class="btn btn-cafe">Ver Bebidas</a>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-6">
+      <article class="card h-100 border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h3 class="h4"><i class="bi bi-bag me-2 text-crema"></i>Café en Grano o Molido</h3>
+          <p class="text-muted">
+            Líneas gourmet premium con perfiles de tueste medio y oscuro. Variedades Bourbon y
+            Geisha perfectas para tus métodos de extracción en casa.
+          </p>
+          <a routerLink="/catalogo" class="btn btn-cafe">Ver Café en Grano</a>
+        </div>
+      </article>
+    </div>
   </div>
 </section>

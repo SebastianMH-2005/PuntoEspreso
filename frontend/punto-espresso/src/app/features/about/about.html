@@ -1,0 +1,86 @@
+<section class="bg-cafe-oscuro text-white py-5">
+  <div class="container text-center py-2">
+    <h1 class="display-5 fw-bold text-crema">Sobre Punto Espresso</h1>
+    <p class="lead mb-0">Café de especialidad peruano, tostado y servido con pasión en Lima.</p>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="row align-items-center g-4 mb-5">
+    <div class="col-md-6">
+      <img
+        class="img-fluid rounded shadow-sm"
+        src="/img/nosotros-historia.jpg"
+        alt="Nuestra cafetería"
+        loading="lazy"
+      />
+    </div>
+    <div class="col-md-6">
+      <span class="badge bg-warning text-dark mb-2">Desde 2020</span>
+      <h2 class="fw-bold" style="color: var(--cafe-oscuro)">¿Cómo nació Punto Espresso?</h2>
+      <p class="text-muted">
+        Punto Espresso comenzó como un pequeño sueño de entusiastas del café limeño con el firme
+        propósito de servir una taza perfecta. Queríamos rescatar la calidez del hogar y fusionarla
+        con los granos más selectos del Perú, creando un punto de encuentro único para la comunidad.
+      </p>
+    </div>
+  </div>
+
+  <div class="row align-items-center g-4 mb-5 flex-md-row-reverse">
+    <div class="col-md-6">
+      <img
+        class="img-fluid rounded shadow-sm"
+        src="/img/nosotros-tostado.jpg"
+        alt="Tostado de café"
+        loading="lazy"
+      />
+    </div>
+    <div class="col-md-6">
+      <span class="badge bg-warning text-dark mb-2">El Proceso</span>
+      <h2 class="fw-bold" style="color: var(--cafe-oscuro)">Tostado Artesanal de Origen</h2>
+      <p class="text-muted">
+        Trabajamos mano a mano con productores de Chanchamayo, Jaén y Villa Rica. Cada grano es
+        sometido a un riguroso perfil de tueste medio que preserva sus notas florales, cítricas y
+        achocolatadas nativas. No vendemos solo café; servimos el esfuerzo de familias caficultoras
+        peruanas.
+      </p>
+    </div>
+  </div>
+
+  <h2 class="h3 fw-bold text-center mb-4" style="color: var(--cafe-oscuro)">
+    Nuestros Compromisos
+  </h2>
+  <div class="row g-4 mb-5">
+    @for (compromiso of compromisos; track compromiso.titulo) {
+      <div class="col-md-4">
+        <article class="card h-100 border-0 shadow-sm text-center">
+          <div class="card-body p-4">
+            <i class="bi {{ compromiso.icono }} display-6 text-crema"></i>
+            <h3 class="h5 mt-3">{{ compromiso.titulo }}</h3>
+            <p class="text-muted mb-0">{{ compromiso.texto }}</p>
+          </div>
+        </article>
+      </div>
+    }
+  </div>
+
+  <div class="row align-items-center g-4">
+    <div class="col-md-6">
+      <img
+        class="img-fluid rounded shadow-sm"
+        src="/img/nosotros-equipo.jpg"
+        alt="Equipo de baristas"
+        loading="lazy"
+      />
+    </div>
+    <div class="col-md-6">
+      <h2 class="fw-bold" style="color: var(--cafe-oscuro)">Cultura Barista</h2>
+      <p class="text-muted">
+        Nuestro equipo está conformado por baristas profesionales certificados que entienden el café
+        como un arte vivo. Desde el calibrado diario de la molienda hasta los trazos finos del arte
+        latte, garantizamos una experiencia multisensorial consistente en cada visita.
+      </p>
+      <a routerLink="/catalogo" class="btn btn-cafe">Ver Especialidades</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,95 @@
+<section class="bg-cafe-oscuro text-white py-5">
+  <div class="container text-center py-2">
+    <h1 class="display-6 fw-bold text-crema">¡Busca tu local más cercano!</h1>
+    <p class="lead mb-0">Escribe tu distrito para mostrarte los locales de esa zona.</p>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="input-group mb-4">
+        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+        <input
+          #caja
+          type="search"
+          class="form-control"
+          placeholder="Distrito o dirección (por ejemplo: San Isidro)"
+          aria-label="Buscar locales por distrito o dirección"
+          maxlength="60"
+          (input)="busqueda.set(caja.value)"
+        />
+      </div>
+
+      @switch (carga()) {
+        @case ('cargando') {
+          <div class="text-center py-5">
+            <div class="spinner-border text-secondary" role="status"></div>
+            <p class="mt-3 text-muted">Cargando nuestros locales…</p>
+            @if (servidorLento()) {
+              <p class="small text-muted">
+                El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+              </p>
+            }
+          </div>
+        }
+        @case ('error') {
+          <div class="alert alert-danger d-flex justify-content-between align-items-center">
+            <span>No pudimos cargar los locales. Revisa tu conexión e inténtalo otra vez.</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar()">
+              Reintentar
+            </button>
+          </div>
+        }
+        @case ('listo') {
+          @if (visibles().length === 0) {
+            <div class="alert alert-info">
+              No encontramos locales en esa zona. Prueba con otro distrito.
+            </div>
+          } @else {
+            <div class="vstack gap-3">
+              @for (sede of visibles(); track sede.idSede) {
+                <article class="card shadow-sm border-0">
+                  <div class="card-body p-4 d-flex flex-wrap justify-content-between gap-3">
+                    <div>
+                      <h2 class="h5 mb-1" style="color: var(--cafe-oscuro)">{{ sede.nombre }}</h2>
+                      <p class="mb-2">
+                        <i class="bi bi-geo-alt me-1 text-crema"></i>{{ sede.direccion }}
+                      </p>
+                      <p class="small text-muted mb-0">
+                        <i class="bi bi-clock me-1"></i>{{ sede.horarioDias }} ·
+                        {{ sede.horarioHoras }}
+                      </p>
+                    </div>
+                    <div class="align-self-center">
+                      <a
+                        [href]="urlMapa(sede)"
+                        target="_blank"
+                        rel="noopener"
+                        class="btn btn-outline-secondary btn-sm"
+                      >
+                        <i class="bi bi-map me-1"></i>Cómo llegar
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        }
+      }
+    </div>
+
+    <div class="col-lg-4">
+      <aside class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-3" style="color: var(--cafe-oscuro)">Contáctanos</h2>
+          <p class="text-muted">¿Tienes una consulta o quieres un pedido especial? Escríbenos.</p>
+          <a [href]="'mailto:' + email" class="btn btn-cafe w-100">
+            <i class="bi bi-envelope me-1"></i>{{ email }}
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

@@ -24,6 +24,24 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog').then((m) => m.Catalog),
   },
   {
+    path: 'nosotros',
+    title: 'Nosotros | Punto Espresso',
+    data: {
+      descripcion:
+        'Conoce la historia de Punto Espresso: café peruano de especialidad, tostado artesanal de origen y baristas certificados en Lima.',
+    },
+    loadComponent: () => import('./features/about/about').then((m) => m.About),
+  },
+  {
+    path: 'contacto',
+    title: 'Contacto y locales en Lima | Punto Espresso',
+    data: {
+      descripcion:
+        'Encuentra tu local Punto Espresso más cercano en Lima: direcciones, horarios y cómo llegar a nuestras cafeterías de San Miguel y San Isidro.',
+    },
+    loadComponent: () => import('./features/contact/contact').then((m) => m.Contact),
+  },
+  {
     path: 'login',
     title: 'Iniciar sesión | Punto Espresso',
     canActivate: [invitadoGuard],

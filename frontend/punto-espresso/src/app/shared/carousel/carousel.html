@@ -1,0 +1,52 @@
+@if (diapositivas().length > 0) {
+  <section
+    class="carousel slide"
+    aria-roledescription="carrusel"
+    aria-label="Destacados"
+    (mouseenter)="pausado.set(true)"
+    (mouseleave)="pausado.set(false)"
+    (focusin)="pausado.set(true)"
+    (focusout)="pausado.set(false)"
+  >
+    @if (diapositivas().length > 1) {
+      <div class="carousel-indicators">
+        @for (diapositiva of diapositivas(); track diapositiva.imagen; let i = $index) {
+          <button
+            type="button"
+            [class.active]="i === actual()"
+            [attr.aria-current]="i === actual()"
+            [attr.aria-label]="'Ir a la diapositiva ' + (i + 1)"
+            (click)="ir(i)"
+          ></button>
+        }
+      </div>
+    }
+
+    <div class="carousel-inner" [style.height]="altura()">
+      @for (diapositiva of diapositivas(); track diapositiva.imagen; let i = $index) {
+        <div class="carousel-item h-100" [class.active]="i === actual()">
+          <a [routerLink]="diapositiva.enlace" class="d-block h-100">
+            <img
+              class="d-block w-100 h-100"
+              style="object-fit: cover"
+              [src]="diapositiva.imagen"
+              [alt]="diapositiva.alt"
+              loading="lazy"
+            />
+          </a>
+        </div>
+      }
+    </div>
+
+    @if (diapositivas().length > 1) {
+      <button class="carousel-control-prev" type="button" (click)="anterior()">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button class="carousel-control-next" type="button" (click)="siguiente()">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+    }
+  </section>
+}
