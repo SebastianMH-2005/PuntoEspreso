@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /checkout
-Disallow: /admin
-Disallow: /registro
-
-Sitemap: https://puntoespreso.onrender.com/sitemap.xml

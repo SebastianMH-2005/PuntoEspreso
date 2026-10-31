@@ -52,13 +52,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Páginas públicas (Thymeleaf) y recursos estáticos
-                        // /admin también queda aquí: la página carga para cualquiera, pero se
-                        // vacía por JavaScript si no hay un token de ADMIN/OPERADOR en localStorage.
-                        // La protección real está en /api/admin/**, más abajo.
-                        .requestMatchers("/", "/index", "/catalogo", "/contacto", "/nosotros", "/login", "/registro",
-                                "/checkout", "/mis-pedidos", "/carrito", "/admin", "/error", "/css/**", "/js/**",
-                                "/img/**", "/robots.txt", "/sitemap.xml", "/favicon.ico")
+                        // Direcciones antiguas del sitio: solo redirigen al frontend (RedireccionController)
+                        .requestMatchers("/", "/index", "/catalogo", "/contacto", "/ubicaciones", "/nosotros",
+                                "/login", "/registro", "/checkout", "/mis-pedidos", "/carrito", "/admin", "/error")
                         .permitAll()
                         // API pública de lectura + autenticación
                         .requestMatchers("/api/auth/**", "/api/productos/**", "/api/sedes/**", "/api/categorias/**")
