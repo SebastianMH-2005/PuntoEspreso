@@ -1,5 +1,6 @@
 {
   "properties": [
+    { "name": "app.frontend-url", "type": "java.lang.String", "description": "Dirección del frontend (Vercel) a la que redirigen las páginas antiguas. Sin barra final." },
     { "name": "app.cors.allowed-origins", "type": "java.lang.String", "description": "Orígenes permitidos para /api/** (separados por coma)." },
     { "name": "app.jwt.secret", "type": "java.lang.String", "description": "Secreto HMAC para firmar los JWT (mínimo 32 caracteres)." },
     { "name": "app.jwt.expiration-ms", "type": "java.lang.Long", "description": "Duración del token JWT en milisegundos." },

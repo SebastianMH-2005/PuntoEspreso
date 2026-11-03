@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-// annotations = RestController.class limita este manejador a los controladores REST.
-// Así, si algo falla en las vistas Thymeleaf, se sigue mostrando una página de error normal.
+// annotations = RestController.class limita este manejador a los controladores REST (/api/**).
 @RestControllerAdvice(annotations = RestController.class)
 public class ApiExceptionHandler {
 
