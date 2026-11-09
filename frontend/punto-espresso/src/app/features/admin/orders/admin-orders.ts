@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OrdenAdmin } from '../../../core/models/admin.models';
 import { EstadoPedido } from '../../../core/models/pedido.models';
@@ -30,7 +31,7 @@ const INTERVALO_REFRESCO_MS = 20_000;
 
 @Component({
   selector: 'app-admin-orders',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, ReactiveFormsModule],
   templateUrl: './admin-orders.html',
 })
 export class AdminOrders implements OnInit {
@@ -47,7 +48,12 @@ export class AdminOrders implements OnInit {
   protected readonly actualizando = signal(false);
   protected readonly ordenes = signal<OrdenAdmin[]>([]);
   protected readonly filtroEstado = signal<EstadoPedido | ''>('');
-  protected readonly busqueda = signal('');
+  protected readonly busquedaControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(60)],
+  });
+  protected readonly busqueda = toSignal(this.busquedaControl.valueChanges, { initialValue: '' });
+  protected readonly estadoControl = new FormControl('', { nonNullable: true });
   protected readonly procesando = signal<number | null>(null);
   protected readonly mensaje = signal<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
 
@@ -71,6 +77,10 @@ export class AdminOrders implements OnInit {
 
   ngOnInit(): void {
     this.cargar('inicial');
+    // Al elegir otro estado en la lista, se vuelven a pedir las órdenes de ese estado
+    this.estadoControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((valor) => this.cambiarFiltro(valor));
     // Las órdenes nuevas aparecen solas mientras el panel está abierto
     const intervalo = setInterval(() => this.cargar('auto'), INTERVALO_REFRESCO_MS);
     this.destroyRef.onDestroy(() => {

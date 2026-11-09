@@ -11,13 +11,12 @@
       <div class="input-group mb-4">
         <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
         <input
-          #caja
+          [formControl]="busquedaControl"
           type="search"
           class="form-control"
           placeholder="Distrito o dirección (por ejemplo: San Isidro)"
           aria-label="Buscar locales por distrito o dirección"
           maxlength="60"
-          (input)="busqueda.set(caja.value)"
         />
       </div>
 

@@ -92,6 +92,22 @@ describe('Cart', () => {
     expect(el.textContent).toContain('Tu carrito está vacío');
   });
 
+  it('muestra las instrucciones guardadas y las vuelve a guardar al dejar de escribir', async () => {
+    guardarCarrito([{ ...item(catalogo[0], 1), instrucciones: 'bien caliente' }]);
+    const { el } = await crear();
+    const nota = el.querySelector(
+      'input[aria-label="Instrucciones para este producto"]',
+    ) as HTMLInputElement;
+    expect(nota.value).toBe('bien caliente');
+
+    nota.value = 'sin azúcar';
+    nota.dispatchEvent(new Event('input'));
+    await new Promise((resolver) => setTimeout(resolver, 350));
+
+    const guardado = JSON.parse(localStorage.getItem('carrito') ?? '[]');
+    expect(guardado[0].instrucciones).toBe('sin azúcar');
+  });
+
   it('avisa al llegar al límite de stock', async () => {
     guardarCarrito([item(catalogo[1], 3)]);
     const { fixture, el } = await crear();

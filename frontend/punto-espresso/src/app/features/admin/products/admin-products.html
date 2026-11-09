@@ -45,10 +45,9 @@
   @case ('listo') {
     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
       <select
-        #selector
+        [formControl]="categoriaControl"
         class="form-select form-select-sm w-auto"
         aria-label="Filtrar por categoría"
-        (change)="categoriaActiva.set(selector.value === '' ? null : +selector.value)"
       >
         <option value="">Todas las categorías</option>
         @for (categoria of categorias(); track categoria.idCategoria) {
@@ -56,21 +55,19 @@
         }
       </select>
       <input
-        #caja
+        [formControl]="busquedaControl"
         type="search"
         class="form-control form-control-sm w-auto"
         placeholder="Buscar producto"
         aria-label="Buscar productos"
         maxlength="60"
-        (input)="busqueda.set(caja.value)"
       />
       <div class="form-check ms-1">
         <input
-          #bajo
+          [formControl]="stockBajoControl"
           id="soloStockBajo"
           type="checkbox"
           class="form-check-input"
-          (change)="soloStockBajo.set(bajo.checked)"
         />
         <label for="soloStockBajo" class="form-check-label small">
           Stock bajo (hasta {{ stockBajo }})

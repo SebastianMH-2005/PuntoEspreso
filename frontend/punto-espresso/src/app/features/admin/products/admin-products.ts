@@ -1,9 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import { Categoria, Producto } from '../../../core/models/producto.models';
 import { AdminProductoService } from '../../../core/services/admin-producto.service';
 import { ProductoService } from '../../../core/services/producto.service';
@@ -16,7 +17,7 @@ const STOCK_BAJO = 5;
 
 @Component({
   selector: 'app-admin-products',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, CurrencyPipe, ReactiveFormsModule],
   templateUrl: './admin-products.html',
 })
 export class AdminProducts implements OnInit {
@@ -32,9 +33,20 @@ export class AdminProducts implements OnInit {
   protected readonly servidorLento = signal(false);
   protected readonly productos = signal<Producto[]>([]);
   protected readonly categorias = signal<Categoria[]>([]);
-  protected readonly categoriaActiva = signal<number | null>(null);
-  protected readonly busqueda = signal('');
-  protected readonly soloStockBajo = signal(false);
+  protected readonly categoriaControl = new FormControl('', { nonNullable: true });
+  protected readonly categoriaActiva = toSignal(
+    this.categoriaControl.valueChanges.pipe(map((valor) => (valor === '' ? null : Number(valor)))),
+    { initialValue: null as number | null },
+  );
+  protected readonly busquedaControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(60)],
+  });
+  protected readonly busqueda = toSignal(this.busquedaControl.valueChanges, { initialValue: '' });
+  protected readonly stockBajoControl = new FormControl(false, { nonNullable: true });
+  protected readonly soloStockBajo = toSignal(this.stockBajoControl.valueChanges, {
+    initialValue: false,
+  });
   protected readonly procesando = signal<number | null>(null);
   protected readonly mensaje = signal<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
 

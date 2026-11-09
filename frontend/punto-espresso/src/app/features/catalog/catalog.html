@@ -37,13 +37,12 @@
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-search"></i></span>
         <input
-          #caja
+          [formControl]="busquedaControl"
           type="search"
           class="form-control"
           placeholder="Buscar café, frappé, geisha…"
           aria-label="Buscar productos"
           maxlength="60"
-          (input)="busqueda.set(caja.value)"
         />
       </div>
     </div>

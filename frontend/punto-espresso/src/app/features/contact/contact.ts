@@ -1,5 +1,6 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Sede } from '../../core/models/sede.models';
 import { SedeService } from '../../core/services/sede.service';
 import { normalizarTexto } from '../../core/utils/texto';
@@ -8,6 +9,7 @@ type Carga = 'cargando' | 'listo' | 'error';
 
 @Component({
   selector: 'app-contact',
+  imports: [ReactiveFormsModule],
   templateUrl: './contact.html',
 })
 export class Contact implements OnInit {
@@ -18,7 +20,11 @@ export class Contact implements OnInit {
   protected readonly carga = signal<Carga>('cargando');
   protected readonly servidorLento = signal(false);
   protected readonly sedes = signal<Sede[]>([]);
-  protected readonly busqueda = signal('');
+  protected readonly busquedaControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(60)],
+  });
+  protected readonly busqueda = toSignal(this.busquedaControl.valueChanges, { initialValue: '' });
 
   protected readonly visibles = computed(() => {
     const texto = normalizarTexto(this.busqueda().trim());

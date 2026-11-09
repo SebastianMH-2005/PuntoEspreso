@@ -39,10 +39,9 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
       <div class="d-flex flex-wrap gap-2">
         <select
-          #selector
+          [formControl]="estadoControl"
           class="form-select form-select-sm w-auto"
           aria-label="Filtrar por estado"
-          (change)="cambiarFiltro(selector.value)"
         >
           <option value="">Todos los estados</option>
           @for (opcion of opcionesEstado; track opcion.valor) {
@@ -50,13 +49,12 @@
           }
         </select>
         <input
-          #caja
+          [formControl]="busquedaControl"
           type="search"
           class="form-control form-control-sm w-auto"
           placeholder="Buscar por código o cliente"
           aria-label="Buscar órdenes"
           maxlength="60"
-          (input)="busqueda.set(caja.value)"
         />
       </div>
       <div class="d-flex align-items-center gap-2">

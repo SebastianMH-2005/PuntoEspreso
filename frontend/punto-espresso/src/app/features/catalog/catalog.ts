@@ -1,5 +1,6 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { Categoria, Producto } from '../../core/models/producto.models';
 import { CartService } from '../../core/services/cart.service';
@@ -17,7 +18,7 @@ const normalizar = (texto: string): string =>
 
 @Component({
   selector: 'app-catalog',
-  imports: [ProductCard],
+  imports: [ProductCard, ReactiveFormsModule],
   templateUrl: './catalog.html',
 })
 export class Catalog implements OnInit {
@@ -30,7 +31,11 @@ export class Catalog implements OnInit {
   protected readonly productos = signal<Producto[]>([]);
   protected readonly categorias = signal<Categoria[]>([]);
   protected readonly categoriaActiva = signal<number | null>(null);
-  protected readonly busqueda = signal('');
+  protected readonly busquedaControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(60)],
+  });
+  protected readonly busqueda = toSignal(this.busquedaControl.valueChanges, { initialValue: '' });
   protected readonly aviso = signal<string | null>(null);
 
   protected readonly visibles = computed(() => {

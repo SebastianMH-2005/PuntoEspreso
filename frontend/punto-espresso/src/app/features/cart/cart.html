@@ -97,14 +97,12 @@
                   </div>
                   <div class="col-sm-5">
                     <input
-                      #nota
+                      [formControl]="notaDe(item)"
                       type="text"
                       class="form-control form-control-sm"
                       maxlength="200"
                       placeholder="Instrucciones (opcional)"
                       aria-label="Instrucciones para este producto"
-                      [value]="item.instrucciones ?? ''"
-                      (change)="cart.actualizarInstrucciones(item.idProducto, nota.value)"
                     />
                   </div>
                   <div class="col-sm-3 text-sm-end fw-bold">
