@@ -5,16 +5,11 @@ import { forkJoin } from 'rxjs';
 import { Categoria, Producto } from '../../core/models/producto.models';
 import { CartService } from '../../core/services/cart.service';
 import { ProductoService } from '../../core/services/producto.service';
+import { normalizarTexto } from '../../core/utils/texto';
 import { ProductCard } from '../../shared/product-card/product-card';
 
 type Estado = 'cargando' | 'listo' | 'error';
 
-// Para que "cafe" encuentre "Café": se comparan los textos sin tildes y en minúsculas
-const normalizar = (texto: string): string =>
-  texto
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase();
 
 @Component({
   selector: 'app-catalog',
@@ -39,12 +34,12 @@ export class Catalog implements OnInit {
   protected readonly aviso = signal<string | null>(null);
 
   protected readonly visibles = computed(() => {
-    const texto = normalizar(this.busqueda().trim());
+    const texto = normalizarTexto(this.busqueda().trim());
     const categoria = this.categoriaActiva();
     return this.productos().filter(
       (p) =>
         (categoria === null || p.categoria?.idCategoria === categoria) &&
-        (texto === '' || normalizar(`${p.nombre} ${p.descripcion}`).includes(texto)),
+        (texto === '' || normalizarTexto(`${p.nombre} ${p.descripcion}`).includes(texto)),
     );
   });
 

@@ -2,7 +2,6 @@ package com.puntoespresso.puntoespresso.pedido;
 
 import com.puntoespresso.puntoespresso.auth.UsuarioAutenticado;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,14 +19,8 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@Valid @RequestBody PedidoRequest request,
+    public PedidoResponse crear(@Valid @RequestBody PedidoRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        try {
-            return ResponseEntity.ok(pedidoService.crear(request, usuario));
-        } catch (RolNoPermitidoException e) {
-            return ResponseEntity.status(403).body(e.getMessage());
-        } catch (StockInsuficienteException e) {
-            return ResponseEntity.status(409).body(e.getMessage());
-        }
+        return pedidoService.crear(request, usuario);
     }
 }

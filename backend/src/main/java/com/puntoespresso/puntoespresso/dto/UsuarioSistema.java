@@ -1,6 +1,7 @@
 package com.puntoespresso.puntoespresso.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -17,6 +18,7 @@ public class UsuarioSistema {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idUsuarioSistema;
     private String nombre;
+    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String contrasena;

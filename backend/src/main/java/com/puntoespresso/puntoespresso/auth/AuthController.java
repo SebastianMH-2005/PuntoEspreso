@@ -1,5 +1,6 @@
 package com.puntoespresso.puntoespresso.auth;
 
+import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,13 +29,13 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<String> registro(@Valid @RequestBody RegistroClienteRequest request) {
+    public ResponseEntity<Void> registro(@Valid @RequestBody RegistroClienteRequest request) {
         if (authService.emailYaRegistrado(request.email())) {
-            return ResponseEntity.status(409).body("Ya existe una cuenta con ese email");
+            throw new ConflictoException("Ya existe una cuenta con ese email");
         }
 
         if (authService.dniYaRegistrado(request.dni())) {
-            return ResponseEntity.status(409).body("Ya existe una cuenta con ese DNI");
+            throw new ConflictoException("Ya existe una cuenta con ese DNI");
         }
 
         authService.registrarCliente(request);

@@ -3,7 +3,10 @@ package com.puntoespresso.puntoespresso.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import com.puntoespresso.puntoespresso.pedido.RolNoPermitidoException;
+import com.puntoespresso.puntoespresso.pedido.StockInsuficienteException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -64,6 +67,27 @@ public class ApiExceptionHandler {
         ErrorResponse error = new ErrorResponse(estado.value(), estado.getReasonPhrase(), mensaje,
                 request.getRequestURI());
         return ResponseEntity.status(estado).body(error);
+    }
+
+      @ExceptionHandler(RolNoPermitidoException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> manejarRolNoPermitido(RolNoPermitidoException ex,
+            HttpServletRequest request) {
+        return construir(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(StockInsuficienteException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> manejarStockInsuficiente(StockInsuficienteException ex,
+            HttpServletRequest request) {
+        return construir(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> manejarTipoNoSoportado(HttpMediaTypeNotSupportedException ex,
+            HttpServletRequest request) {
+        return construir(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "El tipo de contenido no es compatible", request);
     }
 
     @ExceptionHandler(ConflictoException.class)

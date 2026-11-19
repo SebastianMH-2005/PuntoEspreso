@@ -1,5 +1,6 @@
 package com.puntoespresso.puntoespresso.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ public class Producto {
     @JoinColumn(name = "id_categoria")
     private Categoria categoria;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_usuario_sistema")
     private UsuarioSistema usuarioSistema;
@@ -106,21 +108,4 @@ public class Producto {
         this.imagen = imagen;
     }
 
-    public boolean isDisponible() {
-        return this.stock > 0;
-    }
-
-    public double getPrecioInt() {
-        return (int) precio;
-    }
-
-    public String getHeaderClass() {
-        return categoria != null && "Café en Grano".equals(categoria.getNombre())
-                ? "bg-dark text-warning"
-                : "bg-warning text-dark";
-    }
-
-    public String getStockBadgeClass() {
-        return isDisponible() ? "text-success" : "text-danger fw-bold";
-    }
 }

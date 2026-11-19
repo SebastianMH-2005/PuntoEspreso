@@ -12,15 +12,22 @@ import com.puntoespresso.puntoespresso.repository.OrdenDetalleRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class OrdenService {
 
     private static final String PENDIENTE = "PENDIENTE";
     private static final String CANCELADO = "CANCELADO";
-    private static final String ENTREGADO = "ENTREGADO";
+        private static final String ENTREGADO = "ENTREGADO";
+
+    // Flujo permitido; cancelar solo mientras la orden siga en marcha (igual que el panel)
+    private static final Map<String, Set<String>> TRANSICIONES = Map.of(
+            PENDIENTE, Set.of("EN_PROCESO", CANCELADO),
+            "EN_PROCESO", Set.of("LISTO", CANCELADO),
+            "LISTO", Set.of(ENTREGADO, CANCELADO));
 
     private final OrdenRepository ordenRepository;
     private final OrdenDetalleRepository ordenDetalleRepository;
@@ -70,6 +77,9 @@ public class OrdenService {
         String actual = orden.getEstado();
         if (ENTREGADO.equals(actual) || CANCELADO.equals(actual)) {
             throw new ConflictoException("La orden está en estado " + actual + " y ya no se puede modificar");
+        }
+        if (!TRANSICIONES.getOrDefault(String.valueOf(actual), Set.of()).contains(nuevoEstado)) {
+            throw new ConflictoException("No se puede pasar una orden de " + actual + " a " + nuevoEstado);
         }
         if (CANCELADO.equals(nuevoEstado)) {
             reponerStock(orden);
