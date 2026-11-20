@@ -1,5 +1,6 @@
 package com.puntoespresso.puntoespresso.dto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,14 +40,15 @@ public class Orden {
     private String metodoPago;
     private String estado;
     private String codigoUnico;
-    private double total;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal total;
     private LocalDateTime fechaCreacion;
 
     public Orden() {
     }
 
     public Orden(Cliente cliente, Direccion direccion, Sede sede, String tipoEntrega, String metodoPago, String estado,
-            String codigoUnico, double total) {
+            String codigoUnico, BigDecimal total) {
         this.cliente = cliente;
         this.direccion = direccion;
         this.sede = sede;
@@ -134,11 +136,11 @@ public class Orden {
         this.codigoUnico = codigoUnico;
     }
 
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 

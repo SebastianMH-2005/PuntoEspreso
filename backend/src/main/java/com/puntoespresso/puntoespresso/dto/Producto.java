@@ -1,6 +1,7 @@
 package com.puntoespresso.puntoespresso.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "productos")
@@ -27,7 +29,8 @@ public class Producto {
     private UsuarioSistema usuarioSistema;
 
     private String nombre;
-    private double precio;
+        @Column(precision = 10, scale = 2)
+    private BigDecimal precio;
     private String descripcion;
     private int stock;
     private String imagen;
@@ -35,7 +38,7 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Categoria categoria, String nombre, double precio, String descripcion, int stock, String imagen) {
+    public Producto(Categoria categoria, String nombre, BigDecimal precio, String descripcion, int stock, String imagen) {
         this.categoria = categoria;
         this.nombre = nombre;
         this.precio = precio;
@@ -76,11 +79,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public double getPrecio() {
+     public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
 

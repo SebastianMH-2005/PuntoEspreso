@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -57,25 +57,25 @@ public class DataSeeder implements CommandLineRunner {
 
         if (productoRepository.count() == 0) {
             productoRepository.saveAll(List.of(
-                    new Producto(bebidas, "Frappé Mocha", 14.50, "Espresso, chocolate premium, hielo y crema batida.",
+                    new Producto(bebidas, "Frappé Mocha", new BigDecimal("14.50"), "Espresso, chocolate premium, hielo y crema batida.",
                             12, "frappe-mocha.jpg"),
-                    new Producto(cafeEnGrano, "Café Geisha Grano", 45.00,
+                    new Producto(cafeEnGrano, "Café Geisha Grano", new BigDecimal("45.00"),
                             "Café premium de origen con notas florales pronunciadas.", 5, "cafe-geisha.jpg"),
-                    new Producto(bebidas, "Café Americano", 8.50,
+                    new Producto(bebidas, "Café Americano", new BigDecimal("8.50"),
                             "Espresso diluido en agua caliente, sabor limpio y equilibrado.", 20, "cafe-americano.jpg"),
-                    new Producto(bebidas, "Cappuccino", 11.00,
+                    new Producto(bebidas, "Cappuccino", new BigDecimal("11.00"),
                             "Espresso con leche vaporizada y espuma cremosa en partes iguales.", 18, "cappuccino.jpg"),
-                    new Producto(bebidas, "Café Latte", 12.00,
+                    new Producto(bebidas, "Café Latte", new BigDecimal("12.00"),
                             "Espresso suave con abundante leche vaporizada y poca espuma.", 16, "cafe-latte.jpg"),
-                    new Producto(bebidas, "Frappé Vainilla", 14.00,
+                    new Producto(bebidas, "Frappé Vainilla", new BigDecimal("14.00"),
                             "Base de café, sirope de vainilla, hielo y crema batida.", 14, "frappe-vainilla.jpg"),
-                    new Producto(bebidas, "Cold Brew", 13.50,
+                    new Producto(bebidas, "Cold Brew", new BigDecimal("13.50"),
                             "Café de extracción en frío durante 12 horas, suave y concentrado.", 10, "cold-brew.jpg"),
-                    new Producto(bebidas, "Té Matcha Frío", 12.50,
+                    new Producto(bebidas, "Té Matcha Frío", new BigDecimal("12.50"),
                             "Té matcha premium japonés con leche de avena y hielo.", 15, "te-matcha-frio.jpg"),
-                    new Producto(bebidas, "Chocolate Frío", 10.00,
+                    new Producto(bebidas, "Chocolate Frío", new BigDecimal("10.00"),
                             "Chocolate oscuro belga con leche entera y hielo triturado.", 20, "chocolate-frio.jpg"),
-                    new Producto(bebidas, "Mocaccino", 13.00,
+                    new Producto(bebidas, "Mocaccino", new BigDecimal("13.00"),
                             "Espresso con chocolate, leche vaporizada y toque de canela.", 12, "mocaccino.jpg")));
         }
 

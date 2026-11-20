@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,8 +68,10 @@ public class DashboardService {
         }
         VentaDia ultimoDia = ventasPorDia.get(ventasPorDia.size() - 1);
 
-        double ventasPeriodo = sumar(vigentes);
-        double ticketPromedio = vigentes.isEmpty() ? 0 : redondear(ventasPeriodo / vigentes.size());
+        BigDecimal ventasPeriodo = sumar(vigentes);
+                BigDecimal ticketPromedio = vigentes.isEmpty()
+                ? BigDecimal.ZERO
+                : ventasPeriodo.divide(BigDecimal.valueOf(vigentes.size()), 2, RoundingMode.HALF_UP);
 
         return new DashboardResponse(
                 dias,
@@ -94,8 +98,8 @@ public class DashboardService {
                         detalles.get(0).getProducto().getNombre(),
                         detalles.stream().mapToLong(OrdenDetalle::getCantidad).sum(),
                         redondear(detalles.stream()
-                                .mapToDouble(d -> d.getCantidad() * d.getPrecioUnitario())
-                                .sum())))
+                                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
+                                .reduce(BigDecimal.ZERO, BigDecimal::add))))
                 .sorted(Comparator.comparingLong(ProductoVendido::unidades).reversed()
                         .thenComparing(ProductoVendido::nombre))
                 .limit(TOP_PRODUCTOS)
@@ -109,11 +113,11 @@ public class DashboardService {
                 .toList();
     }
 
-    private double sumar(List<Orden> ordenes) {
-        return redondear(ordenes.stream().mapToDouble(Orden::getTotal).sum());
+   private BigDecimal sumar(List<Orden> ordenes) {
+                return redondear(ordenes.stream().map(Orden::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
-    private double redondear(double valor) {
-        return Math.round(valor * 100.0) / 100.0;
+    private BigDecimal redondear(BigDecimal valor) {
+        return valor.setScale(2, RoundingMode.HALF_UP);
     }
 }

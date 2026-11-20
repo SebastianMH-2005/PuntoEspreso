@@ -16,6 +16,8 @@ import com.puntoespresso.puntoespresso.service.ProductoService;
 import com.puntoespresso.puntoespresso.service.SedeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +74,10 @@ public class PedidoService {
         }
 
         String codigoUnico = "PE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        Orden orden = new Orden(cliente, null, sede, "RECOJO", request.metodoPago(), "PENDIENTE", codigoUnico, 0);
+        Orden orden = new Orden(cliente, null, sede, "RECOJO", request.metodoPago(), "PENDIENTE", codigoUnico, BigDecimal.ZERO);
         ordenRepository.save(orden);
 
-        double total = 0;
+        BigDecimal total = BigDecimal.ZERO;
         List<DetalleResponse> detalles = new ArrayList<>();
         for (ItemPedidoRequest linea : lineas.values()) {
             Producto producto = productoService.buscarPorId(linea.idProducto())
@@ -89,11 +91,11 @@ public class PedidoService {
 
             ordenDetalleRepository.save(new OrdenDetalle(
                     orden, producto, linea.cantidad(), producto.getPrecio(), linea.instrucciones()));
-            total += producto.getPrecio() * linea.cantidad();
+            total = total.add(producto.getPrecio().multiply(BigDecimal.valueOf(linea.cantidad())));
             detalles.add(new DetalleResponse(producto.getNombre(), linea.cantidad(), producto.getPrecio()));
         }
 
-        total = Math.round(total * 100.0) / 100.0;
+        total = total.setScale(2, RoundingMode.HALF_UP);
         orden.setTotal(total);
         ordenRepository.save(orden);
 

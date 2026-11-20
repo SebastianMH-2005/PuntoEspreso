@@ -23,9 +23,9 @@ jobs:
         working-directory: backend
         run: chmod +x gradlew
 
-      - name: Compilar (sin tests, requieren base de datos)
+      - name: Compilar y ejecutar las pruebas
         working-directory: backend
-        run: ./gradlew build -x test
+        run: ./gradlew build
 
   frontend:
     runs-on: ubuntu-latest

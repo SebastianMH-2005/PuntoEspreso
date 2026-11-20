@@ -1,9 +1,10 @@
 package com.puntoespresso.puntoespresso.admin;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrdenAdminResponse(Integer idOrden, String clienteNombre, String clienteEmail, String tipoEntrega,
-        String metodoPago, String estado, String codigoUnico, double total,
+        String metodoPago, String estado, String codigoUnico, BigDecimal total,
         LocalDateTime fechaCreacion, String sedeNombre, List<DetalleResponse> detalles) {
 }

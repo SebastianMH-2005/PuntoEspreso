@@ -1,15 +1,16 @@
 package com.puntoespresso.puntoespresso.admin;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public record DashboardResponse(
         int dias,
         int pedidosHoy,
-        double ventasHoy,
+       BigDecimal ventasHoy,
         int pedidosPeriodo,
-        double ventasPeriodo,
-        double ticketPromedio,
+        BigDecimal ventasPeriodo,
+        BigDecimal ticketPromedio,
         int canceladosPeriodo,
         long pendientes,
         long enProceso,
@@ -18,10 +19,10 @@ public record DashboardResponse(
         List<ProductoVendido> masVendidos,
         List<ProductoStockBajo> stockBajo) {
 
-    public record VentaDia(LocalDate fecha, int pedidos, double total) {
+    public record VentaDia(LocalDate fecha, int pedidos, BigDecimal total) {
     }
 
-    public record ProductoVendido(String nombre, long unidades, double ingresos) {
+    public record ProductoVendido(String nombre, long unidades, BigDecimal ingresos) {
     }
 
     public record ProductoStockBajo(Integer idProducto, String nombre, int stock) {
