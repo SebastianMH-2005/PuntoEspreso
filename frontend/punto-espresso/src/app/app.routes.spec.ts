@@ -53,7 +53,9 @@ describe('rutas protegidas', () => {
     const { harness, http, url } = await crear();
 
     await harness.navigateByUrl('/admin/ordenes');
-    http.expectOne((r) => r.url === URL_ORDENES).flush([]);
+        http
+      .expectOne((r) => r.url === URL_ORDENES)
+      .flush({ contenido: [], pagina: 0, tamano: 20, totalElementos: 0, totalPaginas: 0, pendientes: 0 });
     expect(url()).toBe('/admin/ordenes');
 
     await harness.navigateByUrl('/admin/productos');

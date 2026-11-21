@@ -110,6 +110,18 @@ class SeguridadApiTest {
     }
 
     @Test
+        void elListadoDeOrdenesEstaPaginado() throws Exception {
+        String token = bearer(ADMIN_EMAIL, Rol.ADMIN);
+
+        MvcResult resultado = mvc.perform(get("/api/admin/ordenes?page=0&size=5")
+                .header("Authorization", token)).andReturn();
+
+        assertThat(resultado.getResponse().getStatus()).isEqualTo(200);
+        assertThat(resultado.getResponse().getContentAsString())
+                .contains("\"contenido\"", "\"totalPaginas\"", "\"pendientes\"");
+    }
+
+    @Test
     void soloLosClientesPuedenUsarLosEndpointsDePedidos() throws Exception {
         String token = bearer(ADMIN_EMAIL, Rol.ADMIN);
 

@@ -49,6 +49,16 @@ export interface OperadorRequest {
   contrasena: string;
 }
 
+/** Una página del listado de órdenes, con el total de órdenes pendientes de todo el sistema. */
+export interface PaginaOrdenes {
+  contenido: OrdenAdmin[];
+  pagina: number; // empieza en 0
+  tamano: number;
+  totalElementos: number;
+  totalPaginas: number;
+  pendientes: number;
+}
+
 export interface OrdenAdmin {
   idOrden: number;
   clienteNombre: string;

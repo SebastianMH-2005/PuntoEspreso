@@ -1,18 +1,18 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OrdenAdmin } from '../../../core/models/admin.models';
 import { EstadoPedido } from '../../../core/models/pedido.models';
-import { AdminOrdenService } from '../../../core/services/admin-orden.service';
+import { AdminOrdenService, FiltroOrdenes } from '../../../core/services/admin-orden.service';
 import {
   ESTADOS_ACTIVOS,
   ESTADOS_PEDIDO,
   TODOS_LOS_ESTADOS,
 } from '../../../core/utils/estado-pedido';
 import { mensajeDeError } from '../../../core/utils/mensaje-error';
-import { normalizarTexto } from '../../../core/utils/texto';
+
 
 type Carga = 'cargando' | 'listo' | 'error';
 type Modo = 'inicial' | 'manual' | 'auto';
@@ -52,25 +52,16 @@ export class AdminOrders implements OnInit {
     nonNullable: true,
     validators: [Validators.maxLength(60)],
   });
-  protected readonly busqueda = toSignal(this.busquedaControl.valueChanges, { initialValue: '' });
+    // Texto ya aplicado en el servidor: se busca al pulsar Buscar o Enter, no en cada tecla
+  protected readonly busquedaActiva = signal('');
+  protected readonly pagina = signal(0);
+  protected readonly totalPaginas = signal(0);
+  protected readonly totalElementos = signal(0);
+  protected readonly porAtender = signal(0);
   protected readonly estadoControl = new FormControl('', { nonNullable: true });
   protected readonly procesando = signal<number | null>(null);
   protected readonly mensaje = signal<{ tipo: 'exito' | 'error'; texto: string } | null>(null);
 
-  protected readonly visibles = computed(() => {
-    const texto = normalizarTexto(this.busqueda().trim());
-    if (texto === '') {
-      return this.ordenes();
-    }
-    return this.ordenes().filter((orden) =>
-      normalizarTexto(`${orden.codigoUnico} ${orden.clienteNombre} ${orden.clienteEmail}`).includes(
-        texto,
-      ),
-    );
-  });
-  protected readonly porAtender = computed(
-    () => this.ordenes().filter((orden) => orden.estado === 'PENDIENTE').length,
-  );
 
   private peticion?: Subscription;
   private temporizadorLento?: ReturnType<typeof setTimeout>;
@@ -103,11 +94,21 @@ export class AdminOrders implements OnInit {
       this.actualizando.set(true);
     }
 
-    this.peticion = this.servicio.listar(this.filtroEstado() || undefined).subscribe({
-      next: (ordenes) => {
+    this.peticion = this.servicio.listar(this.filtrosActuales()).subscribe({
+      next: (respuesta) => {
         clearTimeout(this.temporizadorLento);
         this.actualizando.set(false);
-        this.ordenes.set(ordenes);
+                // Si la página pedida ya no existe (por ejemplo, se vaciaron las últimas), se retrocede
+        if (respuesta.contenido.length === 0 && respuesta.totalPaginas > 0 && this.pagina() > 0) {
+          this.pagina.set(respuesta.totalPaginas - 1);
+          this.cargar('manual');
+          return;
+        }
+        this.ordenes.set(respuesta.contenido);
+        this.pagina.set(respuesta.pagina);
+        this.totalPaginas.set(respuesta.totalPaginas);
+        this.totalElementos.set(respuesta.totalElementos);
+        this.porAtender.set(respuesta.pendientes);
         this.carga.set('listo');
       },
       error: (fallo: unknown) => {
@@ -125,8 +126,36 @@ export class AdminOrders implements OnInit {
     });
   }
 
+    protected buscar(): void {
+    this.busquedaActiva.set(this.busquedaControl.value.trim());
+    this.pagina.set(0);
+    this.cargar('manual');
+  }
+
+  protected limpiarBusqueda(): void {
+    this.busquedaControl.setValue('');
+    this.buscar();
+  }
+
+  protected irAPagina(pagina: number): void {
+    if (pagina < 0 || pagina >= this.totalPaginas()) {
+      return;
+    }
+    this.pagina.set(pagina);
+    this.cargar('manual');
+  }
+
+  private filtrosActuales(): FiltroOrdenes {
+    return {
+      estado: this.filtroEstado() || undefined,
+      busqueda: this.busquedaActiva() || undefined,
+      pagina: this.pagina(),
+    };
+  }
+
   protected cambiarFiltro(valor: string): void {
-    this.filtroEstado.set(TODOS_LOS_ESTADOS.find((estado) => estado === valor) ?? '');
+        this.filtroEstado.set(TODOS_LOS_ESTADOS.find((estado) => estado === valor) ?? '');
+    this.pagina.set(0);
     this.cargar('manual');
   }
 

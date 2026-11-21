@@ -55,7 +55,16 @@
           placeholder="Buscar por código o cliente"
           aria-label="Buscar órdenes"
           maxlength="60"
+          (keyup.enter)="buscar()"
         />
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="buscar()">
+          <i class="bi bi-search me-1"></i>Buscar
+        </button>
+        @if (busquedaActiva() !== '') {
+          <button type="button" class="btn btn-link btn-sm" (click)="limpiarBusqueda()">
+            Quitar búsqueda
+          </button>
+        }
       </div>
       <div class="d-flex align-items-center gap-2">
         @if (filtroEstado() === '' && porAtender() > 0) {
@@ -73,7 +82,7 @@
       </div>
     </div>
 
-    @if (visibles().length === 0) {
+    @if (ordenes().length === 0) {
       <div class="alert alert-info">No hay órdenes que coincidan con el filtro.</div>
     } @else {
       <div class="table-responsive">
@@ -90,7 +99,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (orden of visibles(); track orden.idOrden) {
+            @for (orden of ordenes(); track orden.idOrden) {
               <tr>
                 <td>
                   <span class="badge bg-dark text-warning font-monospace">
@@ -142,6 +151,35 @@
             }
           </tbody>
         </table>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+        <span class="small text-muted">
+          {{ totalElementos() }} {{ totalElementos() === 1 ? 'orden' : 'órdenes' }}
+          @if (totalPaginas() > 1) {
+            · Página {{ pagina() + 1 }} de {{ totalPaginas() }}
+          }
+        </span>
+        @if (totalPaginas() > 1) {
+          <nav class="btn-group" aria-label="Paginación de órdenes">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              [disabled]="pagina() === 0 || actualizando()"
+              (click)="irAPagina(pagina() - 1)"
+            >
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              [disabled]="pagina() >= totalPaginas() - 1 || actualizando()"
+              (click)="irAPagina(pagina() + 1)"
+            >
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </nav>
+        }
       </div>
     }
   }

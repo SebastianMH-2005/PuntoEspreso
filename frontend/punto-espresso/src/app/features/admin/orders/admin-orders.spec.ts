@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { environment } from '../../../../environments/environment';
-import { OrdenAdmin } from '../../../core/models/admin.models';
+import { OrdenAdmin, PaginaOrdenes } from '../../../core/models/admin.models';
 import { AdminOrders } from './admin-orders';
 
 const URL_ORDENES = `${environment.apiUrl}/api/admin/ordenes`;
@@ -35,7 +35,22 @@ const lista = [
   orden({ idOrden: 3, codigoUnico: 'PE-CCCC3333', estado: 'ENTREGADO' }),
 ];
 
-const sinFiltro = (r: HttpRequest<unknown>) => r.url === URL_ORDENES && !r.params.has('estado');
+const pagina = (contenido: OrdenAdmin[], datos: Partial<PaginaOrdenes> = {}): PaginaOrdenes => ({
+  contenido,
+  pagina: 0,
+  tamano: 20,
+  totalElementos: contenido.length,
+  totalPaginas: 1,
+  pendientes: contenido.filter((o) => o.estado === 'PENDIENTE').length,
+  ...datos,
+});
+
+const sinFiltro = (r: HttpRequest<unknown>) =>
+  r.url === URL_ORDENES && !r.params.has('estado') && !r.params.has('q');
+const enPagina = (numero: number) => (r: HttpRequest<unknown>) =>
+  r.url === URL_ORDENES && r.params.get('page') === String(numero);
+const conBusqueda = (texto: string) => (r: HttpRequest<unknown>) =>
+  r.url === URL_ORDENES && r.params.get('q') === texto;
 const conFiltro = (estado: string) => (r: HttpRequest<unknown>) =>
   r.url === URL_ORDENES && r.params.get('estado') === estado;
 
@@ -47,7 +62,7 @@ describe('AdminOrders', () => {
     });
   });
 
-  async function crear(respuesta: OrdenAdmin[] = lista) {
+   async function crear(respuesta: PaginaOrdenes = pagina(lista)) {
     const fixture = TestBed.createComponent(AdminOrders);
     fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
@@ -120,7 +135,7 @@ describe('AdminOrders', () => {
 
     selector.value = 'PENDIENTE';
     selector.dispatchEvent(new Event('change'));
-    http.expectOne(conFiltro('PENDIENTE')).flush([lista[0]]);
+    http.expectOne(conFiltro('PENDIENTE')).flush(pagina([lista[0]]));
     await fixture.whenStable();
 
     expect(filas(el)).toHaveLength(1);
@@ -131,7 +146,7 @@ describe('AdminOrders', () => {
     const selector = el.querySelector('select') as HTMLSelectElement;
     selector.value = 'PENDIENTE';
     selector.dispatchEvent(new Event('change'));
-    http.expectOne(conFiltro('PENDIENTE')).flush([lista[0]]);
+       http.expectOne(conFiltro('PENDIENTE')).flush(pagina([lista[0]]));
     await fixture.whenStable();
 
     botones(el, 'Iniciar preparación')[0].click();
@@ -142,16 +157,37 @@ describe('AdminOrders', () => {
     expect(el.textContent).toContain('No hay órdenes que coincidan');
   });
 
-  it('busca por código, nombre o email sin importar tildes', async () => {
-    const { fixture, el } = await crear();
+  it('busca en el servidor por código, nombre o email', async () => {
+    const { fixture, el, http } = await crear();
     const caja = el.querySelector('input[type="search"]') as HTMLInputElement;
 
     caja.value = 'gomez';
     caja.dispatchEvent(new Event('input'));
+    botones(el, 'Buscar')[0].click();
+    http.expectOne(conBusqueda('gomez')).flush(pagina([lista[1]]));
     await fixture.whenStable();
 
     expect(filas(el)).toHaveLength(1);
     expect(el.textContent).toContain('Luis Gómez');
+  });
+
+  it('muestra la paginación y pide la página siguiente al servidor', async () => {
+    const { fixture, el, http } = await crear(
+      pagina(lista, { totalElementos: 45, totalPaginas: 3 }),
+    );
+    expect(el.textContent).toContain('45 órdenes');
+    expect(el.textContent).toContain('Página 1 de 3');
+    expect(botones(el, 'Anterior')[0].disabled).toBe(true);
+
+    botones(el, 'Siguiente')[0].click();
+    http
+      .expectOne(enPagina(1))
+      .flush(pagina([lista[2]], { pagina: 1, totalElementos: 45, totalPaginas: 3 }));
+    await fixture.whenStable();
+
+    expect(el.textContent).toContain('Página 2 de 3');
+    expect(filas(el)).toHaveLength(1);
+    expect(botones(el, 'Anterior')[0].disabled).toBe(false);
   });
 
   it('muestra el mensaje del servidor si la orden ya no se puede modificar y recarga la lista', async () => {
@@ -164,7 +200,7 @@ describe('AdminOrders', () => {
         status: 409,
         statusText: 'Conflict',
       });
-    http.expectOne(sinFiltro).flush([orden({ idOrden: 1, estado: 'CANCELADO' })]);
+    http.expectOne(sinFiltro).flush(pagina([orden({ idOrden: 1, estado: 'CANCELADO' })]));
     await fixture.whenStable();
 
     expect(el.textContent).toContain('ya no se puede modificar');
@@ -181,7 +217,7 @@ describe('AdminOrders', () => {
     expect(el.textContent).toContain('No pudimos cargar las órdenes');
 
     botones(el, 'Reintentar')[0].click();
-    http.expectOne(sinFiltro).flush(lista);
+   http.expectOne(sinFiltro).flush(pagina(lista));
     await fixture.whenStable();
 
     expect(filas(el)).toHaveLength(3);
@@ -195,7 +231,9 @@ describe('AdminOrders', () => {
       intervalo.mock.calls.find((llamada) => llamada[1] === 20_000) ?? [];
     expect(milisegundos).toBe(20_000);
     (accion as () => void)();
-    http.expectOne(sinFiltro).flush([...lista, orden({ idOrden: 4, codigoUnico: 'PE-DDDD4444' })]);
+       http
+      .expectOne(sinFiltro)
+      .flush(pagina([...lista, orden({ idOrden: 4, codigoUnico: 'PE-DDDD4444' })]));
     await fixture.whenStable();
 
     expect(filas(el)).toHaveLength(4);
