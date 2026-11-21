@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { OrdenAdmin, PaginaOrdenes } from '../models/admin.models';
 import { EstadoPedido } from '../models/pedido.models';
 
-export const TAMANO_PAGINA = 2;
+export const TAMANO_PAGINA = 20;
 
 export interface FiltroOrdenes {
   estado?: EstadoPedido;
