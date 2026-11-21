@@ -1,0 +1,33 @@
+<section class="despedida">
+  <div class="contenido text-center">
+    <svg class="taza" viewBox="0 0 120 110" aria-hidden="true">
+      <path class="vapor v1" d="M46 40c-7-7 7-12 0-22" />
+      <path class="vapor v2" d="M60 42c-7-8 7-14 0-26" />
+      <path class="vapor v3" d="M74 40c-7-7 7-12 0-22" />
+      <path class="asa" d="M88 58h5a11 11 0 0 1 0 22h-8" />
+      <path class="cuerpo" d="M30 50h58v24a24 24 0 0 1-24 24H54a24 24 0 0 1-24-24z" />
+      <ellipse class="cafe" cx="59" cy="50" rx="29" ry="5" />
+      <ellipse class="plato" cx="59" cy="100" rx="42" ry="6" />
+    </svg>
+
+    <h1 class="titulo">
+      @if (nombreVisible()) {
+        ¡Hasta pronto, {{ nombreVisible() }}!
+      } @else {
+        ¡Hasta pronto!
+      }
+    </h1>
+    <p class="mensaje">
+      Gracias por tomarte una pausa con Punto Espresso. Tu próxima taza ya te está esperando:
+      vuelve cuando quieras.
+    </p>
+
+    <div class="acciones">
+      <a routerLink="/" class="btn btn-cafe btn-lg">Volver al inicio</a>
+      <a routerLink="/catalogo" class="btn btn-outline-light btn-lg">Ver el catálogo</a>
+    </div>
+
+    <div class="barra" aria-hidden="true"><span></span></div>
+    <p class="aviso">Te llevamos al inicio en unos segundos…</p>
+  </div>
+</section>

@@ -146,6 +146,12 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'hasta-pronto',
+    title: 'Hasta pronto | Punto Espresso',
+    data: { noindex: true },
+    loadComponent: () => import('./features/farewell/farewell').then((m) => m.Farewell),
+  },
+  {
     path: '**',
     title: 'Página no encontrada | Punto Espresso',
     data: { noindex: true },

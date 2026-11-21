@@ -1,0 +1,80 @@
+.boton-usuario {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  background: transparent;
+  border: 1px solid rgba(212, 163, 115, 0.55);
+  border-radius: 999px;
+  color: var(--cafe-crema);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.boton-usuario:hover,
+.boton-usuario[aria-expanded='true'] {
+  background: rgba(212, 163, 115, 0.15);
+  border-color: var(--cafe-crema);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--cafe-crema);
+  color: var(--cafe-oscuro);
+  font-weight: 700;
+}
+
+.nombre {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flecha {
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.flecha.girada {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--cafe-oscuro);
+  --bs-dropdown-border-color: var(--cafe-boton);
+  --bs-dropdown-link-color: var(--cafe-calido);
+  --bs-dropdown-link-hover-color: #fff;
+  --bs-dropdown-link-hover-bg: var(--cafe-boton);
+  --bs-dropdown-link-active-bg: var(--cafe-boton);
+  --bs-dropdown-divider-bg: rgba(212, 163, 115, 0.35);
+  --bs-dropdown-header-color: var(--cafe-crema);
+  min-width: 14rem;
+  animation: aparecer 0.15s ease-out;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-menu {
+    animation: none;
+  }
+  .flecha,
+  .boton-usuario {
+    transition: none;
+  }
+}

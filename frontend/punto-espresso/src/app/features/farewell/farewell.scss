@@ -1,0 +1,146 @@
+:host {
+  display: block;
+}
+
+.despedida {
+  min-height: 72vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--cafe-calido);
+  background: radial-gradient(circle at 50% 15%, #5a3a22 0%, var(--cafe-oscuro) 62%);
+}
+
+.contenido {
+  max-width: 34rem;
+  animation: entrar 0.7s ease-out both;
+}
+
+.taza {
+  width: 9rem;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.cuerpo {
+  fill: var(--cafe-crema);
+}
+.cafe {
+  fill: var(--cafe-boton-hover);
+}
+.plato {
+  fill: var(--cafe-boton);
+}
+.asa {
+  fill: none;
+  stroke: var(--cafe-crema);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.vapor {
+  fill: none;
+  stroke: var(--cafe-crema);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: subir 3s ease-in-out infinite;
+}
+.v2 {
+  animation-delay: 0.6s;
+}
+.v3 {
+  animation-delay: 1.2s;
+}
+
+.titulo {
+  font-weight: 700;
+  color: var(--cafe-crema);
+  margin-bottom: 0.75rem;
+  animation: entrar 0.7s 0.15s ease-out both;
+}
+.mensaje {
+  font-size: 1.1rem;
+  margin-bottom: 1.75rem;
+  animation: entrar 0.7s 0.3s ease-out both;
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  animation: entrar 0.7s 0.45s ease-out both;
+}
+
+.barra {
+  height: 3px;
+  max-width: 16rem;
+  margin: 2rem auto 0.5rem;
+  background: rgba(244, 239, 233, 0.18);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.barra span {
+  display: block;
+  height: 100%;
+  background: var(--cafe-crema);
+  transform-origin: left;
+  animation: avance 8s linear forwards;
+}
+.aviso {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes subir {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes avance {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contenido,
+  .titulo,
+  .mensaje,
+  .acciones {
+    animation: none;
+  }
+  .vapor {
+    animation: none;
+    opacity: 0.6;
+  }
+  .barra span {
+    animation: none;
+    transform: scaleX(1);
+  }
+}

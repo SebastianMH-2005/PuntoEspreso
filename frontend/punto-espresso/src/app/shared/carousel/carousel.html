@@ -22,13 +22,13 @@
       </div>
     }
 
-    <div class="carousel-inner" [style.height]="altura()">
+    <div class="carousel-inner bg-cafe-oscuro" [style.aspect-ratio]="proporcion()">
       @for (diapositiva of diapositivas(); track diapositiva.imagen; let i = $index) {
         <div class="carousel-item h-100" [class.active]="i === actual()">
           <a [routerLink]="diapositiva.enlace" class="d-block h-100">
             <img
               class="d-block w-100 h-100"
-              style="object-fit: cover"
+              style="object-fit: contain"
               [src]="diapositiva.imagen"
               [alt]="diapositiva.alt"
               loading="lazy"

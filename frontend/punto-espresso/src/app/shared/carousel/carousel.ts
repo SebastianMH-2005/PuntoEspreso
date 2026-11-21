@@ -18,8 +18,8 @@ export class Carousel implements OnInit {
 
   readonly diapositivas = input.required<Diapositiva[]>();
   readonly intervaloMs = input(6000);
-  /** Alto del carrusel: cualquier valor CSS válido. */
-  readonly altura = input('clamp(220px, 42vw, 520px)');
+  /** Proporción ancho/alto (como en CSS aspect-ratio): las imágenes se muestran siempre completas. */
+  readonly proporcion = input('1024 / 502');
 
   protected readonly actual = signal(0);
   protected readonly pausado = signal(false);
