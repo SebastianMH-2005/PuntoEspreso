@@ -21,6 +21,12 @@
               {{ confirmado.codigoUnico }}
             </p>
 
+              @if (pagoQr(); as qr) {
+              <div class="alert alert-info text-start small" role="status">
+                Verificaremos tu pago con {{ qr.nombre }} (operación
+                {{ form.controls.codigoOperacion.value }}) antes de preparar tu pedido.
+              </div>
+            }
             <ul class="list-group list-group-flush text-start my-3">
               @for (detalle of confirmado.detalles; track detalle.productoNombre) {
                 <li class="list-group-item d-flex justify-content-between">
@@ -96,9 +102,9 @@
 
           <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-              <h2 class="h5 fw-bold mb-1">Pago con tarjeta</h2>
+              <h2 class="h5 fw-bold mb-1">Método de pago</h2>
               <p class="small text-muted">
-                Pago simulado: los datos de la tarjeta no se envían ni se guardan.
+                Elige cómo quieres pagar. Con tarjeta el pago es simulado: los datos no se envían ni se guardan.
               </p>
 
               <div class="mb-3">
@@ -122,8 +128,21 @@
                   />
                   <label class="form-check-label" for="pagoDebito">Débito</label>
                 </div>
+                @for (qr of pagosQr; track qr.metodo) {
+                  <div class="form-check form-check-inline">
+                    <input
+                      [id]="'pago' + qr.metodo"
+                      class="form-check-input"
+                      type="radio"
+                      [value]="qr.metodo"
+                      formControlName="metodoPago"
+                    />
+                    <label class="form-check-label" [for]="'pago' + qr.metodo">{{ qr.nombre }}</label>
+                  </div>
+                }
               </div>
 
+              @if (pagaConTarjeta()) {
               <div class="mb-3">
                 <label for="titular" class="form-label">Titular de la tarjeta</label>
                 <input
@@ -198,6 +217,46 @@
                   />
                 </div>
               </div>
+              } @else if (pagoQr(); as qr) {
+                <div class="panel-qr text-center border rounded p-3">
+                  <p class="mb-2">
+                    Escanea el código con tu app de {{ qr.nombre }} y paga exactamente
+                    <strong>{{ cart.total() | currency: 'PEN' : 'S/ ' : '1.2-2' }}</strong>.
+                  </p>
+                  <img
+                    [src]="qr.imagen"
+                    [alt]="'Código QR de ' + qr.nombre + ' a nombre de ' + qr.titular"
+                    width="230"
+                    class="img-fluid rounded mb-2"
+                  />
+                  <p class="small text-muted">A nombre de {{ qr.titular }}</p>
+
+                  <div class="text-start">
+                    <label for="codigoOperacion" class="form-label">Número de operación</label>
+                    <input
+                      id="codigoOperacion"
+                      type="text"
+                      inputmode="numeric"
+                      class="form-control"
+                      formControlName="codigoOperacion"
+                      placeholder="Ej. 12345678"
+                      [class.is-invalid]="invalido('codigoOperacion')"
+                      (input)="alEscribir('codigoOperacion', $event)"
+                    />
+                    <app-field-error
+                      [control]="form.controls.codigoOperacion"
+                      [mensajes]="{
+                        required: 'Ingresa el número de operación de tu pago.',
+                        pattern: 'Debe tener entre 6 y 12 dígitos.',
+                      }"
+                    />
+                    <div class="form-text">
+                      Lo encuentras en el comprobante de tu pago. Verificaremos el pago antes de
+                      preparar tu pedido.
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
           </div>
         </div>

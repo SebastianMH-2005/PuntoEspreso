@@ -112,6 +112,14 @@
                 <td>
                   {{ orden.clienteNombre }}
                   <div class="small text-muted">{{ orden.clienteEmail }}</div>
+                  <div class="small">
+                    <span class="badge text-bg-light border">{{ etiquetaPago(orden.metodoPago) }}</span>
+                    @if (orden.codigoOperacion) {
+                      <span class="ms-1">
+                        Operación <strong class="font-monospace">{{ orden.codigoOperacion }}</strong>
+                      </span>
+                    }
+                  </div>
                 </td>
                 <td>
                   <ul class="list-unstyled mb-0 small">

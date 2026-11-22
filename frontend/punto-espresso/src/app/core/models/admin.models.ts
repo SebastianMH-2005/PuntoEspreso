@@ -65,6 +65,8 @@ export interface OrdenAdmin {
   clienteEmail: string;
   tipoEntrega: string;
   metodoPago: MetodoPago;
+  /** Número de operación de los pagos con QR (Yape o Plin), para que el personal verifique el pago. */
+  codigoOperacion?: string | null;
   estado: EstadoPedido;
   codigoUnico: string;
   total: number;

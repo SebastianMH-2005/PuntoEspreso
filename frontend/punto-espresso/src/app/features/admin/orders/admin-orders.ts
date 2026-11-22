@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OrdenAdmin } from '../../../core/models/admin.models';
+import { etiquetaMetodoPago } from '../../../core/utils/metodo-pago';
 import { EstadoPedido } from '../../../core/models/pedido.models';
 import { AdminOrdenService, FiltroOrdenes } from '../../../core/services/admin-orden.service';
 import {
@@ -47,6 +48,7 @@ export class AdminOrders implements OnInit {
   protected readonly servidorLento = signal(false);
   protected readonly actualizando = signal(false);
   protected readonly ordenes = signal<OrdenAdmin[]>([]);
+  protected readonly etiquetaPago = etiquetaMetodoPago;
   protected readonly filtroEstado = signal<EstadoPedido | ''>('');
   protected readonly busquedaControl = new FormControl('', {
     nonNullable: true,

@@ -37,7 +37,7 @@ class MigracionesTest {
 
     @Test
     void lasMigracionesSeAplicanYLaAplicacionArrancaSobreEseEsquema() {
-        assertThat(flyway.info().applied()).hasSize(2);
+        assertThat(flyway.info().applied()).hasSize(3);
         assertThat(flyway.info().pending()).isEmpty();
         assertThat(productoRepository.count()).isEqualTo(10); // cargados por el DataSeeder
         assertThat(usuarioSistemaRepository.count()).isEqualTo(1);

@@ -40,6 +40,10 @@ public class Orden {
     private String metodoPago;
     private String estado;
     private String codigoUnico;
+
+    // Solo en pagos con QR (Yape o Plin): número de operación del comprobante
+    @Column(length = 20)
+    private String codigoOperacion;
     @Column(precision = 12, scale = 2)
     private BigDecimal total;
     private LocalDateTime fechaCreacion;
@@ -110,6 +114,14 @@ public class Orden {
 
     public void setTipoEntrega(String tipoEntrega) {
         this.tipoEntrega = tipoEntrega;
+    }
+
+    public String getCodigoOperacion() {
+        return codigoOperacion;
+    }
+
+    public void setCodigoOperacion(String codigoOperacion) {
+        this.codigoOperacion = codigoOperacion;
     }
 
     public String getMetodoPago() {

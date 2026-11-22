@@ -1,10 +1,11 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { PAGOS_QR } from '../../core/config/pagos-qr';
 import { MetodoPago, PedidoResponse } from '../../core/models/pedido.models';
 import { Sede } from '../../core/models/sede.models';
 import { CartService } from '../../core/services/cart.service';
@@ -15,8 +16,18 @@ import { mensajeDeError } from '../../core/utils/mensaje-error';
 import { noSoloEspacios, tarjetaNoVencida } from '../../core/validators/form.validators';
 import { FieldError } from '../../shared/field-error/field-error';
 
-type Campo = 'idSede' | 'metodoPago' | 'titular' | 'numeroTarjeta' | 'vencimiento' | 'cvv';
-type CampoNumerico = 'numeroTarjeta' | 'vencimiento' | 'cvv';
+type Campo =
+  | 'idSede'
+  | 'metodoPago'
+  | 'titular'
+  | 'numeroTarjeta'
+  | 'vencimiento'
+  | 'cvv'
+  | 'codigoOperacion';
+type CampoNumerico = 'numeroTarjeta' | 'vencimiento' | 'cvv' | 'codigoOperacion';
+
+// Estos campos solo se piden (y validan) cuando se paga con tarjeta
+const CAMPOS_TARJETA = ['titular', 'numeroTarjeta', 'vencimiento', 'cvv'] as const;
 
 @Component({
   selector: 'app-checkout',
@@ -54,9 +65,28 @@ export class Checkout implements OnInit {
       [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/), tarjetaNoVencida],
     ],
     cvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]],
+    // Solo con Yape o Plin: el número de operación del comprobante (el personal verifica el pago)
+    codigoOperacion: ['', [Validators.required, Validators.pattern(/^\d{6,12}$/)]],
   });
 
+    // Métodos con QR (Yape, Plin): se activan en core/config/pagos-qr.ts
+  protected readonly pagosQr = PAGOS_QR;
+  protected readonly metodoSeleccionado = toSignal(this.form.controls.metodoPago.valueChanges, {
+    initialValue: this.form.controls.metodoPago.value,
+  });
+  protected readonly pagaConTarjeta = computed(
+    () => this.metodoSeleccionado() === 'CC' || this.metodoSeleccionado() === 'DC',
+  );
+  protected readonly pagoQr = computed(() =>
+    this.pagosQr.find((pago) => pago.metodo === this.metodoSeleccionado()),
+  );
+
   ngOnInit(): void {
+    // Con tarjeta se piden los datos de la tarjeta; con QR, el número de operación
+    this.form.controls.metodoPago.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((metodo) => this.ajustarCampos(metodo));
+    this.ajustarCampos(this.form.controls.metodoPago.value);
     this.cargar();
   }
 
@@ -91,6 +121,24 @@ export class Checkout implements OnInit {
       });
   }
 
+    private ajustarCampos(metodo: MetodoPago): void {
+    const conTarjeta = metodo === 'CC' || metodo === 'DC';
+    for (const campo of CAMPOS_TARJETA) {
+      const control = this.form.controls[campo];
+      if (conTarjeta) {
+        control.enable({ emitEvent: false });
+      } else {
+        control.disable({ emitEvent: false });
+      }
+    }
+    const codigo = this.form.controls.codigoOperacion;
+    if (conTarjeta) {
+      codigo.disable({ emitEvent: false });
+    } else {
+      codigo.enable({ emitEvent: false });
+    }
+  }
+
   protected invalido(campo: Campo): boolean {
     const control = this.form.controls[campo];
     return control.invalid && (control.touched || control.dirty);
@@ -102,6 +150,8 @@ export class Checkout implements OnInit {
     let limpio: string;
     if (campo === 'numeroTarjeta') {
       limpio = digitos.slice(0, 16);
+    } else if (campo === 'codigoOperacion') {
+      limpio = digitos.slice(0, 12);
     } else if (campo === 'cvv') {
       limpio = digitos.slice(0, 3);
     } else {
@@ -115,7 +165,7 @@ export class Checkout implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const { idSede, metodoPago } = this.form.getRawValue();
+    const { idSede, metodoPago, codigoOperacion } = this.form.getRawValue();
     if (idSede === null) {
       return;
     }
@@ -128,6 +178,10 @@ export class Checkout implements OnInit {
       .crear({
         idSede,
         metodoPago,
+        // Solo los pagos con QR llevan número de operación; con tarjeta no se envía nada más
+        ...(metodoPago === 'YAPE' || metodoPago === 'PLIN'
+          ? { codigoOperacion: codigoOperacion.trim() }
+          : {}),
         items: this.cart.items().map((item) => ({
           idProducto: item.idProducto,
           cantidad: item.cantidad,

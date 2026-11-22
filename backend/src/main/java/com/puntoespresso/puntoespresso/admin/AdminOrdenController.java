@@ -102,6 +102,7 @@ public class AdminOrdenController {
                                 orden.getCliente() != null ? orden.getCliente().getEmail() : "—",
                                 orden.getTipoEntrega(),
                                 orden.getMetodoPago(),
+                                orden.getCodigoOperacion(),
                                 orden.getEstado(),
                                 orden.getCodigoUnico(),
                                 orden.getTotal(),

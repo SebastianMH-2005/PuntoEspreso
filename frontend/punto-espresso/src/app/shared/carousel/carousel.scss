@@ -1,0 +1,37 @@
+// Fundido suave entre diapositivas. Se apilan todas y solo cambia la opacidad (barato para el navegador).
+// La duración sale de la variable --fundido, que fija el componente (input fundidoMs).
+.carousel-inner {
+  position: relative;
+}
+
+// Diapositiva que sale: se queda visible mientras la nueva aparece encima y luego se oculta
+// (así no hay un "bajón" de brillo a mitad del cambio).
+.carousel-item {
+  position: absolute;
+  inset: 0;
+  display: block; // Bootstrap oculta las inactivas con display:none; aquí se ocultan con opacity
+  float: none;
+  margin-right: 0;
+  opacity: 0;
+  visibility: hidden; // evita que las diapositivas ocultas reciban foco o clics
+  transition:
+    opacity 0s linear var(--fundido, 2s),
+    visibility 0s linear var(--fundido, 2s);
+}
+
+// Diapositiva que entra: aparece poco a poco por encima de la anterior
+.carousel-item.active {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--fundido, 2s) ease-in-out,
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-item,
+  .carousel-item.active {
+    transition: none;
+  }
+}

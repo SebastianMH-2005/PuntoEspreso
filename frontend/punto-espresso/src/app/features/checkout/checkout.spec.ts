@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { vi } from 'vitest';
 import { environment } from '../../../environments/environment';
+import { PAGOS_QR } from '../../core/config/pagos-qr';
 import { Producto } from '../../core/models/producto.models';
 import { Sede } from '../../core/models/sede.models';
 import { Checkout } from './checkout';
@@ -172,6 +173,90 @@ describe('Checkout', () => {
     expect(el.textContent).toContain('PE-AB12CD34');
     expect(el.textContent).toContain('La Marina');
     expect(JSON.parse(localStorage.getItem('carrito') ?? 'null')).toEqual([]);
+  });
+
+    // Los radios se identifican por su id: pagoCredito, pagoDebito, pagoYAPE, pagoPLIN…
+  function elegirMetodo(el: HTMLElement, id: string) {
+    (el.querySelector(`#${id}`) as HTMLInputElement).click();
+  }
+
+  it('ofrece exactamente los métodos con QR activados en la configuración', async () => {
+    guardarCarrito();
+    const { el } = await crear();
+
+    const ids = Array.from(el.querySelectorAll('input[type="radio"]')).map((r) => r.id);
+    expect(ids).toEqual(['pagoCredito', 'pagoDebito', ...PAGOS_QR.map((pago) => `pago${pago.metodo}`)]);
+  });
+
+  it('con Yape muestra su QR y el total a pagar, y oculta los datos de la tarjeta', async () => {
+    guardarCarrito();
+    const { fixture, el } = await crear();
+
+    elegirMetodo(el, 'pagoYAPE');
+    await fixture.whenStable();
+
+    expect(el.querySelector('img[alt*="Yape"]')).not.toBeNull();
+    expect(el.querySelector('.panel-qr')?.textContent).toContain('S/ 25.00');
+    expect(el.querySelector('#numeroTarjeta')).toBeNull();
+    expect(el.querySelector('#codigoOperacion')).not.toBeNull();
+  });
+
+  it('con Yape exige el número de operación y no envía el pedido sin él', async () => {
+    guardarCarrito();
+    const { fixture, el, http } = await crear();
+    elegirMetodo(el, 'pagoYAPE');
+    await fixture.whenStable();
+
+    confirmar(el);
+    await fixture.whenStable();
+    http.expectNone(URL_PEDIDOS);
+    expect(el.textContent).toContain('Ingresa el número de operación');
+
+    escribir(el, 'codigoOperacion', '12ab');
+    confirmar(el);
+    await fixture.whenStable();
+    http.expectNone(URL_PEDIDOS);
+    expect(el.textContent).toContain('entre 6 y 12 dígitos');
+  });
+
+  it('envía el pedido con Yape incluyendo el número de operación y avisa que se verificará', async () => {
+    guardarCarrito();
+    const { fixture, el, http } = await crear();
+    elegirMetodo(el, 'pagoYAPE');
+    await fixture.whenStable();
+
+    escribir(el, 'codigoOperacion', '12345678');
+    confirmar(el);
+    const peticion = http.expectOne(URL_PEDIDOS);
+    expect(peticion.request.body).toEqual({
+      idSede: 1,
+      metodoPago: 'YAPE',
+      codigoOperacion: '12345678',
+      items: [{ idProducto: 1, cantidad: 2, instrucciones: null }],
+    });
+    peticion.flush({
+      codigoUnico: 'PE-YAPE0001',
+      total: 25,
+      sedeNombre: 'La Marina',
+      detalles: [{ productoNombre: 'Café Latte', cantidad: 2, precioUnitario: 12.5 }],
+    });
+    await fixture.whenStable();
+
+    expect(el.textContent).toContain('PE-YAPE0001');
+    expect(el.textContent).toContain('Verificaremos tu pago con Yape');
+  });
+
+  it('si vuelves a elegir tarjeta, pide otra vez los datos de la tarjeta', async () => {
+    guardarCarrito();
+    const { fixture, el } = await crear();
+
+    elegirMetodo(el, 'pagoYAPE');
+    await fixture.whenStable();
+    elegirMetodo(el, 'pagoDebito');
+    await fixture.whenStable();
+
+    expect(el.querySelector('#numeroTarjeta')).not.toBeNull();
+    expect(el.querySelector('#codigoOperacion')).toBeNull();
   });
 
   it('muestra el error de stock del servidor y conserva el carrito', async () => {

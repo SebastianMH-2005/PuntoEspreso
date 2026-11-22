@@ -1,4 +1,4 @@
-export type MetodoPago = 'CC' | 'DC';
+export type MetodoPago = 'CC' | 'DC' | 'YAPE' | 'PLIN';
 
 export interface ItemPedido {
   idProducto: number;
@@ -10,6 +10,8 @@ export interface PedidoRequest {
   items: ItemPedido[];
   idSede: number;
   metodoPago: MetodoPago;
+  /** Solo en pagos con QR (Yape o Plin): número de operación del comprobante. */
+  codigoOperacion?: string;
 }
 
 export interface DetallePedido {

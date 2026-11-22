@@ -171,6 +171,22 @@ describe('AdminOrders', () => {
     expect(el.textContent).toContain('Luis Gómez');
   });
 
+    it('muestra el método de pago y el número de operación para verificar los pagos con QR', async () => {
+    const { el } = await crear(
+      pagina([
+        orden({
+          idOrden: 9,
+          codigoUnico: 'PE-YAPE0009',
+          metodoPago: 'YAPE',
+          codigoOperacion: '12345678',
+        }),
+      ]),
+    );
+
+    expect(el.textContent).toContain('Yape');
+    expect(el.textContent).toContain('12345678');
+  });
+
   it('muestra la paginación y pide la página siguiente al servidor', async () => {
     const { fixture, el, http } = await crear(
       pagina(lista, { totalElementos: 45, totalPaginas: 3 }),

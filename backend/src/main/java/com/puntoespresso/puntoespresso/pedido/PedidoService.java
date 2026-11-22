@@ -8,7 +8,9 @@ import com.puntoespresso.puntoespresso.dto.OrdenDetalle;
 import com.puntoespresso.puntoespresso.dto.Producto;
 import com.puntoespresso.puntoespresso.dto.Rol;
 import com.puntoespresso.puntoespresso.dto.Sede;
+import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
+import com.puntoespresso.puntoespresso.exception.SolicitudInvalidaException;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenDetalleRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenRepository;
@@ -73,6 +75,19 @@ public class PedidoService {
                     unirInstrucciones(a.instrucciones(), b.instrucciones())));
         }
 
+                // Pagos con QR (Yape o Plin): el cliente informa el número de operación y el personal verifica el pago
+        boolean pagoConQr = "YAPE".equals(request.metodoPago()) || "PLIN".equals(request.metodoPago());
+        String codigoOperacion = null;
+        if (pagoConQr) {
+            codigoOperacion = request.codigoOperacion() == null ? "" : request.codigoOperacion().trim();
+            if (codigoOperacion.isEmpty()) {
+                throw new SolicitudInvalidaException("Ingresa el número de operación de tu pago");
+            }
+            if (ordenRepository.existsByCodigoOperacion(codigoOperacion)) {
+                throw new ConflictoException("Ese número de operación ya fue usado en otro pedido");
+            }
+        }
+
         String codigoUnico = "PE-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         Orden orden = new Orden(cliente, null, sede, "RECOJO", request.metodoPago(), "PENDIENTE", codigoUnico, BigDecimal.ZERO);
         ordenRepository.save(orden);
@@ -97,6 +112,7 @@ public class PedidoService {
 
         total = total.setScale(2, RoundingMode.HALF_UP);
         orden.setTotal(total);
+        orden.setCodigoOperacion(codigoOperacion);
         ordenRepository.save(orden);
 
         return new PedidoResponse(codigoUnico, total, sede.getNombre(), detalles);

@@ -3,6 +3,7 @@
     class="carousel slide"
     aria-roledescription="carrusel"
     aria-label="Destacados"
+    [style.--fundido]="fundidoMs() + 'ms'"
     (mouseenter)="pausado.set(true)"
     (mouseleave)="pausado.set(false)"
     (focusin)="pausado.set(true)"

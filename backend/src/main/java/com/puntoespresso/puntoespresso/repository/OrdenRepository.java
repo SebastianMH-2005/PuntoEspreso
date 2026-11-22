@@ -23,6 +23,8 @@ public interface OrdenRepository extends JpaRepository<Orden, Integer> {
 
     long countByEstado(String estado);
 
+    boolean existsByCodigoOperacion(String codigoOperacion);
+
     String FILTRO_ORDENES = "WHERE (:estado = '' OR o.estado = :estado) "
             + "AND (:q = '' OR LOCATE(:q, LOWER(o.codigoUnico)) > 0 "
             + "OR LOCATE(:q, LOWER(c.nombre)) > 0 OR LOCATE(:q, LOWER(c.email)) > 0)";

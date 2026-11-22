@@ -90,6 +90,13 @@ public class ApiExceptionHandler {
         return construir(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "El tipo de contenido no es compatible", request);
     }
 
+        @ExceptionHandler(SolicitudInvalidaException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> manejarSolicitudInvalida(SolicitudInvalidaException ex,
+            HttpServletRequest request) {
+        return construir(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
     @ExceptionHandler(ConflictoException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> manejarConflicto(ConflictoException ex, HttpServletRequest request) {
