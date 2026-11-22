@@ -5,10 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { mensajeDeError } from '../../../core/utils/mensaje-error';
 import { FieldError } from '../../../shared/field-error/field-error';
+import { GoogleButton } from '../../../shared/google-button/google-button';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, FieldError],
+  imports: [ReactiveFormsModule, RouterLink, FieldError, GoogleButton],
   templateUrl: './login.html',
 })
 export class Login {
@@ -31,6 +32,10 @@ export class Login {
   protected invalido(campo: 'email' | 'contrasena'): boolean {
     const control = this.form.controls[campo];
     return control.invalid && (control.touched || control.dirty);
+  }
+
+    protected alIniciarConGoogle(): void {
+    this.router.navigateByUrl(this.destino());
   }
 
   protected enviar(): void {

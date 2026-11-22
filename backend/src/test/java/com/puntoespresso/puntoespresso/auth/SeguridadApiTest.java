@@ -143,6 +143,16 @@ class SeguridadApiTest {
     }
 
     @Test
+        void elInicioConGoogleEsPublicoYRechazaCredencialesFalsas() throws Exception {
+        assertThat(estado(post("/api/auth/google")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"credencial\":\"esto-no-es-un-token\"}"))).isEqualTo(401);
+        assertThat(estado(post("/api/auth/google")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"credencial\":\"\"}"))).isEqualTo(400);
+    }
+
+    @Test
     void loginConContrasenaIncorrectaDa401() throws Exception {
         assertThat(estado(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)

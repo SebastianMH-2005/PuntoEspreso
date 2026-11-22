@@ -34,6 +34,13 @@ export class AuthService {
       .pipe(tap((respuesta) => this.guardarSesion(respuesta)));
   }
 
+    /** Inicia sesión con la credencial (JWT firmado) que entrega "Continuar con Google". */
+  loginConGoogle(credencial: string) {
+    return this.http
+      .post<LoginResponse>(`${this.api}/google`, { credencial })
+      .pipe(tap((respuesta) => this.guardarSesion(respuesta)));
+  }
+
   registro(datos: RegistroRequest) {
     return this.http.post<void>(`${this.api}/registro`, datos);
   }

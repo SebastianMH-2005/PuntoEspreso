@@ -28,6 +28,15 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/google")
+    public ResponseEntity<LoginResponse> google(@Valid @RequestBody GoogleLoginRequest request) {
+        try {
+            return ResponseEntity.ok(authService.loginConGoogle(request.credencial()));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).build();
+        }
+    }
+
     @PostMapping("/registro")
     public ResponseEntity<Void> registro(@Valid @RequestBody RegistroClienteRequest request) {
         if (authService.emailYaRegistrado(request.email())) {

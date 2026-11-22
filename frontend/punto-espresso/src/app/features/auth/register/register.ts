@@ -5,12 +5,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { camposIguales, noSoloEspacios } from '../../../core/validators/form.validators';
 import { mensajeDeError } from '../../../core/utils/mensaje-error';
 import { FieldError } from '../../../shared/field-error/field-error';
+import { GoogleButton } from '../../../shared/google-button/google-button';
 
 type Campo = 'nombre' | 'dni' | 'email' | 'telefono' | 'contrasena' | 'confirmacion';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, FieldError],
+  imports: [ReactiveFormsModule, RouterLink, FieldError, GoogleButton],
   templateUrl: './register.html',
 })
 export class Register {
@@ -45,6 +46,11 @@ export class Register {
   protected confirmacionNoCoincide(): boolean {
     const confirmacion = this.form.controls.confirmacion;
     return this.form.hasError('noCoinciden') && !confirmacion.errors && confirmacion.touched;
+  }
+
+    // Con Google no hace falta crear contraseña: la cuenta se crea (o se reconoce) al instante
+  protected alIniciarConGoogle(): void {
+    this.router.navigateByUrl('/');
   }
 
   protected enviar(): void {
