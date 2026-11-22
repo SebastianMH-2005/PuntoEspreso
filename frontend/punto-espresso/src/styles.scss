@@ -23,6 +23,15 @@ body { background-color: var(--cafe-calido); }
   animation-duration: 0.25s;
 }
 
+/* Al imprimir (por ejemplo la carta) se ocultan el encabezado y el pie */
+@media print {
+  app-header,
+  app-footer,
+  .no-imprimir {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

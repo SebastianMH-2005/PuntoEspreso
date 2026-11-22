@@ -24,6 +24,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/catalog/catalog').then((m) => m.Catalog),
   },
   {
+    path: 'carta',
+    title: 'Carta de bebidas y precios | Punto Espresso',
+    data: {
+      descripcion:
+        'La carta completa de Punto Espresso con precios: café de especialidad, frappés, cold brew, bebidas frías y café en grano. Pide en línea y recoge en Lima.',
+    },
+    loadComponent: () => import('./features/carta/carta').then((m) => m.Carta),
+  },
+  {
     path: 'nosotros',
     title: 'Nosotros | Punto Espresso',
     data: {

@@ -1,0 +1,228 @@
+:host {
+  display: block;
+}
+
+.carta-pagina {
+  min-height: 70vh;
+  color: var(--cafe-calido);
+  background: radial-gradient(circle at 50% 0%, #5a3a22 0%, var(--cafe-oscuro) 55%);
+}
+
+// Pancarta: marco doble color crema, como una carta de cafetería. Sin imágenes: cero peso extra.
+.pancarta {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 2.25rem;
+  border: 2px solid var(--cafe-crema);
+  border-radius: 0.75rem;
+  outline: 1px solid rgba(212, 163, 115, 0.45);
+  outline-offset: 6px;
+  background: rgba(0, 0, 0, 0.18);
+  font-family: Georgia, 'Times New Roman', serif;
+  animation: entrar 0.6s ease-out both;
+}
+
+.cabecera {
+  margin-bottom: 2rem;
+}
+
+.icono {
+  font-size: 2.5rem;
+  color: var(--cafe-crema);
+}
+
+.titulo {
+  margin: 0.25rem 0 0.25rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cafe-crema);
+}
+
+.subtitulo {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.seccion {
+  margin-bottom: 2rem;
+  animation: entrar 0.6s ease-out both;
+}
+
+.seccion:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+
+.seccion:nth-of-type(3) {
+  animation-delay: 0.24s;
+}
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cafe-crema);
+}
+
+.seccion-titulo::before,
+.seccion-titulo::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cafe-crema));
+}
+
+.seccion-titulo::after {
+  transform: scaleX(-1);
+}
+
+// En pantallas anchas la lista corre en dos columnas
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .lista {
+    column-count: 2;
+    column-gap: 3rem;
+  }
+}
+
+.item {
+  break-inside: avoid;
+  margin-bottom: 1.1rem;
+}
+
+.fila {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.nombre {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+// Línea punteada entre el nombre y el precio, como en las cartas de cafetería
+.puntos {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 2px dotted rgba(212, 163, 115, 0.55);
+  transform: translateY(-0.2em);
+}
+
+.precio {
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--cafe-crema);
+}
+
+.descripcion {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.item.agotado {
+  opacity: 0.55;
+}
+
+.etiqueta-agotado {
+  display: inline-block;
+  margin-top: 0.2rem;
+  padding: 0 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pie {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 163, 115, 0.4);
+}
+
+.nota {
+  margin-bottom: 1.25rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pancarta,
+  .seccion {
+    animation: none;
+  }
+}
+
+// Al imprimir: fondo blanco y texto negro (ahorra tinta); las secciones no se cortan entre páginas
+@media print {
+  .carta-pagina {
+    min-height: 0;
+    color: #000;
+    background: #fff;
+  }
+
+  .pancarta {
+    padding: 0.5rem 1rem;
+    border-color: #000;
+    outline: none;
+    background: none;
+    animation: none;
+  }
+
+  .icono,
+  .titulo,
+  .subtitulo,
+  .seccion-titulo,
+  .precio {
+    color: #000;
+  }
+
+  .seccion {
+    break-inside: avoid;
+    animation: none;
+  }
+
+  .seccion-titulo::before,
+  .seccion-titulo::after {
+    background: #000;
+  }
+
+  .puntos {
+    border-bottom-color: #000;
+  }
+}

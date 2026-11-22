@@ -1,0 +1,75 @@
+<section class="carta-pagina">
+  <div class="container py-4 py-lg-5">
+    <article class="pancarta">
+      <header class="cabecera text-center">
+        <i class="bi bi-cup-hot icono" aria-hidden="true"></i>
+        <h1 class="titulo">Nuestra carta</h1>
+        <p class="subtitulo">Punto Espresso · Café de especialidad</p>
+      </header>
+
+      @switch (estado()) {
+        @case ('cargando') {
+          <div class="text-center py-5">
+            <div class="spinner-border" role="status"></div>
+            <p class="mt-3 mb-0">Preparando la carta…</p>
+            @if (servidorLento()) {
+              <p class="small mt-2 mb-0">
+                El servidor estaba dormido y está despertando. Puede tardar hasta un par de minutos.
+              </p>
+            }
+          </div>
+        }
+        @case ('error') {
+          <div class="alert alert-danger d-flex justify-content-between align-items-center">
+            <span>No pudimos cargar la carta. Revisa tu conexión e inténtalo otra vez.</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargar()">
+              Reintentar
+            </button>
+          </div>
+        }
+        @case ('listo') {
+          @for (seccion of secciones(); track seccion.idCategoria) {
+            <section class="seccion" [attr.aria-labelledby]="'categoria-' + seccion.idCategoria">
+              <h2 class="seccion-titulo" [id]="'categoria-' + seccion.idCategoria">
+                <span>{{ seccion.nombre }}</span>
+              </h2>
+              <ul class="lista">
+                @for (producto of seccion.productos; track producto.idProducto) {
+                  <li class="item" [class.agotado]="producto.stock <= 0">
+                    <div class="fila">
+                      <span class="nombre">{{ producto.nombre }}</span>
+                      <span class="puntos" aria-hidden="true"></span>
+                      <span class="precio">{{ producto.precio | currency: 'PEN' : 'S/ ' : '1.2-2' }}</span>
+                    </div>
+                    @if (producto.descripcion) {
+                      <p class="descripcion">{{ producto.descripcion }}</p>
+                    }
+                    @if (producto.stock <= 0) {
+                      <span class="etiqueta-agotado">Agotado</span>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          } @empty {
+            <p class="text-center py-4 mb-0">Pronto publicaremos nuestra carta.</p>
+          }
+
+          <footer class="pie text-center">
+            <p class="nota">
+              Precios en soles (S/). Pide en línea y recoge tu pedido en el local que prefieras.
+            </p>
+            <div class="acciones no-imprimir">
+              <a routerLink="/catalogo" class="btn btn-cafe btn-lg">
+                <i class="bi bi-bag-heart me-1"></i>Hacer mi pedido
+              </a>
+              <button type="button" class="btn btn-outline-light btn-lg" (click)="imprimir()">
+                <i class="bi bi-printer me-1"></i>Imprimir carta
+              </button>
+            </div>
+          </footer>
+        }
+      }
+    </article>
+  </div>
+</section>
