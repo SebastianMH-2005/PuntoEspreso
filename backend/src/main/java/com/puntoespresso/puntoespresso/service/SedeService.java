@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.service;
 
-import com.puntoespresso.puntoespresso.dto.Sede;
+import com.puntoespresso.puntoespresso.entity.Sede;
 import com.puntoespresso.puntoespresso.repository.SedeRepository;
 import org.springframework.stereotype.Service;
 

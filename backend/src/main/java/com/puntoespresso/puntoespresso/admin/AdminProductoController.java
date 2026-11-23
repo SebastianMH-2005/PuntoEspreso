@@ -1,7 +1,7 @@
 package com.puntoespresso.puntoespresso.admin;
 
-import com.puntoespresso.puntoespresso.dto.Categoria;
-import com.puntoespresso.puntoespresso.dto.Producto;
+import com.puntoespresso.puntoespresso.entity.Categoria;
+import com.puntoespresso.puntoespresso.entity.Producto;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import com.puntoespresso.puntoespresso.service.ProductoService;

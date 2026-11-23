@@ -1,4 +1,4 @@
-package com.puntoespresso.puntoespresso.dto;
+package com.puntoespresso.puntoespresso.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

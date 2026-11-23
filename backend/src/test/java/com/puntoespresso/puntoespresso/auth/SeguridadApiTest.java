@@ -1,8 +1,8 @@
 package com.puntoespresso.puntoespresso.auth;
 
-import com.puntoespresso.puntoespresso.dto.Cliente;
-import com.puntoespresso.puntoespresso.dto.Rol;
-import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
+import com.puntoespresso.puntoespresso.entity.Cliente;
+import com.puntoespresso.puntoespresso.entity.Rol;
+import com.puntoespresso.puntoespresso.entity.UsuarioSistema;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;
 import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;
 import jakarta.servlet.Filter;

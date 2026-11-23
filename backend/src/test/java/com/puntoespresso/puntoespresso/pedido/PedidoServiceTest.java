@@ -1,10 +1,10 @@
 package com.puntoespresso.puntoespresso.pedido;
 
 import com.puntoespresso.puntoespresso.auth.UsuarioAutenticado;
-import com.puntoespresso.puntoespresso.dto.Cliente;
-import com.puntoespresso.puntoespresso.dto.Producto;
-import com.puntoespresso.puntoespresso.dto.Rol;
-import com.puntoespresso.puntoespresso.dto.Sede;
+import com.puntoespresso.puntoespresso.entity.Cliente;
+import com.puntoespresso.puntoespresso.entity.Producto;
+import com.puntoespresso.puntoespresso.entity.Rol;
+import com.puntoespresso.puntoespresso.entity.Sede;
 import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;

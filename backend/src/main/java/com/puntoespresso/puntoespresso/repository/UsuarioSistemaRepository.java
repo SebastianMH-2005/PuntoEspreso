@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.repository;
 
-import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
+import com.puntoespresso.puntoespresso.entity.UsuarioSistema;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

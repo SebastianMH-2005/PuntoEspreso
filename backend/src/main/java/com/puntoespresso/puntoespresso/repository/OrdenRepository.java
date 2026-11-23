@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.repository;
 
-import com.puntoespresso.puntoespresso.dto.Orden;
+import com.puntoespresso.puntoespresso.entity.Orden;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

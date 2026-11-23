@@ -1,47 +1,47 @@
-package com.puntoespresso.puntoespresso.dto;
+package com.puntoespresso.puntoespresso.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "usuarios_sistema")
-public class UsuarioSistema {
+@Table(name = "clientes")
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idUsuarioSistema;
+    private Integer idCliente;
     private String nombre;
+    @Column(unique = true)
+    private String dni;
     @Column(unique = true)
     private String email;
     @JsonIgnore
     private String contrasena;
+    private String telefono;
 
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
-
-    public UsuarioSistema() {
+    public Cliente() {
     }
 
-    public UsuarioSistema(String nombre, String email, String contrasena, Rol rol) {
+    public Cliente(String nombre, String dni, String email, String contrasena, String telefono) {
         this.nombre = nombre;
+        this.dni = dni;
         this.email = email;
         this.contrasena = contrasena;
-        this.rol = rol;
+        this.telefono = telefono;
     }
 
-    public Integer getIdUsuarioSistema() {
-        return idUsuarioSistema;
+    public Integer getIdCliente() {
+        return idCliente;
     }
 
-    public void setIdUsuarioSistema(Integer idUsuarioSistema) {
-        this.idUsuarioSistema = idUsuarioSistema;
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
     }
 
     public String getNombre() {
@@ -50,6 +50,14 @@ public class UsuarioSistema {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getEmail() {
@@ -68,11 +76,11 @@ public class UsuarioSistema {
         this.contrasena = contrasena;
     }
 
-    public Rol getRol() {
-        return rol;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setRol(Rol rol) {
-        this.rol = rol;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

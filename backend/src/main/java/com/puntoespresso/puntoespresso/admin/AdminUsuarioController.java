@@ -1,7 +1,7 @@
 package com.puntoespresso.puntoespresso.admin;
 
-import com.puntoespresso.puntoespresso.dto.Rol;
-import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
+import com.puntoespresso.puntoespresso.entity.Rol;
+import com.puntoespresso.puntoespresso.entity.UsuarioSistema;
 import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;

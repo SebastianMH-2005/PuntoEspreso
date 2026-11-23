@@ -1,10 +1,10 @@
 package com.puntoespresso.puntoespresso.config;
 
-import com.puntoespresso.puntoespresso.dto.Categoria;
-import com.puntoespresso.puntoespresso.dto.Producto;
-import com.puntoespresso.puntoespresso.dto.Rol;
-import com.puntoespresso.puntoespresso.dto.Sede;
-import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
+import com.puntoespresso.puntoespresso.entity.Categoria;
+import com.puntoespresso.puntoespresso.entity.Producto;
+import com.puntoespresso.puntoespresso.entity.Rol;
+import com.puntoespresso.puntoespresso.entity.Sede;
+import com.puntoespresso.puntoespresso.entity.UsuarioSistema;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import com.puntoespresso.puntoespresso.repository.SedeRepository;

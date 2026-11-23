@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.service;
 
-import com.puntoespresso.puntoespresso.dto.Categoria;
+import com.puntoespresso.puntoespresso.entity.Categoria;
 import com.puntoespresso.puntoespresso.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,8 @@
 # Punto Espresso
 
-Aplicación web de una cafetería de especialidad en Lima: catálogo de productos, carrito, pedidos con recojo en sede y panel de administración. Proyecto del curso **Desarrollo Web Integrado** (UTP, 2026 · Ciclo 2 Agosto).
+Aplicación web de una cafetería de especialidad en Lima: carta de bebidas, catálogo de productos, carrito, pedidos con recojo en sede (pago con tarjeta simulado o con Yape), inicio de sesión con Google y panel de administración. Proyecto del curso **Desarrollo Web Integrado** (UTP, 2026 · Ciclo 2 Agosto).
+
+> **Sobre la empresa:** Punto Espresso es una marca **ficticia**, creada con fines académicos. Las imágenes y los datos son ilustrativos.
 
 ## Sitio desplegado
 
@@ -15,9 +17,9 @@ Aplicación web de una cafetería de especialidad en Lima: catálogo de producto
 
 ## Qué se puede hacer
 
-- **Visitante:** ver inicio, nosotros, catálogo (con filtro por categoría y buscador) y locales con sus horarios; registrarse e iniciar sesión.
-- **Cliente:** armar un carrito con varios productos, elegir la sede de recojo, pagar (pago simulado), ver sus pedidos, seguir su estado en vivo y cancelar los pendientes.
-- **Operador:** ver las órdenes, filtrarlas por estado y llevarlas de pendiente a entregado (o cancelarlas).
+- **Visitante:** ver inicio, nosotros, la **carta** de bebidas con precios (imprimible), el catálogo (con filtro por categoría y buscador) y los locales con sus horarios; registrarse e iniciar sesión, con correo y contraseña o con **Google**.
+- **Cliente:** armar un carrito con varios productos, elegir la sede de recojo, pagar con tarjeta (simulado) o con **Yape** (QR y número de operación), ver sus pedidos, seguir su estado en vivo y cancelar los pendientes.
+- **Operador:** ver las órdenes (paginadas, con búsqueda y filtro por estado), verificar los pagos con Yape o Plin por su número de operación y llevarlas de pendiente a entregado (o cancelarlas).
 - **Administrador:** todo lo del operador, más el resumen de ventas, y crear, editar y borrar productos, sedes y operadores.
 
 ## Tecnologías
@@ -25,9 +27,9 @@ Aplicación web de una cafetería de especialidad en Lima: catálogo de producto
 | Capa | Tecnología |
 |---|---|
 | Frontend | Angular 22 (componentes standalone, señales, sin zone.js), TypeScript, Bootstrap 5 y Bootstrap Icons, formularios reactivos |
-| Backend | Java 25, Spring Boot 4, Spring Web, Spring Data JPA (Hibernate), Spring Security con JWT, Bean Validation, Actuator, springdoc (Swagger) |
-| Base de datos | PostgreSQL en Supabase |
-| Pruebas | Vitest (frontend) |
+| Backend | Java 25, Spring Boot 4, Spring Web, Spring Data JPA (Hibernate), Spring Security con JWT y verificación de credenciales de Google, Flyway (migraciones), Bean Validation, Actuator, springdoc (Swagger) |
+| Base de datos | PostgreSQL en Supabase (esquema versionado con Flyway) |
+| Pruebas | JUnit 5 con H2 (backend) y Vitest (frontend) |
 | Despliegue | Vercel (frontend), Render con Docker (backend), GitHub Actions (integración continua) |
 
 ## Arquitectura
@@ -52,22 +54,22 @@ Navegador ──► Vercel: sitio Angular (archivos estáticos)
 │   │   ├── auth/                  login, registro, JWT y seguridad
 │   │   ├── config/                CORS, Swagger y datos iniciales
 │   │   ├── controller/            API pública y redirección de las páginas antiguas
-│   │   ├── dto/                   entidades JPA
+│   │   ├── entity/                entidades JPA
 │   │   ├── exception/             errores de la API en JSON
 │   │   ├── pedido/                pedidos del cliente
 │   │   ├── repository/            acceso a datos (Spring Data JPA)
 │   │   └── service/               lógica de negocio
-│   ├── src/main/resources/        application.properties
+│   ├── src/main/resources/        application.properties y db/migration (migraciones de Flyway)
 │   ├── Dockerfile
 │   └── .env.example               plantilla de variables de entorno
 ├── frontend/punto-espresso/       sitio web (Angular)
 │   ├── src/app/
 │   │   ├── core/                  servicios, interceptor, guards, modelos, utilidades y validadores
-│   │   ├── shared/                header, footer, product-card, carousel, field-error
-│   │   └── features/              about, admin, auth, cart, catalog, checkout, contact, home, not-found, orders
+│   │   ├── shared/                header, footer, product-card, carousel, field-error, google-button
+│   │   └── features/              about, admin, auth, carta, cart, catalog, checkout, contact, farewell, home, legal, not-found, orders
 │   ├── public/                    imágenes, robots.txt y sitemap.xml
 │   └── vercel.json
-└── .github/workflows/ci.yml       compila el backend en cada push
+└── .github/workflows/ci.yml       compila y prueba el backend y el frontend en cada push
 ```
 
 ## Cómo ejecutarlo en local
@@ -89,7 +91,7 @@ gradlew bootRun
 
    En VS Code también puedes usar la configuración de `.vscode/launch.json`, que lee el archivo `.env`.
 
-3. La API queda en http://localhost:8080 (Swagger en `/swagger-ui.html`). Al arrancar por primera vez crea las tablas y carga categorías, 10 productos, 3 sedes y el usuario administrador.
+3. La API queda en http://localhost:8080 (Swagger en `/swagger-ui.html`). Al arrancar, Flyway crea las tablas (migraciones en `src/main/resources/db/migration`) y se cargan categorías, 10 productos, 3 sedes y el usuario administrador.
 
 ### Frontend
 
@@ -99,7 +101,7 @@ npm install
 ng serve
 ```
 
-El sitio queda en http://localhost:4200 y usa la API de `http://localhost:8080` (ver `src/environments/environment.development.ts`).
+El sitio queda en http://localhost:4200 y usa la API de `http://localhost:8080` (ver `src/environments/environment.development.ts`). Para activar "Continuar con Google" pon tu ID de cliente en `googleClientId` de los archivos de `src/environments` (si está vacío, el botón no aparece).
 
 ## Variables de entorno del backend
 
@@ -114,6 +116,7 @@ El sitio queda en http://localhost:4200 y usa la API de `http://localhost:8080` 
 | `TZ` | Zona horaria del servidor (`America/Lima`); afecta fechas y el resumen de ventas |
 | `SPRINGDOC_SWAGGER_UI_ENABLED`, `SPRINGDOC_API_DOCS_ENABLED` | `false` para ocultar la documentación Swagger |
 | `JPA_SHOW_SQL` | `true` para ver las consultas SQL en el log |
+| `GOOGLE_CLIENT_ID` | ID de cliente de Google Cloud para "Continuar con Google" (opcional; vacío = apagado). Debe ser el mismo que `googleClientId` del frontend |
 
 ## Cuentas de prueba
 
@@ -124,6 +127,8 @@ El sitio queda en http://localhost:4200 y usa la API de `http://localhost:8080` 
 | Cliente | se crea en **/registro** | la que elija |
 
 **Pago de prueba:** el pago es simulado y los datos de la tarjeta nunca se envían ni se guardan. Sirve cualquier número de 16 dígitos (por ejemplo `4111111111111111`), un vencimiento futuro (`MM/AA`) y un CVV de 3 dígitos.
+
+**Pago con Yape:** el checkout muestra el QR y pide el número de operación del comprobante (de 6 a 12 dígitos; para probar sirve cualquiera, pero no puede repetirse entre pedidos). El personal lo verifica en **Panel → Órdenes**. **Plin** está implementado pero desactivado hasta contar con su QR; se activa en `frontend/punto-espresso/src/app/core/config/pagos-qr.ts`.
 
 ## Roles y permisos
 
@@ -142,10 +147,11 @@ La seguridad real está en el backend (Spring Security + JWT); los guards de Ang
 |---|---|
 | `POST /api/auth/login` | Inicia sesión y devuelve el token JWT |
 | `POST /api/auth/registro` | Registra un cliente |
+| `POST /api/auth/google` | Inicia sesión con una credencial de Google (crea la cuenta de cliente si no existe) |
 | `GET /api/productos`, `/api/productos/{id}`, `/api/categorias`, `/api/sedes` | Datos públicos |
-| `POST /api/pedidos` | Crea un pedido con varios productos y la sede de recojo |
+| `POST /api/pedidos` | Crea un pedido con varios productos y la sede de recojo (con Yape o Plin incluye `codigoOperacion`) |
 | `GET /api/pedidos/mis-ordenes`, `PUT /api/pedidos/mis-ordenes/{id}/cancelar` | Pedidos del cliente |
-| `GET /api/admin/ordenes`, `PUT /api/admin/ordenes/{id}/estado` | Atención de órdenes |
+| `GET /api/admin/ordenes?page=0&size=20&estado=&q=`, `PUT /api/admin/ordenes/{id}/estado` | Atención de órdenes (listado paginado con búsqueda y filtro) |
 | `/api/admin/productos`, `/api/admin/sedes` | Altas, bajas y cambios (GET, POST, PUT, DELETE) |
 | `GET/POST/DELETE /api/admin/usuarios` | Personal (operadores) |
 | `GET /api/admin/dashboard?dias=7` | Resumen de ventas |
@@ -154,15 +160,17 @@ Los errores de la API responden en JSON con el campo `message`.
 
 ## Pruebas
 
-- **Frontend:** `ng test --no-watch` (en `frontend/punto-espresso`) ejecuta 147 pruebas con Vitest: servicios, guards, formularios, páginas y rutas protegidas.
-- **Backend:** la integración continua compila con `gradlew build -x test`; el test de arranque de Spring necesita una base de datos real.
+- **Frontend:** `ng test --no-watch` (en `frontend/punto-espresso`) ejecuta más de 180 pruebas con Vitest: servicios, guards, formularios, páginas, rutas protegidas, carta, pagos con QR e inicio de sesión con Google.
+- **Backend:** `gradlew test` (en `backend`) ejecuta las pruebas de JUnit 5 sobre una base H2 en memoria, sin tocar la base real: CRUD del panel (productos, sedes y personal), pedidos y stock, seguridad con JWT y roles, paginación, migraciones de Flyway, pagos con Yape e inicio de sesión con Google.
 
 ## Despliegue
 
 - **Render:** servicio Docker con *Root Directory* `backend`, y las variables de la tabla anterior.
 - **Vercel:** *Root Directory* `frontend/punto-espresso`; `vercel.json` define la carpeta de salida y redirige todas las rutas a `index.html`.
-- **Supabase:** base PostgreSQL; las tablas las crea Hibernate al arrancar.
+- **Supabase:** base PostgreSQL; las tablas las crea y versiona Flyway al arrancar el backend (migraciones en `backend/src/main/resources/db/migration`); Hibernate solo valida que coincidan con las entidades.
 - Cada `git push` a `main` vuelve a desplegar ambos servicios.
+- **GitHub Actions** compila y ejecuta las pruebas del backend y del frontend en cada push.
+- **UptimeRobot** consulta la API cada pocos minutos para que Render no la duerma.
 
 ## Dónde está cada criterio del ATF3
 
@@ -175,6 +183,23 @@ Los errores de la API responden en JSON con el campo `message`.
 | Servicios con `inject()` | `core/services/*` y `core/interceptors/auth.interceptor.ts` (sin inyección por constructor) |
 | Componentes reutilizables y páginas | `shared/*` (5 componentes) y 10 páginas en `features/*` |
 | Formularios reactivos con validación | login, registro, pago, producto, sede y personal, más los buscadores y filtros; los mensajes los muestra `shared/field-error` |
+
+## Criterios del proyecto final
+
+| # | Criterio | Dónde verlo |
+|:-:|---|---|
+| 1 | Organización del front (por funcionalidades, carpetas en kebab-case) | `frontend/punto-espresso/src/app/`: `core`, `shared` y `features` (por ejemplo `google-button`, `field-error`, `product-card`) |
+| 2 | Organización del back (paquetes por capas) | `backend/src/main/java/com/puntoespresso/puntoespresso/`: `controller`, `service`, `repository`, `entity`, `exception`, `config` y `auth` (más `admin` y `pedido`, agrupados por funcionalidad) |
+| 3 | Variables de entorno del front | `src/environments/environment.ts` (producción) y `environment.development.ts` (desarrollo), con reemplazo de archivos en `angular.json` |
+| 4 | Variables de entorno del back | `application.properties` lee todo lo sensible de variables de entorno (`${...}`); plantilla en `backend/.env.example` y tabla de este README |
+| 5 | JWT | `auth/JwtUtil` (firma y expiración), `auth/JwtAuthFilter` (validación en cada petición) y `auth/SecurityConfig` (reglas por rol) |
+| 6 | Inicio de sesión funcional | `POST /api/auth/login` y `POST /api/auth/google` devuelven el token JWT; el front lo guarda y lo envía con un interceptor |
+| 7 | CRUD completo y pruebas con JUnit | `admin/Admin*Controller` (productos, sedes, personal y órdenes); pruebas en `backend/src/test/java` (`AdminCrudApiTest`, `PedidoServiceTest`, `SeguridadApiTest`…) con `gradlew test` |
+| 8 | Angular consume la API | `core/services/*` con `HttpClient`; los resultados se muestran en las páginas de `features/*` |
+| 9 | Base de datos | PostgreSQL en Supabase con usuario y contraseña propios (variables de entorno) y esquema versionado con Flyway en `backend/src/main/resources/db/migration` |
+| 10 | Manejo de errores | Back: `exception/ApiExceptionHandler` (respuestas JSON uniformes). Front: mensajes en formularios y alertas (`shared/field-error`) y página 404 (`features/not-found`) |
+| 11 | Interfaz responsive | Bootstrap 5 y Bootstrap Icons; el diseño se adapta a celular |
+| 12 | Documentación | Este README |
 
 ## Notas de diseño
 

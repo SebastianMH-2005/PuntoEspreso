@@ -1,9 +1,9 @@
 package com.puntoespresso.puntoespresso.pedido;
 
 import com.puntoespresso.puntoespresso.auth.UsuarioAutenticado;
-import com.puntoespresso.puntoespresso.dto.Cliente;
-import com.puntoespresso.puntoespresso.dto.Orden;
-import com.puntoespresso.puntoespresso.dto.Rol;
+import com.puntoespresso.puntoespresso.entity.Cliente;
+import com.puntoespresso.puntoespresso.entity.Orden;
+import com.puntoespresso.puntoespresso.entity.Rol;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenDetalleRepository;
 import com.puntoespresso.puntoespresso.repository.OrdenRepository;

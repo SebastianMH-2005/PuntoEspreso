@@ -1,4 +1,4 @@
-package com.puntoespresso.puntoespresso.dto;
+package com.puntoespresso.puntoespresso.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

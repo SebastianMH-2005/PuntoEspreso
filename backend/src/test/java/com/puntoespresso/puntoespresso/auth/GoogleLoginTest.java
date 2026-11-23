@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.auth;
 
-import com.puntoespresso.puntoespresso.dto.Cliente;
+import com.puntoespresso.puntoespresso.entity.Cliente;
 import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import com.puntoespresso.puntoespresso.exception.SolicitudInvalidaException;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;

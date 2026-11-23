@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.admin;
 
-import com.puntoespresso.puntoespresso.dto.Sede;
+import com.puntoespresso.puntoespresso.entity.Sede;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.service.SedeService;
 import jakarta.validation.Valid;

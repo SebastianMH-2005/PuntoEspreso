@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.repository;
 
-import com.puntoespresso.puntoespresso.dto.OrdenDetalle;
+import com.puntoespresso.puntoespresso.entity.OrdenDetalle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

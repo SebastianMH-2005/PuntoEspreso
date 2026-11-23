@@ -2,9 +2,9 @@ package com.puntoespresso.puntoespresso.service;
 
 import com.puntoespresso.puntoespresso.admin.DetalleResponse;
 import com.puntoespresso.puntoespresso.auth.UsuarioAutenticado;
-import com.puntoespresso.puntoespresso.dto.Orden;
-import com.puntoespresso.puntoespresso.dto.OrdenDetalle;
-import com.puntoespresso.puntoespresso.dto.UsuarioSistema;
+import com.puntoespresso.puntoespresso.entity.Orden;
+import com.puntoespresso.puntoespresso.entity.OrdenDetalle;
+import com.puntoespresso.puntoespresso.entity.UsuarioSistema;
 import com.puntoespresso.puntoespresso.exception.ConflictoException;
 import com.puntoespresso.puntoespresso.exception.RecursoNoEncontradoException;
 import com.puntoespresso.puntoespresso.pedido.MiOrdenResponse;

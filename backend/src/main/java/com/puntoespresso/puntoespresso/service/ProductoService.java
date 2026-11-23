@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso.service;
 
-import com.puntoespresso.puntoespresso.dto.Producto;
+import com.puntoespresso.puntoespresso.entity.Producto;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

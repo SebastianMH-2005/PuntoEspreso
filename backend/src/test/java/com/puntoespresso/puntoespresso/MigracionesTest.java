@@ -1,6 +1,6 @@
 package com.puntoespresso.puntoespresso;
 
-import com.puntoespresso.puntoespresso.dto.Cliente;
+import com.puntoespresso.puntoespresso.entity.Cliente;
 import com.puntoespresso.puntoespresso.repository.ClienteRepository;
 import com.puntoespresso.puntoespresso.repository.ProductoRepository;
 import com.puntoespresso.puntoespresso.repository.UsuarioSistemaRepository;

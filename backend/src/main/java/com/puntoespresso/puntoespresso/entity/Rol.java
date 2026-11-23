@@ -1,4 +1,4 @@
-package com.puntoespresso.puntoespresso.dto;
+package com.puntoespresso.puntoespresso.entity;
 
 public enum Rol {
     CLIENTE,
