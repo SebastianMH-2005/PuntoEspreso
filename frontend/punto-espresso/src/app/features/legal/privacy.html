@@ -1,0 +1,89 @@
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <article class="col-lg-8">
+      <h1 class="h2 fw-bold mb-1">Política de privacidad</h1>
+      <p class="text-muted">Última actualización: {{ actualizacion }}</p>
+
+      <p>
+        En Punto Espresso cuidamos tus datos. Esta política explica qué información recopilamos cuando
+        usas la aplicación, para qué la usamos y qué derechos tienes sobre ella.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">1. Quiénes somos</h2>
+      <p>
+        Punto Espresso es una aplicación web de pedidos en línea para una cafetería de especialidad en
+        Lima, Perú, desarrollada como proyecto del curso Desarrollo Web Integrado de la Universidad
+        Tecnológica del Perú (UTP). Puedes escribirnos a
+        <a [href]="'mailto:' + correo">{{ correo }}</a>.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">2. Datos que recopilamos</h2>
+      <ul>
+        <li>
+          <strong>Al crear tu cuenta:</strong> nombre, DNI, correo electrónico, teléfono y una
+          contraseña. La contraseña se guarda cifrada y nadie, tampoco el equipo, puede leerla.
+        </li>
+        <li>
+          <strong>Si entras con Google:</strong> tu nombre y tu correo verificado, que Google nos
+          entrega con tu autorización. No recibimos tu contraseña de Google ni acceso a otros datos
+          de tu cuenta de Google.
+        </li>
+        <li>
+          <strong>Al hacer un pedido:</strong> los productos, el local de recojo, el método de pago y
+          la fecha. Si pagas con Yape o Plin, también el número de operación de tu comprobante, que
+          usamos para verificar el pago.
+        </li>
+        <li>
+          <strong>Pagos con tarjeta:</strong> en esta versión el pago con tarjeta es simulado. Los
+          datos de la tarjeta se validan en tu navegador y no se envían ni se guardan.
+        </li>
+        <li>
+          <strong>En tu navegador:</strong> guardamos tu sesión y tu carrito en el almacenamiento
+          local del navegador para que no se pierdan al recargar la página.
+        </li>
+      </ul>
+
+      <h2 class="h5 fw-bold mt-4">3. Para qué usamos tus datos</h2>
+      <ul>
+        <li>Crear y proteger tu cuenta, y reconocerte cuando inicias sesión.</li>
+        <li>Preparar, verificar y entregar tus pedidos, y mostrarte su estado.</li>
+        <li>Responder tus consultas.</li>
+      </ul>
+      <p>No vendemos tus datos ni los usamos para publicidad.</p>
+
+      <h2 class="h5 fw-bold mt-4">4. Con quién los compartimos</h2>
+      <p>
+        Solo con los servicios técnicos que hacen funcionar la aplicación: Vercel (sitio web), Render
+        (servidor), Supabase (base de datos) y Google (inicio de sesión). Cada uno los trata según su
+        propia política.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">5. Seguridad y conservación</h2>
+      <p>
+        Las comunicaciones viajan cifradas (HTTPS), las contraseñas se guardan cifradas y el acceso
+        del personal está limitado por roles. Conservamos tus datos mientras tengas una cuenta o los
+        necesitemos para atender tus pedidos.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">6. Tus derechos</h2>
+      <p>
+        Conforme a la Ley N.° 29733, Ley de Protección de Datos Personales del Perú, puedes pedir
+        acceso, rectificación, cancelación u oposición sobre tus datos escribiendo a
+        <a [href]="'mailto:' + correo">{{ correo }}</a>.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">7. Cookies y almacenamiento</h2>
+      <p>
+        No usamos cookies de publicidad. Usamos el almacenamiento local de tu navegador para tu sesión
+        y tu carrito. Si entras con Google, Google puede usar sus propias cookies al mostrar su botón.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">8. Cambios en esta política</h2>
+      <p>
+        Si la actualizamos, publicaremos la nueva versión en esta página con su fecha. Para más
+        información sobre las reglas de uso, revisa nuestros
+        <a routerLink="/terminos">Términos y condiciones</a>.
+      </p>
+    </article>
+  </div>
+</section>

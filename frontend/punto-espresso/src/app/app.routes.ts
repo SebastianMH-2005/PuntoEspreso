@@ -33,6 +33,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/carta/carta').then((m) => m.Carta),
   },
   {
+    path: 'privacidad',
+    title: 'Política de privacidad | Punto Espresso',
+    data: { descripcion: 'Cómo Punto Espresso recopila, usa y protege tus datos personales.' },
+    loadComponent: () => import('./features/legal/privacy').then((m) => m.Privacy),
+  },
+  {
+    path: 'terminos',
+    title: 'Términos y condiciones | Punto Espresso',
+    data: {
+      descripcion:
+        'Condiciones de uso de Punto Espresso: pedidos, pagos con tarjeta, Yape y Plin, y recojo en el local.',
+    },
+    loadComponent: () => import('./features/legal/terms').then((m) => m.Terms),
+  },
+  {
     path: 'nosotros',
     title: 'Nosotros | Punto Espresso',
     data: {

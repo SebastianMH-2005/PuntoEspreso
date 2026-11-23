@@ -1,0 +1,75 @@
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <article class="col-lg-8">
+      <h1 class="h2 fw-bold mb-1">Términos y condiciones</h1>
+      <p class="text-muted">Última actualización: {{ actualizacion }}</p>
+
+      <p>
+        Al usar Punto Espresso aceptas estas condiciones. Si no estás de acuerdo con alguna, te pedimos
+        que no uses la aplicación.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">1. El servicio</h2>
+      <p>
+        Punto Espresso permite consultar la carta, hacer pedidos en línea y recogerlos en el local que
+        elijas en Lima, Perú. No ofrecemos entrega a domicilio.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">2. Tu cuenta</h2>
+      <p>
+        Debes dar datos verdaderos al crear tu cuenta y cuidar tu contraseña o tu cuenta de Google.
+        Eres responsable de lo que se haga con tu sesión. Puedes entrar con tu correo y contraseña o
+        con Google.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">3. Pedidos</h2>
+      <ul>
+        <li>Los pedidos están sujetos al stock disponible; los productos agotados no se pueden pedir.</li>
+        <li>Puedes cancelar un pedido mientras siga pendiente. Después de que empiece a prepararse ya no es posible.</li>
+        <li>Cada pedido tiene un código único para que lo identifiques al recogerlo.</li>
+      </ul>
+
+      <h2 class="h5 fw-bold mt-4">4. Precios y pagos</h2>
+      <ul>
+        <li>Los precios están en soles (S/) y pueden cambiar sin previo aviso; el precio que pagas es el vigente al hacer el pedido.</li>
+        <li>El pago con tarjeta es simulado en esta versión: no se cobra ni se guardan los datos de la tarjeta.</li>
+        <li>
+          Con Yape o Plin pagas escaneando el código QR e ingresas el número de operación de tu
+          comprobante. Verificamos el pago antes de preparar el pedido. Un número de operación solo
+          puede usarse una vez.
+        </li>
+      </ul>
+
+      <h2 class="h5 fw-bold mt-4">5. Uso adecuado</h2>
+      <p>
+        No está permitido intentar vulnerar la aplicación, usar datos o comprobantes falsos, ni
+        interferir con su funcionamiento. Podemos suspender cuentas que incumplan estas condiciones.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">6. Propiedad intelectual</h2>
+      <p>
+        El nombre, las imágenes y el contenido de Punto Espresso pertenecen a sus titulares y no
+        pueden usarse sin autorización.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">7. Disponibilidad y responsabilidad</h2>
+      <p>
+        Hacemos lo posible para que la aplicación funcione siempre, pero no garantizamos que esté
+        disponible de forma ininterrumpida: puede tardar en responder o estar en mantenimiento. No nos
+        hacemos responsables por daños derivados de interrupciones ajenas a nuestro control.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">8. Privacidad</h2>
+      <p>
+        Tratamos tus datos como explica nuestra
+        <a routerLink="/privacidad">Política de privacidad</a>.
+      </p>
+
+      <h2 class="h5 fw-bold mt-4">9. Ley aplicable y contacto</h2>
+      <p>
+        Estas condiciones se rigen por las leyes de la República del Perú. Para cualquier consulta
+        escríbenos a <a [href]="'mailto:' + correo">{{ correo }}</a>.
+      </p>
+    </article>
+  </div>
+</section>
